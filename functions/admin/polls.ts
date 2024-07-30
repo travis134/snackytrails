@@ -14,7 +14,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     try {
         const result = await POLLS_DB.prepare(createPoll).bind(name, description, selections).run();
-        return new Response(JSON.stringify({ id: result.meta.last_row_id }), { status: 201 });
+        const id = result.meta.last_row_id;
+
+        return new Response(JSON.stringify({ id }), { status: 201 });
     } catch (error) {
         return new Response(`Error creating poll: ${error.message}`, { status: 500 });
     }
