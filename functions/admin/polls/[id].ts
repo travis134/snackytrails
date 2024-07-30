@@ -1,4 +1,4 @@
-import { Env, Poll } from "../../lib/types";
+import { Env, Poll } from `../../lib/types`;
 
 // Update a poll
 export const onRequestPut: PagesFunction<Env> = async (context) => {
@@ -51,7 +51,7 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
     const { POLLS_DB } = context.env;
     const { id } = context.params;
 
-    const deletePoll = "DELETE FROM polls WHERE id = ?";
+    const deletePoll = `DELETE FROM polls WHERE id = ?`;
 
     try {
         await POLLS_DB.prepare(deletePoll).bind(id).run();
