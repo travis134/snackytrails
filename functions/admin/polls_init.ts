@@ -10,7 +10,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       description TEXT,
-      selections TEXT CHECK(poll_type IN ('single', 'multiple')) NOT NULL,
+      selections TEXT CHECK(selections IN ('single', 'multiple')) NOT NULL,
       created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       ended TIMESTAMP
     );
