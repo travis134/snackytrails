@@ -3,7 +3,7 @@ import { Env, Poll, Option } from "../lib/types";
 // Read a poll
 export const onRequestGet: PagesFunction<Env> = async (context) => {
     const { POLLS_DB } = context.env;
-    const { id: pollId } = context.params;
+    const { poll: pollId } = context.params;
 
     const getPoll = `SELECT * FROM polls WHERE id = ?`;
     const getOptions = `SELECT * FROM options WHERE poll_id = ?`;

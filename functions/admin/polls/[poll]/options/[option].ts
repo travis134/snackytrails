@@ -3,7 +3,7 @@ import { Env, Option } from "../../../../lib/types";
 // Update an option
 export const onRequestPut: PagesFunction<Env> = async (context) => {
     const { POLLS_DB } = context.env;
-    const { id: pollId } = context.params;
+    const { poll: pollId, option: optionId } = context.params;
     const option: Partial<Option> = await context.request.json();
     const { text, image } = option;
 
@@ -23,8 +23,9 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
     }
 
     values.push(pollId);
+    values.push(optionId);
 
-    const updateOption = `UPDATE options SET ${fields.join(', ')} WHERE id = ?`;
+    const updateOption = `UPDATE options SET ${fields.join(', ')} WHERE poll_id = ? AND id = ?`;
 
     try {
         await POLLS_DB.prepare(updateOption).bind(...values).run();
@@ -37,12 +38,12 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
 // Delete an option
 export const onRequestDelete: PagesFunction<Env> = async (context) => {
     const { POLLS_DB } = context.env;
-    const { id } = context.params;
+    const { poll: pollId, option: optionId } = context.params;
 
-    const deleteOption = `DELETE FROM options WHERE id = ?`;
+    const deleteOption = `DELETE FROM options WHERE poll_id = ? AND id = ?`;
 
     try {
-        await POLLS_DB.prepare(deleteOption).bind(id).run();
+        await POLLS_DB.prepare(deleteOption).bind(pollId, optionId).run();
         return new Response('Option deleted successfully', { status: 200 });
     } catch (error) {
         return new Response(`Error deleting option: ${error.message}`, { status: 500 });

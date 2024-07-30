@@ -4,7 +4,7 @@ import { Env, Option, ResponseOption } from "../../lib/types";
 export const onRequestGet: PagesFunction<Env> = async (context) => {
     const { request } = context;
     const { POLLS_DB } = context.env;
-    const { id: pollId } = context.params;
+    const { poll: pollId } = context.params;
     const url = new URL(request.url);
     const optionIds = url.searchParams.getAll('optionId');
 

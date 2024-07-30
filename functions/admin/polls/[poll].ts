@@ -3,7 +3,7 @@ import { Env, Poll } from "../../lib/types";
 // Update a poll
 export const onRequestPut: PagesFunction<Env> = async (context) => {
     const { POLLS_DB } = context.env;
-    const { id: pollId } = context.params;
+    const { poll: pollId } = context.params;
     const poll: Partial<Poll> = await context.request.json();
     const { name, description, selections, ended } = poll;
 

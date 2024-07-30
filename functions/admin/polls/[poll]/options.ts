@@ -3,7 +3,7 @@ import { Env, Option } from "../../../lib/types";
 // Create a new option
 export const onRequestPost: PagesFunction<Env> = async (context) => {
     const { POLLS_DB } = context.env;
-    const { id: pollId } = context.params;
+    const { poll: pollId } = context.params;
     const option: Partial<Option> = await context.request.json();
     const { text, image } = option;
 
