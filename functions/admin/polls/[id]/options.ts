@@ -1,6 +1,6 @@
-import { Env, Option } from `../../../lib/types`;
+import { Env, Option } from "../../../lib/types";
 
-// Create a new poll
+// Create a new option
 export const onRequestPost: PagesFunction<Env> = async (context) => {
     const { POLLS_DB } = context.env;
     const { id: pollId } = context.params;

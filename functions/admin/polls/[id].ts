@@ -1,9 +1,9 @@
-import { Env, Poll } from `../../lib/types`;
+import { Env, Poll } from "../../lib/types";
 
 // Update a poll
 export const onRequestPut: PagesFunction<Env> = async (context) => {
     const { POLLS_DB } = context.env;
-    const { id } = context.params;
+    const { id: pollId } = context.params;
     const poll: Partial<Poll> = await context.request.json();
     const { name, description, selections, ended } = poll;
 
@@ -34,7 +34,7 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
         return new Response('No valid fields to update', { status: 400 });
     }
 
-    values.push(id);
+    values.push(pollId);
 
     const updatePoll = `UPDATE polls SET ${fields.join(', ')} WHERE id = ?`;
 
