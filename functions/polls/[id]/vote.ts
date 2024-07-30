@@ -20,13 +20,22 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     const createResponse = `INSERT INTO responses (user, poll_id) VALUES (?, ?)`;
     const createResponseOption = `INSERT INTO response_options (response_id, option_id) VALUES (?, ?)`;
+    const validateOptions = `SELECT id FROM options WHERE poll_id = ? AND id IN (${optionIds.map(() => '?').join(', ')})`;
 
     try {
+        const validationResults = await POLLS_DB.prepare(validateOptions)
+            .bind(pollId, ...optionIds)
+            .all();
+
+        if (validationResults.results.length !== optionIds.length) {
+            return new Response('Invalid option IDs provided', { status: 400 });
+        }
+
         const result = await POLLS_DB.prepare(createResponse).bind(user, pollId).run();
         const responseId = result.meta.last_row_id;
 
         for (const optionId of optionIds) {
-            await POLLS_DB.prepare(createResponseOption).bind(responseId, optionId);
+            await POLLS_DB.prepare(createResponseOption).bind(responseId, optionId).run();
         }
 
         return new Response('Vote cast successfully', { status: 201 });
