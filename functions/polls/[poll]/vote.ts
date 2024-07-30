@@ -21,8 +21,17 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const createResponse = `INSERT INTO responses (user, poll_id) VALUES (?, ?)`;
     const createResponseOption = `INSERT INTO response_options (response_id, option_id) VALUES (?, ?)`;
     const validateOptions = `SELECT id FROM options WHERE poll_id = ? AND id IN (${optionIds.map(() => '?').join(', ')})`;
+    const checkSelections = `SELECT selections FROM polls WHERE id = ?`;
 
     try {
+        const poll = await POLLS_DB.prepare(checkSelections).bind(pollId).first();
+        if (!poll) {
+            return new Response('Poll not found', { status: 404 });
+        }
+        if (poll.selections === 'single' && optionIds.length > 1) {
+            return new Response('Only one option can be selected for this poll', { status: 400 });
+        }
+
         const validationResults = await POLLS_DB.prepare(validateOptions)
             .bind(pollId, ...optionIds)
             .all();
