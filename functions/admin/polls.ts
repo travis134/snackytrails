@@ -5,7 +5,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const poll: Partial<Poll> = await context.request.json();
     const { name, description, selections } = poll;
 
-    if (!name || !selections) {
+    if (!name || !description || !selections) {
         return new Response('Invalid input', { status: 400 });
     }
 

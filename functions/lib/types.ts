@@ -5,7 +5,7 @@ export interface Env {
 export interface Poll {
     id: number;
     name: string;
-    description?: string;
+    description: string;
     selections: 'single' | 'multiple';
     created: string;
     ended?: string;
