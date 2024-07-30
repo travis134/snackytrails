@@ -9,7 +9,7 @@ export async function onRequest(context) {
 
     const base64Credentials = authHeader.split(" ")[1];
     const credentials = atob(base64Credentials).split(":");
-    const apiKey = credentials[1];
+    const apiKey = credentials[0];
 
     if (apiKey !== env.API_KEY) {
         return new Response('Unauthorized', { status: 401 });
