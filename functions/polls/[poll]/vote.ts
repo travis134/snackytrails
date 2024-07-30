@@ -6,7 +6,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const { POLLS_DB } = context.env;
     const { poll: pollId } = context.params;
     const url = new URL(request.url);
-    const optionIds = url.searchParams.getAll('optionId');
+    const optionIds = url.searchParams.getAll('option');
 
     if (!pollId) {
         return new Response('Poll ID is required', { status: 400 });
