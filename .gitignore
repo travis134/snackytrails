@@ -8,3 +8,6 @@ yarn-error.log*
 
 # Environment variables file
 .env
+
+# Mac junk
+.DS_Store
