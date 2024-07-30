@@ -1,6 +1,4 @@
-interface Env {
-  POLLS_DB: D1Database;
-}
+import { Env } from "../lib/types";
 
 export const onRequest: PagesFunction<Env> = async (context) => {
   const { POLLS_DB } = context.env;
