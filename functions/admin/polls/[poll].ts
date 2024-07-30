@@ -34,12 +34,10 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
         return new Response('No valid fields to update', { status: 400 });
     }
 
-    values.push(pollId);
-
     const updatePoll = `UPDATE polls SET ${fields.join(', ')} WHERE id = ?`;
 
     try {
-        await POLLS_DB.prepare(updatePoll).bind(...values).run();
+        await POLLS_DB.prepare(updatePoll).bind(...values, pollId).run();
         return new Response('Poll updated successfully', { status: 200 });
     } catch (error) {
         return new Response(`Error updating poll: ${error.message}`, { status: 500 });
