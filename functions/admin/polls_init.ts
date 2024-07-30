@@ -31,7 +31,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user TEXT NOT NULL,
       poll_id INTEGER NOT NULL,
-      UNIQUE(user_id, poll_id),
+      UNIQUE(user, poll_id),
       FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE
     );
   `;
