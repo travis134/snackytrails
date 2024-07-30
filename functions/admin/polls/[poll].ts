@@ -47,12 +47,12 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
 // Delete a poll
 export const onRequestDelete: PagesFunction<Env> = async (context) => {
     const { POLLS_DB } = context.env;
-    const { id } = context.params;
+    const { poll: pollId } = context.params;
 
     const deletePoll = `DELETE FROM polls WHERE id = ?`;
 
     try {
-        await POLLS_DB.prepare(deletePoll).bind(id).run();
+        await POLLS_DB.prepare(deletePoll).bind(pollId).run();
         return new Response('Poll deleted successfully', { status: 200 });
     } catch (error) {
         return new Response(`Error deleting poll: ${error.message}`, { status: 500 });
