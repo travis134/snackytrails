@@ -7,7 +7,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     const getPoll = `SELECT * FROM polls WHERE id = ?`;
     const getOptionsWithResponses = `
-        SELECT options.id, options.text, options.image, COUNT(response_options.response_id) as response_count
+        SELECT options.id, options.text, options.image, COUNT(response_options.response_id) as responses
         FROM options
         LEFT JOIN response_options ON options.id = response_options.option_id
         WHERE options.poll_id = ?
@@ -24,7 +24,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
             id: option.id,
             text: option.text,
             image: option.image,
-            response_count: option.response_count
+            responses: option.responses
         }));
         return new Response(JSON.stringify({ poll, options }), { status: 200 });
     } catch (error) {

@@ -15,8 +15,10 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
         values.push(text);
     }
 
-    fields.push('image = ?');
-    values.push(image || null);
+    if (image !== undefined) {
+        fields.push('image = ?');
+        values.push(image || null);
+    }
 
     if (fields.length === 0) {
         return new Response('No valid fields to update', { status: 400 });
