@@ -25,17 +25,26 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     try {
         const poll = await POLLS_DB.prepare(checkSelections).bind(pollId).first();
+
+        // Validate exists
         if (!poll) {
             return new Response('Poll not found', { status: 404 });
         }
+
+        // Validate not ended
+        if (poll.ended && new Date(poll.ended as string) <= new Date()) {
+            return new Response('Poll has ended', { status: 400 });
+        }
+
+        // Validate selection mode
         if (poll.selections === 'single' && optionIds.length > 1) {
             return new Response('Only one option can be selected for this poll', { status: 400 });
         }
 
+        // Validate selected options
         const validationResults = await POLLS_DB.prepare(validateOptions)
             .bind(pollId, ...optionIds)
             .all();
-
         if (validationResults.results.length !== optionIds.length) {
             return new Response('Invalid option IDs provided', { status: 400 });
         }
@@ -53,6 +62,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     }
 }
 
+// Janky anonymous user ID
 const userFromRequest = async (request: Request): Promise<string> => {
     const ip = request.headers.get('cf-connecting-ip') || 'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
