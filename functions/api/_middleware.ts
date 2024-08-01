@@ -16,9 +16,12 @@ export async function onRequest(
 
         console.error(apiError.innerError);
 
-        response = new Response(JSON.stringify({ error: apiError.message }), {
-            status: apiError.status,
-        });
+        response = Response.json(
+            { error: apiError.message },
+            {
+                status: apiError.status,
+            }
+        );
     }
 
     return response;
