@@ -76,7 +76,7 @@ export const isPoll = (obj: any): obj is Poll => {
 
 export interface Option {
     id?: number;
-    poll_id: string;
+    poll_id?: string;
     text: string;
     image?: string;
 }
@@ -86,7 +86,8 @@ export const isOption = (obj: any): obj is Option => {
         typeof obj === "object" &&
         obj !== null &&
         (typeof obj.id === "undefined" || typeof obj.id === "number") &&
-        typeof obj.poll_id === "string" &&
+        (typeof obj.poll_id === "undefined" ||
+            typeof obj.poll_id === "string") &&
         typeof obj.text === "string" &&
         (typeof obj.image === "undefined" ||
             obj.image === null ||
