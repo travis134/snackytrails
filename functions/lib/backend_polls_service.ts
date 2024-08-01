@@ -10,10 +10,13 @@ import {
     PollsService as PollsService,
     ReadOptionResult,
     ReadPollResult,
+    Tally,
+    TallyPollResult,
     UpdateOptionResult,
     UpdatePollResult,
     isOption,
     isPoll,
+    isTally,
 } from "@shared/types";
 
 export class BackendPollsService implements PollsService {
@@ -220,5 +223,33 @@ export class BackendPollsService implements PollsService {
         await this.pollsDb.prepare(deleteOption).bind(pollId, optionId).run();
 
         return { found: true };
+    }
+
+    async tallyPoll(pollId: string): Promise<TallyPollResult> {
+        const getPoll = `SELECT * FROM polls WHERE id = ?`;
+        const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
+        if (!poll) {
+            return { found: false, tallies: null };
+        }
+
+        const getTallies = `
+            SELECT options.poll_id as poll_id, options.id as option_id, COUNT(response_options.response_id) as responses
+            FROM options
+            LEFT JOIN response_options ON options.id = response_options.option_id
+            WHERE options.poll_id = ?
+            GROUP BY options.id
+        `;
+
+        const { results: tallies } = await this.pollsDb
+            .prepare(getTallies)
+            .bind(pollId)
+            .all();
+        for (const tally of tallies) {
+            if (!isTally(tally)) {
+                throw new Error(`Invalid option: ${JSON.stringify(tally)}`);
+            }
+        }
+
+        return { found: true, tallies: tallies as unknown as Tally[] };
     }
 }

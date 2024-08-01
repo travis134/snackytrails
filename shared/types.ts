@@ -29,6 +29,10 @@ export type UpdateOptionResult =
     | { valid: true; found: true };
 export type DeleteOptionResult = { found: boolean };
 
+export type TallyPollResult =
+    | { found: true; tallies: Tally[] }
+    | { found: false; tallies: null };
+
 export interface PollsService {
     createPoll(poll: Poll): Promise<CreatePollResult>;
     readPoll(pollId: string): Promise<ReadPollResult>;
@@ -47,6 +51,7 @@ export interface PollsService {
         optionUpdate: Partial<Option>
     ): Promise<UpdateOptionResult>;
     deleteOption(pollId: string, optionId: number): Promise<DeleteOptionResult>;
+    tallyPoll(pollId: string): Promise<TallyPollResult>;
 }
 
 export interface Poll {
@@ -122,5 +127,21 @@ export const isResponseOption = (obj: any): obj is ResponseOption => {
         obj !== null &&
         typeof obj.response_id === "number" &&
         typeof obj.option_id === "number"
+    );
+};
+
+export interface Tally {
+    poll_id: string;
+    option_id: number;
+    responses: number;
+}
+
+export const isTally = (obj: any): obj is Tally => {
+    return (
+        typeof obj === "object" &&
+        obj !== null &&
+        typeof obj.poll_id === "string" &&
+        typeof obj.option_id === "number" &&
+        typeof obj.responses === "number"
     );
 };
