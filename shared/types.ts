@@ -10,7 +10,7 @@ export interface Poll {
     name: string;
     description: string;
     selections: "single" | "multiple";
-    created: string;
+    created?: string;
     ended?: string;
 }
 
@@ -22,7 +22,8 @@ export const isPoll = (obj: any): obj is Poll => {
         typeof obj.name === "string" &&
         typeof obj.description === "string" &&
         (obj.selections === "single" || obj.selections === "multiple") &&
-        typeof obj.created === "string" &&
+        (typeof obj.created === "undefined" ||
+            typeof obj.created === "string") &&
         (typeof obj.ended === "undefined" || typeof obj.ended === "string")
     );
 };
