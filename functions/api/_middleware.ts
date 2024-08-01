@@ -14,7 +14,7 @@ export async function onRequest(
             apiError = error;
         }
 
-        console.error(apiError.innerError);
+        console.error(apiError.innerError.message, apiError.innerError.stack);
 
         response = Response.json(
             { error: apiError.message },
