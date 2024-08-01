@@ -71,7 +71,7 @@ export const isPoll = (obj: any): obj is Poll => {
 };
 
 export interface Option {
-    id: number;
+    id?: number;
     poll_id: string;
     text: string;
     image?: string;
@@ -91,7 +91,7 @@ export const isOption = (obj: any): obj is Option => {
 };
 
 export interface Response {
-    id: number;
+    id?: number;
     user: string;
     poll_id: string;
 }
