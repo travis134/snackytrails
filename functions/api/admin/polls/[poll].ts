@@ -1,50 +1,34 @@
-import { BadRequest } from "@shared/errors";
+import { BadRequestError, NotFoundError } from "@shared/errors";
 import { Env, Poll } from "@shared/types";
 
 // Update a poll
 export const onRequestPost: PagesFunction<Env> = async (context) => {
-    const { POLLS_DB } = context.env;
-    const { poll: pollId } = context.params;
-    const poll: Partial<Poll> = await context.request.json();
+    const { pollsService } = context.env;
+    const { poll: pollParam } = context.params;
+    const pollId = Array.isArray(pollParam) ? pollParam[0] : pollParam;
+    const pollUpdate: Partial<Poll> = await context.request.json();
 
-    const { name, description, selections, ended } = poll;
-    const fields: string[] = [];
-    const values: any[] = [];
-    if (name) {
-        fields.push("name = ?");
-        values.push(name);
+    const { valid, found } = await pollsService.updatePoll(pollId, pollUpdate);
+    if (!valid) {
+        throw new BadRequestError();
     }
-    if (description) {
-        fields.push("description = ?");
-        values.push(description);
+    if (!found) {
+        throw new NotFoundError();
     }
-    if (selections) {
-        fields.push("selections = ?");
-        values.push(selections);
-    }
-    if (ended) {
-        fields.push("ended = ?");
-        values.push(ended);
-    }
-    if (fields.length === 0) {
-        throw new BadRequest();
-    }
-
-    const updatePoll = `UPDATE polls SET ${fields.join(", ")} WHERE id = ?`;
-    await POLLS_DB.prepare(updatePoll)
-        .bind(...values, pollId)
-        .run();
 
     return new Response();
 };
 
 // Delete a poll
 export const onRequestDelete: PagesFunction<Env> = async (context) => {
-    const { POLLS_DB } = context.env;
-    const { poll: pollId } = context.params;
+    const { pollsService } = context.env;
+    const { poll: pollParam } = context.params;
+    const pollId = Array.isArray(pollParam) ? pollParam[0] : pollParam;
 
-    const deletePoll = `DELETE FROM polls WHERE id = ?`;
-    await POLLS_DB.prepare(deletePoll).bind(pollId).run();
+    const { found } = await pollsService.deletePoll(pollId);
+    if (!found) {
+        throw new NotFoundError();
+    }
 
     return new Response();
 };

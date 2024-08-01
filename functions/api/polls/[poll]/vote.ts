@@ -1,29 +1,27 @@
-import { BadRequest, NotFound } from "@shared/errors";
+import { BadRequestError, NotFoundError } from "@shared/errors";
 import { Env } from "@shared/types";
 
 // Cast a vote
 export const onRequestGet: PagesFunction<Env> = async (context) => {
     const { request } = context;
-    const { POLLS_DB } = context.env;
+    const { POLLS_DB, user } = context.env;
     const { poll: pollId } = context.params;
     const url = new URL(request.url);
     const optionIds = url.searchParams.getAll("option");
 
     if (!pollId) {
-        throw new BadRequest({ message: "Invalid poll" });
+        throw new BadRequestError({ message: "Invalid poll" });
     }
 
     if (optionIds.length === 0) {
-        throw new BadRequest({ message: "No options provided" });
+        throw new BadRequestError({ message: "No options provided" });
     }
-
-    const user = await userFromRequest(request);
 
     // Validate exists
     const checkSelections = `SELECT selections FROM polls WHERE id = ?`;
     const poll = await POLLS_DB.prepare(checkSelections).bind(pollId).first();
     if (!poll) {
-        throw new NotFound();
+        throw new NotFoundError();
     }
 
     // Validate user not already voted
@@ -32,17 +30,17 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         .bind(pollId, user)
         .first();
     if (votedResults) {
-        throw new BadRequest({ message: "User already voted" });
+        throw new BadRequestError({ message: "User already voted" });
     }
 
     // Validate not ended
     if (poll.ended && new Date(poll.ended as string) <= new Date()) {
-        throw new BadRequest({ message: "Poll has ended" });
+        throw new BadRequestError({ message: "Poll has ended" });
     }
 
     // Validate selection mode
     if (poll.selections === "single" && optionIds.length > 1) {
-        throw new BadRequest({
+        throw new BadRequestError({
             message: "Too many options provided",
         });
     }
@@ -55,7 +53,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         .bind(pollId, ...optionIds)
         .all();
     if (validationResults.results.length !== optionIds.length) {
-        throw new BadRequest({ message: "Invalid option(s)" });
+        throw new BadRequestError({ message: "Invalid option(s)" });
     }
 
     const createResponse = `INSERT INTO responses (user, poll_id) VALUES (?, ?)`;
@@ -72,17 +70,4 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     }
 
     return new Response();
-};
-
-// Janky anonymous user ID
-const userFromRequest = async (request: Request): Promise<string> => {
-    const ip = request.headers.get("cf-connecting-ip") || "unknown";
-    const userAgent = request.headers.get("user-agent") || "unknown";
-    const acceptLanguage = request.headers.get("accept-language") || "unknown";
-
-    const data = new TextEncoder().encode(ip + userAgent + acceptLanguage);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    return Array.from(new Uint8Array(hashBuffer))
-        .map((byte) => byte.toString(16).padStart(2, "0"))
-        .join("");
 };

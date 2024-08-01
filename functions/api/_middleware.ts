@@ -1,10 +1,9 @@
+import { BackendPollsService } from "@lib/backend_polls_service";
 import { APIError, InternalServerError, isAPIError } from "@shared/errors";
 import { Env } from "@shared/types";
 
 // Error handling
-export async function onRequest(
-    context: EventContext<Env, any, Record<string, unknown>>
-) {
+const handleErrors: PagesFunction<Env> = async (context) => {
     let response: Response;
     try {
         response = await context.next();
@@ -25,4 +24,50 @@ export async function onRequest(
     }
 
     return response;
-}
+};
+
+// Polls service dependency
+const injectPollsService: PagesFunction<Env> = async (context) => {
+    const { env } = context;
+    const { POLLS_DB } = env;
+
+    const pollsService = new BackendPollsService({ pollsDb: POLLS_DB });
+    env.pollsService = pollsService;
+
+    return context.next();
+};
+
+// Janky anonymous user ID
+const injectUser: PagesFunction<Env> = async (context) => {
+    const { env, request } = context;
+
+    const ip = request.headers.get("cf-connecting-ip") || "unknown";
+    const userAgent = request.headers.get("user-agent") || "unknown";
+    const acceptLanguage = request.headers.get("accept-language") || "unknown";
+    const data = new TextEncoder().encode(ip + userAgent + acceptLanguage);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const user = Array.from(new Uint8Array(hashBuffer))
+        .map((byte) => byte.toString(16).padStart(2, "0"))
+        .join("");
+    env.user = user;
+
+    return context.next();
+};
+
+// Request logging
+const logAccess: PagesFunction<Env> = async (context) => {
+    const { env, request } = context;
+
+    console.log(
+        `User: ${env.user}, Method: ${request.method} , URL: ${request.url}`
+    );
+
+    return context.next();
+};
+
+export const onRequest = [
+    injectUser,
+    logAccess,
+    injectPollsService,
+    handleErrors,
+];

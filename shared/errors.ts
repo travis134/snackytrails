@@ -23,7 +23,7 @@ export const isAPIError = (error: unknown): error is APIError => {
     return error instanceof APIError;
 };
 
-export class BadRequest extends APIError {
+export class BadRequestError extends APIError {
     constructor(params?: { message?: string; innerError?: Error }) {
         super({
             message: params?.message ?? "Bad Request",
@@ -33,7 +33,7 @@ export class BadRequest extends APIError {
     }
 }
 
-export class Unauthorized extends APIError {
+export class UnauthorizedError extends APIError {
     constructor(params?: { message?: string; innerError?: Error }) {
         super({
             message: params?.message ?? "Unauthorized",
@@ -43,7 +43,7 @@ export class Unauthorized extends APIError {
     }
 }
 
-export class NotFound extends APIError {
+export class NotFoundError extends APIError {
     constructor(params?: { message?: string; innerError?: Error }) {
         super({
             message: params?.message ?? "Not Found",

@@ -1,33 +1,16 @@
-import { NotFound } from "@shared/errors";
+import { NotFoundError } from "@shared/errors";
 import { Env } from "@shared/types";
 
 // Read a poll
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-    const { POLLS_DB } = context.env;
-    const { poll: pollId } = context.params;
+    const { pollsService } = context.env;
+    const { poll: pollParam } = context.params;
+    const pollId = Array.isArray(pollParam) ? pollParam[0] : pollParam;
 
-    const getPoll = `SELECT * FROM polls WHERE id = ?`;
-    const poll = await POLLS_DB.prepare(getPoll).bind(pollId).first();
-    if (!poll) {
-        throw new NotFound();
+    const { found, poll } = await pollsService.readPoll(pollId);
+    if (!found) {
+        throw new NotFoundError();
     }
 
-    const getOptionsWithResponses = `
-        SELECT options.id, options.text, options.image, COUNT(response_options.response_id) as responses
-        FROM options
-        LEFT JOIN response_options ON options.id = response_options.option_id
-        WHERE options.poll_id = ?
-        GROUP BY options.id
-    `;
-    const optionsResult = await POLLS_DB.prepare(getOptionsWithResponses)
-        .bind(pollId)
-        .all();
-    const options = optionsResult.results.map((option: any) => ({
-        id: option.id,
-        text: option.text,
-        image: option.image,
-        responses: option.responses,
-    }));
-
-    return Response.json({ poll, options });
+    return Response.json({ poll });
 };
