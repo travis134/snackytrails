@@ -1,4 +1,4 @@
-import { Env } from "../lib/types";
+import { Env } from "@shared/types";
 
 export const onRequest: PagesFunction<Env> = async (context) => {
   const { POLLS_DB } = context.env;

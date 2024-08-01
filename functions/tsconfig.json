@@ -1,13 +1,17 @@
 {
-    "include": [
-        "**/*"
-    ],
     "compilerOptions": {
         "target": "esnext",
         "module": "esnext",
+        "moduleResolution": "node",
         "lib": [
             "esnext"
         ],
+        "baseUrl": "..",
+        "paths": {
+            "@shared/*": [
+                "shared/*"
+            ]
+        },
         "types": [
             "@cloudflare/workers-types"
         ]

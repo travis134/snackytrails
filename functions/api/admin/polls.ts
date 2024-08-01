@@ -1,4 +1,4 @@
-import { Env, Poll } from "../lib/types";
+import { Env, Poll } from "@shared/types";
 
 // Create a new poll
 export const onRequestPost: PagesFunction<Env> = async (context) => {

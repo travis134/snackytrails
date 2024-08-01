@@ -1,4 +1,4 @@
-import { Env, Option } from "../../../lib/types";
+import { Env, Option } from "@shared/types";
 
 // Create a new option
 export const onRequestPost: PagesFunction<Env> = async (context) => {
