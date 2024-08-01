@@ -1,4 +1,4 @@
-import { Env, Option, ResponseOption } from "@shared/types";
+import { Env } from "@shared/types";
 
 // Cast a vote
 export const onRequestGet: PagesFunction<Env> = async (context) => {
