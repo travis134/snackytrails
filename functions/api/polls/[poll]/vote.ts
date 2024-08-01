@@ -46,7 +46,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         .bind(pollId, ...optionIds)
         .all();
     if (validationResults.results.length !== optionIds.length) {
-        throw new Response("Invalid option(s)", { status: 400 });
+        throw new BadRequest({ message: "Invalid option(s)" });
     }
 
     const createResponse = `INSERT INTO responses (user, poll_id) VALUES (?, ?)`;
