@@ -64,7 +64,9 @@ export const isPoll = (obj: any): obj is Poll => {
         (obj.selections === "single" || obj.selections === "multiple") &&
         (typeof obj.created === "undefined" ||
             typeof obj.created === "string") &&
-        (typeof obj.ended === "undefined" || typeof obj.ended === "string")
+        (typeof obj.ended === "undefined" ||
+            obj.ended === null ||
+            typeof obj.ended === "string")
     );
 };
 
@@ -82,7 +84,9 @@ export const isOption = (obj: any): obj is Option => {
         typeof obj.id === "number" &&
         typeof obj.poll_id === "string" &&
         typeof obj.text === "string" &&
-        (typeof obj.image === "undefined" || typeof obj.image === "string")
+        (typeof obj.image === "undefined" ||
+            obj.image === null ||
+            typeof obj.image === "string")
     );
 };
 

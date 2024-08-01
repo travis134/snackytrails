@@ -38,7 +38,6 @@ export class BackendPollsService implements PollsService {
         if (!poll) {
             return { found: false, poll: null };
         }
-        console.log(JSON.stringify(poll));
         if (!isPoll(poll)) {
             throw new Error("Invalid poll");
         }
