@@ -1,5 +1,5 @@
-import { APIError } from "@shared/errors";
-import { Env, Poll, isPoll } from "@shared/types";
+import { BadRequest } from "@shared/errors";
+import { Env, isPoll } from "@shared/types";
 
 // Create a new poll
 export const onRequestPost: PagesFunction<Env> = async (context) => {
@@ -7,7 +7,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const poll = await context.request.json();
 
     if (!isPoll(poll)) {
-        throw new APIError("Invalid poll", 400);
+        throw new BadRequest();
     }
 
     const { name, description, selections } = poll;

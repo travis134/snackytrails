@@ -1,5 +1,5 @@
-import { Env, Option, isOption } from "@shared/types";
-import { APIError } from "@shared/errors";
+import { Env, isOption } from "@shared/types";
+import { BadRequest } from "@shared/errors";
 
 // Create a new option
 export const onRequestPost: PagesFunction<Env> = async (context) => {
@@ -8,7 +8,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const option = await context.request.json();
 
     if (!isOption(option)) {
-        throw new APIError("Invalid option", 400);
+        throw new BadRequest();
     }
 
     const { text, image } = option;

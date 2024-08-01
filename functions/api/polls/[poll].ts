@@ -1,3 +1,4 @@
+import { NotFound } from "@shared/errors";
 import { Env } from "@shared/types";
 
 // Read a poll
@@ -8,7 +9,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const getPoll = `SELECT * FROM polls WHERE id = ?`;
     const poll = await POLLS_DB.prepare(getPoll).bind(pollId).first();
     if (!poll) {
-        return new Response("Poll not found", { status: 404 });
+        throw new NotFound();
     }
 
     const getOptionsWithResponses = `

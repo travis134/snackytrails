@@ -1,4 +1,4 @@
-import { APIError } from "@shared/errors";
+import { BadRequest } from "@shared/errors";
 import { Env, Poll } from "@shared/types";
 
 // Update a poll
@@ -27,7 +27,7 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
         values.push(ended);
     }
     if (fields.length === 0) {
-        throw new APIError("Invalid update request", 400);
+        throw new BadRequest();
     }
 
     const updatePoll = `UPDATE polls SET ${fields.join(", ")} WHERE id = ?`;

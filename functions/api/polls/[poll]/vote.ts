@@ -1,3 +1,4 @@
+import { BadRequest, NotFound } from "@shared/errors";
 import { Env } from "@shared/types";
 
 // Cast a vote
@@ -9,13 +10,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const optionIds = url.searchParams.getAll("option");
 
     if (!pollId) {
-        return new Response("Poll ID is required", { status: 400 });
+        throw new BadRequest({ message: "Invalid poll" });
     }
 
     if (optionIds.length === 0) {
-        return new Response("At least one option ID is required", {
-            status: 400,
-        });
+        throw new BadRequest({ message: "No options provided" });
     }
 
     const user = await userFromRequest(request);
@@ -24,18 +23,18 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const checkSelections = `SELECT selections FROM polls WHERE id = ?`;
     const poll = await POLLS_DB.prepare(checkSelections).bind(pollId).first();
     if (!poll) {
-        return new Response("Poll not found", { status: 404 });
+        throw new NotFound();
     }
 
     // Validate not ended
     if (poll.ended && new Date(poll.ended as string) <= new Date()) {
-        return new Response("Poll has ended", { status: 400 });
+        throw new BadRequest({ message: "Poll has ended" });
     }
 
     // Validate selection mode
     if (poll.selections === "single" && optionIds.length > 1) {
-        return new Response("Only one option can be selected for this poll", {
-            status: 400,
+        throw new BadRequest({
+            message: "Too many options provided",
         });
     }
 
@@ -47,7 +46,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         .bind(pollId, ...optionIds)
         .all();
     if (validationResults.results.length !== optionIds.length) {
-        return new Response("Invalid option IDs provided", { status: 400 });
+        throw new Response("Invalid option(s)", { status: 400 });
     }
 
     const createResponse = `INSERT INTO responses (user, poll_id) VALUES (?, ?)`;

@@ -1,4 +1,4 @@
-import { APIError } from "@shared/errors";
+import { BadRequest } from "@shared/errors";
 import { Env, Option } from "@shared/types";
 
 // Update an option
@@ -19,7 +19,7 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
         values.push(image || null);
     }
     if (fields.length === 0) {
-        throw new APIError("Invalid update request", 400);
+        throw new BadRequest();
     }
 
     const updateOption = `UPDATE options SET ${fields.join(
