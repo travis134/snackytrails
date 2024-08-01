@@ -26,6 +26,15 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         throw new NotFound();
     }
 
+    // Validate user not already voted
+    const checkVoted = `SELECT id FROM responses WHERE poll_id = ? AND user = ?`;
+    const votedResults = await POLLS_DB.prepare(checkVoted)
+        .bind(pollId, user)
+        .first();
+    if (votedResults) {
+        throw new BadRequest({ message: "User already voted" });
+    }
+
     // Validate not ended
     if (poll.ended && new Date(poll.ended as string) <= new Date()) {
         throw new BadRequest({ message: "Poll has ended" });
