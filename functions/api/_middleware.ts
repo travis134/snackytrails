@@ -59,7 +59,7 @@ const logAccess: PagesFunction<Env> = async (context) => {
     const { env, request } = context;
 
     console.log(
-        `User: ${env.user}, Method: ${request.method} , URL: ${request.url}`
+        `method="${request.method}" url="${request.url}, user="${env.user}"`
     );
 
     return context.next();

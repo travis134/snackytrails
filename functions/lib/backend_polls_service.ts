@@ -24,7 +24,7 @@ export class BackendPollsService implements PollsService {
     async createPoll(poll: Poll): Promise<CreatePollResult> {
         const { id, name, description, selections } = poll;
         const createPoll = `INSERT INTO polls (id, name, description, selections) VALUES (?, ?, ?, ?)`;
-        const result = await this.pollsDb
+        await this.pollsDb
             .prepare(createPoll)
             .bind(id, name, description, selections)
             .run();
@@ -38,6 +38,7 @@ export class BackendPollsService implements PollsService {
         if (!poll) {
             return { found: false, poll: null };
         }
+        console.log(JSON.stringify(poll));
         if (!isPoll(poll)) {
             throw new Error("Invalid poll");
         }
