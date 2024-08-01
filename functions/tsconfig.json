@@ -7,7 +7,8 @@
         "baseUrl": "..",
         "paths": {
             "@shared/*": ["shared/*"],
-            "@lib/*": ["functions/lib/*"]
+            "@lib/*": ["functions/lib/*"],
+            "@types": ["functions/types.ts"]
         },
         "types": ["@cloudflare/workers-types"]
     }

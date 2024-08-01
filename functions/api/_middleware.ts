@@ -1,6 +1,6 @@
-import { BackendPollsService } from "@lib/backend_polls_service";
+import { D1PollsService } from "@lib/d1_polls_service";
 import { APIError, InternalServerError, isAPIError } from "@shared/errors";
-import { Env } from "@shared/types";
+import { Env } from "@types";
 
 // Error handling
 const handleErrors: PagesFunction<Env> = async (context) => {
@@ -31,7 +31,7 @@ const injectPollsService: PagesFunction<Env> = async (context) => {
     const { env } = context;
     const { POLLS_DB } = env;
 
-    const pollsService = new BackendPollsService({ pollsDb: POLLS_DB });
+    const pollsService = new D1PollsService({ pollsDb: POLLS_DB });
     env.pollsService = pollsService;
 
     return context.next();

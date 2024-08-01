@@ -1,5 +1,5 @@
 import { UnauthorizedError } from "@shared/errors";
-import { Env } from "@shared/types";
+import { Env } from "@types";
 
 // Basic authorization
 const checkAuthorization: PagesFunction<Env> = async (context) => {

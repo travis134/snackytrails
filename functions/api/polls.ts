@@ -1,4 +1,4 @@
-import { Env } from "@shared/types";
+import { Env } from "@types";
 
 // List polls
 export const onRequestGet: PagesFunction<Env> = async (context) => {

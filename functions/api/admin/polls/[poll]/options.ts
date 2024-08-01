@@ -1,5 +1,6 @@
-import { Env, isOption } from "@shared/types";
 import { BadRequestError } from "@shared/errors";
+import { isOption } from "@shared/types";
+import { Env } from "@types";
 
 // Create a new option
 export const onRequestPost: PagesFunction<Env> = async (context) => {

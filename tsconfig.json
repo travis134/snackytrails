@@ -17,7 +17,9 @@
         "jsx": "react-jsx",
         "baseUrl": ".",
         "paths": {
-            "@shared/*": ["shared/*"]
+            "@shared/*": ["shared/*"],
+            "@lib/*": ["src/lib/*"],
+            "@types": ["src/types.ts"]
         }
     },
     "exclude": ["functions"]

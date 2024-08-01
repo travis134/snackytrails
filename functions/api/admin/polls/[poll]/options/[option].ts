@@ -1,5 +1,6 @@
 import { BadRequestError, NotFoundError } from "@shared/errors";
-import { Env, Option } from "@shared/types";
+import { Option } from "@shared/types";
+import { Env } from "@types";
 
 // Update an option
 export const onRequestPost: PagesFunction<Env> = async (context) => {

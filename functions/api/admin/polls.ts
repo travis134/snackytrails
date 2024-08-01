@@ -1,5 +1,6 @@
 import { BadRequestError } from "@shared/errors";
-import { Env, isPoll } from "@shared/types";
+import { isPoll } from "@shared/types";
+import { Env } from "@types";
 
 // Create a new poll
 export const onRequestPost: PagesFunction<Env> = async (context) => {

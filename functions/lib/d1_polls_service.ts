@@ -1,15 +1,8 @@
 import { BadRequestError, NotFoundError } from "@shared/errors";
-import {
-    Option,
-    Poll,
-    PollsService as PollsService,
-    Tally,
-    isOption,
-    isPoll,
-    isTally,
-} from "@shared/types";
+import { Option, Poll, Tally, isOption, isPoll, isTally } from "@shared/types";
+import { PollsService } from "functions/types";
 
-export class BackendPollsService implements PollsService {
+export class D1PollsService implements PollsService {
     pollsDb: D1Database;
 
     constructor({ pollsDb }: { pollsDb: D1Database }) {

@@ -1,5 +1,5 @@
 import { NotFoundError } from "@shared/errors";
-import { Env } from "@shared/types";
+import { Env } from "@types";
 
 // Read a poll
 export const onRequestGet: PagesFunction<Env> = async (context) => {

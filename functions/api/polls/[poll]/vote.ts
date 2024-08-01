@@ -1,5 +1,5 @@
 import { BadRequestError, NotFoundError } from "@shared/errors";
-import { Env } from "@shared/types";
+import { Env } from "@types";
 
 // Cast a vote
 export const onRequestGet: PagesFunction<Env> = async (context) => {
