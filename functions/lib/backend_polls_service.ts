@@ -3,6 +3,8 @@ import {
     CreatePollResult,
     DeleteOptionResult,
     DeletePollResult,
+    ListOptionsResult,
+    ListPollsResult,
     Option,
     Poll,
     PollsService as PollsService,
@@ -39,10 +41,22 @@ export class BackendPollsService implements PollsService {
             return { found: false, poll: null };
         }
         if (!isPoll(poll)) {
-            throw new Error("Invalid poll");
+            throw new Error(`Invalid poll: ${JSON.stringify(poll)}`);
         }
 
         return { found: true, poll };
+    }
+
+    async listPolls(): Promise<ListPollsResult> {
+        const listPolls = `SELECT * FROM polls WHERE ended IS NULL OR ended > datetime('now')`;
+        const { results: polls } = await this.pollsDb.prepare(listPolls).all();
+        for (const poll of polls) {
+            if (!isPoll(poll)) {
+                throw new Error(`Invalid poll: ${JSON.stringify(poll)}`);
+            }
+        }
+
+        return { polls: polls as unknown as Poll[] };
     }
 
     async updatePoll(
@@ -128,10 +142,25 @@ export class BackendPollsService implements PollsService {
             return { found: false, option: null };
         }
         if (!isOption(option)) {
-            throw new Error("Invalid option");
+            throw new Error(`Invalid option: ${JSON.stringify(option)}`);
         }
 
         return { found: true, option };
+    }
+
+    async listOptions(pollId: string): Promise<ListOptionsResult> {
+        const listOptions = `SELECT * FROM options WHERE poll_id = ?`;
+        const { results: options } = await this.pollsDb
+            .prepare(listOptions)
+            .bind(pollId)
+            .all();
+        for (const option of options) {
+            if (!isOption(option)) {
+                throw new Error(`Invalid option: ${JSON.stringify(option)}`);
+            }
+        }
+
+        return { options: options as unknown as Option[] };
     }
 
     async updateOption(

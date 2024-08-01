@@ -11,6 +11,7 @@ export type CreatePollResult = string;
 export type ReadPollResult =
     | { found: true; poll: Poll }
     | { found: false; poll: null };
+export type ListPollsResult = { polls: Poll[] };
 export type UpdatePollResult =
     | { valid: false; found: null }
     | { valid: true; found: false }
@@ -21,6 +22,7 @@ export type CreateOptionResult = number;
 export type ReadOptionResult =
     | { found: true; option: Option }
     | { found: false; option: null };
+export type ListOptionsResult = { options: Option[] };
 export type UpdateOptionResult =
     | { valid: false; found: null }
     | { valid: true; found: false }
@@ -30,6 +32,7 @@ export type DeleteOptionResult = { found: boolean };
 export interface PollsService {
     createPoll(poll: Poll): Promise<CreatePollResult>;
     readPoll(pollId: string): Promise<ReadPollResult>;
+    listPolls(): Promise<ListPollsResult>;
     updatePoll(
         pollId: string,
         pollUpdate: Partial<Poll>
@@ -37,6 +40,7 @@ export interface PollsService {
     deletePoll(pollId: string): Promise<DeletePollResult>;
     createOption(pollId: string, option: Option): Promise<CreateOptionResult>;
     readOption(pollId: string, optionId: number): Promise<ReadOptionResult>;
+    listOptions(pollId: string): Promise<ListOptionsResult>;
     updateOption(
         pollId: string,
         optionId: number,
