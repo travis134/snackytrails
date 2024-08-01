@@ -1,5 +1,7 @@
+import { Env } from "@shared/types";
+
 // Basic Authorization
-export async function onRequest(context) {
+export async function onRequest(context: EventContext<Env, any, Record<string, unknown>>) {
     const { request, env } = context;
     const authHeader = request.headers.get("Authorization");
 

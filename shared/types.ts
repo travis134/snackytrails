@@ -1,6 +1,7 @@
 import type { D1Database } from "@cloudflare/workers-types"
 
 export interface Env {
+    API_KEY: string;
     POLLS_DB: D1Database;
 }
 
