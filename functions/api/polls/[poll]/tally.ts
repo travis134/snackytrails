@@ -1,7 +1,7 @@
 import { NotFoundError } from "@shared/errors";
 import { Env } from "@shared/types";
 
-// Tally votes on a poll
+// Tally votes
 export const onRequestGet: PagesFunction<Env> = async (context) => {
     const { pollsService } = context.env;
     const { poll: pollParam } = context.params;

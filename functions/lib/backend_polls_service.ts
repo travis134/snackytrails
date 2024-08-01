@@ -14,6 +14,7 @@ import {
     TallyPollResult,
     UpdateOptionResult,
     UpdatePollResult,
+    VotePollResult,
     isOption,
     isPoll,
     isTally,
@@ -115,6 +116,99 @@ export class BackendPollsService implements PollsService {
         await this.pollsDb.prepare(deletePoll).bind(pollId).run();
 
         return { found: true };
+    }
+
+    async tallyPoll(pollId: string): Promise<TallyPollResult> {
+        const getPoll = `SELECT * FROM polls WHERE id = ?`;
+        const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
+        if (!poll) {
+            return { found: false, tallies: null };
+        }
+
+        const getTallies = `
+            SELECT options.poll_id as poll_id, options.id as option_id, COUNT(response_options.response_id) as responses
+            FROM options
+            LEFT JOIN response_options ON options.id = response_options.option_id
+            WHERE options.poll_id = ?
+            GROUP BY options.id
+        `;
+
+        const { results: tallies } = await this.pollsDb
+            .prepare(getTallies)
+            .bind(pollId)
+            .all();
+        for (const tally of tallies) {
+            if (!isTally(tally)) {
+                throw new Error(`Invalid option: ${JSON.stringify(tally)}`);
+            }
+        }
+
+        return { found: true, tallies: tallies as unknown as Tally[] };
+    }
+
+    async votePoll(
+        pollId: string,
+        user: string,
+        optionIds: number[]
+    ): Promise<VotePollResult> {
+        // Validate input
+        if (optionIds.length === 0) {
+            return { valid: false, found: null, legal: null };
+        }
+
+        // Validate poll exists and hasn't ended
+        const getPoll = `SELECT * FROM polls WHERE id = ? AND ended IS NULL OR ended > datetime('now')`;
+        const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
+        if (!poll) {
+            return { valid: null, found: false, legal: null };
+        }
+        if (!isPoll(poll)) {
+            throw new Error(`Invalid poll: ${JSON.stringify(poll)}`);
+        }
+
+        // Validate selection mode
+        if (poll.selections === "single" && optionIds.length > 1) {
+            return { valid: false, found: true, legal: null };
+        }
+
+        // Validate selected options
+        const validateOptions = `SELECT id FROM options WHERE poll_id = ? AND id IN (${optionIds
+            .map(() => "?")
+            .join(", ")})`;
+        const validationResults = await this.pollsDb
+            .prepare(validateOptions)
+            .bind(pollId, ...optionIds)
+            .all();
+        if (validationResults.results.length !== optionIds.length) {
+            return { valid: false, found: true, legal: null };
+        }
+
+        // Validate user not already voted
+        const checkVoted = `SELECT id FROM responses WHERE poll_id = ? AND user = ?`;
+        const votedResults = await this.pollsDb
+            .prepare(checkVoted)
+            .bind(pollId, user)
+            .first();
+        if (votedResults) {
+            return { valid: true, found: true, legal: false };
+        }
+
+        const createResponse = `INSERT INTO responses (user, poll_id) VALUES (?, ?)`;
+        const result = await this.pollsDb
+            .prepare(createResponse)
+            .bind(user, pollId)
+            .run();
+        const responseId = result.meta.last_row_id;
+
+        for (const optionId of optionIds) {
+            const createResponseOption = `INSERT INTO response_options (response_id, option_id) VALUES (?, ?)`;
+            await this.pollsDb
+                .prepare(createResponseOption)
+                .bind(responseId, optionId)
+                .run();
+        }
+
+        return { valid: true, found: true, legal: true };
     }
 
     async createOption(
@@ -223,33 +317,5 @@ export class BackendPollsService implements PollsService {
         await this.pollsDb.prepare(deleteOption).bind(pollId, optionId).run();
 
         return { found: true };
-    }
-
-    async tallyPoll(pollId: string): Promise<TallyPollResult> {
-        const getPoll = `SELECT * FROM polls WHERE id = ?`;
-        const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
-        if (!poll) {
-            return { found: false, tallies: null };
-        }
-
-        const getTallies = `
-            SELECT options.poll_id as poll_id, options.id as option_id, COUNT(response_options.response_id) as responses
-            FROM options
-            LEFT JOIN response_options ON options.id = response_options.option_id
-            WHERE options.poll_id = ?
-            GROUP BY options.id
-        `;
-
-        const { results: tallies } = await this.pollsDb
-            .prepare(getTallies)
-            .bind(pollId)
-            .all();
-        for (const tally of tallies) {
-            if (!isTally(tally)) {
-                throw new Error(`Invalid option: ${JSON.stringify(tally)}`);
-            }
-        }
-
-        return { found: true, tallies: tallies as unknown as Tally[] };
     }
 }
