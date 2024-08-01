@@ -1,9 +1,9 @@
 import { Env } from "@shared/types";
 
 export const onRequest: PagesFunction<Env> = async (context) => {
-  const { POLLS_DB } = context.env;
+    const { POLLS_DB } = context.env;
 
-  const createPollsTable = `
+    const createPollsTable = `
     CREATE TABLE IF NOT EXISTS polls (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -14,7 +14,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     );
   `;
 
-  const createOptionsTable = `
+    const createOptionsTable = `
     CREATE TABLE IF NOT EXISTS options (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       poll_id INTEGER NOT NULL,
@@ -24,7 +24,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     );
   `;
 
-  const createResponsesTable = `
+    const createResponsesTable = `
     CREATE TABLE IF NOT EXISTS responses (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user TEXT NOT NULL,
@@ -34,7 +34,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     );
   `;
 
-  const createResponseOptionsTable = `
+    const createResponseOptionsTable = `
     CREATE TABLE IF NOT EXISTS response_options (
       response_id INTEGER NOT NULL,
       option_id INTEGER NOT NULL,
@@ -44,14 +44,10 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     );
   `;
 
-  try {
     await POLLS_DB.prepare(createPollsTable).run();
     await POLLS_DB.prepare(createOptionsTable).run();
     await POLLS_DB.prepare(createResponsesTable).run();
     await POLLS_DB.prepare(createResponseOptionsTable).run();
 
-    return new Response('Tables created successfully', { status: 200 });
-  } catch (error) {
-    return new Response(`Error creating tables: ${error.message}`, { status: 500 });
-  }
-}
+    return new Response();
+};

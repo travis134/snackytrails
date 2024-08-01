@@ -6,6 +6,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const { poll: pollId } = context.params;
 
     const getPoll = `SELECT * FROM polls WHERE id = ?`;
+    const poll = await POLLS_DB.prepare(getPoll).bind(pollId).first();
+    if (!poll) {
+        return new Response("Poll not found", { status: 404 });
+    }
+
     const getOptionsWithResponses = `
         SELECT options.id, options.text, options.image, COUNT(response_options.response_id) as responses
         FROM options
@@ -13,21 +18,15 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         WHERE options.poll_id = ?
         GROUP BY options.id
     `;
+    const optionsResult = await POLLS_DB.prepare(getOptionsWithResponses)
+        .bind(pollId)
+        .all();
+    const options = optionsResult.results.map((option: any) => ({
+        id: option.id,
+        text: option.text,
+        image: option.image,
+        responses: option.responses,
+    }));
 
-    try {
-        const poll = await POLLS_DB.prepare(getPoll).bind(pollId).first();
-        if (!poll) {
-            return new Response('Poll not found', { status: 404 });
-        }
-        const optionsResult = await POLLS_DB.prepare(getOptionsWithResponses).bind(pollId).all();
-        const options = optionsResult.results.map((option: any) => ({
-            id: option.id,
-            text: option.text,
-            image: option.image,
-            responses: option.responses
-        }));
-        return new Response(JSON.stringify({ poll, options }), { status: 200 });
-    } catch (error) {
-        return new Response(`Error reading poll: ${error.message}`, { status: 500 });
-    }
-}
+    return Response.json({ poll, options });
+};

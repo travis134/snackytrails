@@ -19,3 +19,6 @@ npm-debug.log*
 # Wrangler files
 .wrangler
 .dev.vars
+
+# Formatting
+.prettierrc
