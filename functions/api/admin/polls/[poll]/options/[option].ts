@@ -2,7 +2,7 @@ import { BadRequest } from "@shared/errors";
 import { Env, Option } from "@shared/types";
 
 // Update an option
-export const onRequestPut: PagesFunction<Env> = async (context) => {
+export const onRequestPost: PagesFunction<Env> = async (context) => {
     const { POLLS_DB } = context.env;
     const { poll: pollId, option: optionId } = context.params;
     const option: Partial<Option> = await context.request.json();
