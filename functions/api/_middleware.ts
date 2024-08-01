@@ -16,7 +16,7 @@ const handleErrors: PagesFunction<Env> = async (context) => {
         console.error(apiError.innerError ?? apiError);
 
         response = Response.json(
-            { error: apiError.message },
+            { error: apiError.message, error_code: apiError.errorCode },
             {
                 status: apiError.status,
             }

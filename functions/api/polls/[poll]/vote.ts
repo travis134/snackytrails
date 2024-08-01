@@ -30,7 +30,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         .bind(pollId, user)
         .first();
     if (votedResults) {
-        throw new BadRequestError({ message: "User already voted" });
+        throw new BadRequestError({
+            errorCode: "user_already_voted",
+            message: "User already voted",
+        });
     }
 
     // Validate not ended
