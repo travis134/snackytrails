@@ -5,7 +5,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
     const createPollsTable = `
     CREATE TABLE IF NOT EXISTS polls (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
       description TEXT NOT NULL,
       selections TEXT CHECK(selections IN ('single', 'multiple')) NOT NULL,
@@ -17,7 +17,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     const createOptionsTable = `
     CREATE TABLE IF NOT EXISTS options (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      poll_id INTEGER NOT NULL,
+      poll_id TEXT NOT NULL,
       text TEXT NOT NULL,
       image TEXT,
       FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE
@@ -28,7 +28,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     CREATE TABLE IF NOT EXISTS responses (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user TEXT NOT NULL,
-      poll_id INTEGER NOT NULL,
+      poll_id TEXT NOT NULL,
       UNIQUE(user, poll_id),
       FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE
     );

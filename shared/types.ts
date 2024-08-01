@@ -6,7 +6,7 @@ export interface Env {
 }
 
 export interface Poll {
-    id: number;
+    id: string;
     name: string;
     description: string;
     selections: "single" | "multiple";
@@ -18,7 +18,7 @@ export const isPoll = (obj: any): obj is Poll => {
     return (
         typeof obj === "object" &&
         obj !== null &&
-        typeof obj.id === "number" &&
+        typeof obj.id === "string" &&
         typeof obj.name === "string" &&
         typeof obj.description === "string" &&
         (obj.selections === "single" || obj.selections === "multiple") &&
@@ -29,7 +29,7 @@ export const isPoll = (obj: any): obj is Poll => {
 
 export interface Option {
     id: number;
-    poll_id: number;
+    poll_id: string;
     text: string;
     image?: string;
 }
@@ -39,7 +39,7 @@ export const isOption = (obj: any): obj is Option => {
         typeof obj === "object" &&
         obj !== null &&
         typeof obj.id === "number" &&
-        typeof obj.poll_id === "number" &&
+        typeof obj.poll_id === "string" &&
         typeof obj.text === "string" &&
         (typeof obj.image === "undefined" || typeof obj.image === "string")
     );
@@ -48,7 +48,7 @@ export const isOption = (obj: any): obj is Option => {
 export interface Response {
     id: number;
     user: string;
-    poll_id: number;
+    poll_id: string;
 }
 
 export const isResponse = (obj: any): obj is Response => {
@@ -57,7 +57,7 @@ export const isResponse = (obj: any): obj is Response => {
         obj !== null &&
         typeof obj.id === "number" &&
         typeof obj.user === "string" &&
-        typeof obj.poll_id === "number"
+        typeof obj.poll_id === "string"
     );
 };
 
