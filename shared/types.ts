@@ -81,7 +81,7 @@ export const isOption = (obj: any): obj is Option => {
     return (
         typeof obj === "object" &&
         obj !== null &&
-        typeof obj.id === "number" &&
+        (typeof obj.id === "undefined" || typeof obj.id === "number") &&
         typeof obj.poll_id === "string" &&
         typeof obj.text === "string" &&
         (typeof obj.image === "undefined" ||
@@ -100,7 +100,7 @@ export const isResponse = (obj: any): obj is Response => {
     return (
         typeof obj === "object" &&
         obj !== null &&
-        typeof obj.id === "number" &&
+        (typeof obj.id === "undefined" || typeof obj.id === "number") &&
         typeof obj.user === "string" &&
         typeof obj.poll_id === "string"
     );
