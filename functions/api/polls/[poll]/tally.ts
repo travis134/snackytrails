@@ -7,10 +7,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const { poll: pollParam } = context.params;
     const pollId = Array.isArray(pollParam) ? pollParam[0] : pollParam;
 
-    const { found, tallies } = await pollsService.tallyPoll(pollId);
-    if (!found) {
-        throw new NotFoundError();
-    }
+    const tallies = await pollsService.tallyPoll(pollId);
 
     return Response.json({ tallies });
 };

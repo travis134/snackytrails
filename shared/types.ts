@@ -7,64 +7,24 @@ export interface Env {
     user: string;
 }
 
-export type CreatePollResult = string;
-export type ReadPollResult =
-    | { found: true; poll: Poll }
-    | { found: false; poll: null };
-export type ListPollsResult = { polls: Poll[] };
-export type UpdatePollResult =
-    | { valid: false; found: null }
-    | { valid: true; found: false }
-    | { valid: true; found: true };
-export type DeletePollResult = { found: boolean };
-
-export type CreateOptionResult = number;
-export type ReadOptionResult =
-    | { found: true; option: Option }
-    | { found: false; option: null };
-export type ListOptionsResult = { options: Option[] };
-export type UpdateOptionResult =
-    | { valid: false; found: null }
-    | { valid: true; found: false }
-    | { valid: true; found: true };
-export type DeleteOptionResult = { found: boolean };
-
-export type TallyPollResult =
-    | { found: true; tallies: Tally[] }
-    | { found: false; tallies: null };
-
-export type VotePollResult =
-    | { valid: false; found: null; legal: null }
-    | { valid: false; found: true; legal: null }
-    | { valid: true; found: false; legal: null }
-    | { valid: true; found: true; legal: true }
-    | { valid: true; found: true; legal: false };
-
 export interface PollsService {
-    createPoll(poll: Poll): Promise<CreatePollResult>;
-    readPoll(pollId: string): Promise<ReadPollResult>;
-    listPolls(): Promise<ListPollsResult>;
-    updatePoll(
-        pollId: string,
-        pollUpdate: Partial<Poll>
-    ): Promise<UpdatePollResult>;
-    deletePoll(pollId: string): Promise<DeletePollResult>;
-    tallyPoll(pollId: string): Promise<TallyPollResult>;
-    votePoll(
-        pollId: string,
-        user: string,
-        optionIds: number[]
-    ): Promise<VotePollResult>;
+    createPoll(poll: Poll): Promise<string>;
+    readPoll(pollId: string): Promise<Poll>;
+    listPolls(): Promise<Poll[]>;
+    updatePoll(pollId: string, pollUpdate: Partial<Poll>): Promise<void>;
+    deletePoll(pollId: string): Promise<void>;
+    tallyPoll(pollId: string): Promise<Tally[]>;
+    votePoll(pollId: string, user: string, optionIds: number[]): Promise<void>;
 
-    createOption(pollId: string, option: Option): Promise<CreateOptionResult>;
-    readOption(pollId: string, optionId: number): Promise<ReadOptionResult>;
-    listOptions(pollId: string): Promise<ListOptionsResult>;
+    createOption(pollId: string, option: Option): Promise<number>;
+    readOption(pollId: string, optionId: number): Promise<Option>;
+    listOptions(pollId: string): Promise<Option[]>;
     updateOption(
         pollId: string,
         optionId: number,
         optionUpdate: Partial<Option>
-    ): Promise<UpdateOptionResult>;
-    deleteOption(pollId: string, optionId: number): Promise<DeleteOptionResult>;
+    ): Promise<void>;
+    deleteOption(pollId: string, optionId: number): Promise<void>;
 }
 
 export interface Poll {

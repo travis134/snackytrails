@@ -1,4 +1,10 @@
-export type ErrorCode = "user_already_voted" | "invalid_request" | "unknown";
+export type ErrorCode =
+    | "no_options"
+    | "too_many_options"
+    | "invalid_options"
+    | "user_already_voted"
+    | "invalid_request"
+    | "unknown";
 
 export class APIError extends Error {
     errorCode: ErrorCode;

@@ -8,13 +8,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const pollId = Array.isArray(pollParam) ? pollParam[0] : pollParam;
     const pollUpdate: Partial<Poll> = await context.request.json();
 
-    const { valid, found } = await pollsService.updatePoll(pollId, pollUpdate);
-    if (!valid) {
-        throw new BadRequestError();
-    }
-    if (!found) {
-        throw new NotFoundError();
-    }
+    await pollsService.updatePoll(pollId, pollUpdate);
 
     return new Response();
 };
@@ -25,10 +19,7 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
     const { poll: pollParam } = context.params;
     const pollId = Array.isArray(pollParam) ? pollParam[0] : pollParam;
 
-    const { found } = await pollsService.deletePoll(pollId);
-    if (!found) {
-        throw new NotFoundError();
-    }
+    await pollsService.deletePoll(pollId);
 
     return new Response();
 };

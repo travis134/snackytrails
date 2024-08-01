@@ -15,17 +15,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         throw new BadRequestError();
     }
 
-    const { valid, found } = await pollsService.updateOption(
-        pollId,
-        optionId,
-        optionUpdate
-    );
-    if (!valid) {
-        throw new BadRequestError();
-    }
-    if (!found) {
-        throw new NotFoundError();
-    }
+    await pollsService.updateOption(pollId, optionId, optionUpdate);
 
     return new Response();
 };
@@ -43,10 +33,7 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
         throw new BadRequestError();
     }
 
-    const { found } = await pollsService.deleteOption(pollId, optionId);
-    if (!found) {
-        throw new NotFoundError();
-    }
+    await pollsService.deleteOption(pollId, optionId);
 
     return new Response();
 };

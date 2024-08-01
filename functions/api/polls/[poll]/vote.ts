@@ -20,26 +20,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         optionIds.push(optionId);
     }
 
-    const { valid, found, legal } = await pollsService.votePoll(
-        pollId,
-        user,
-        optionIds
-    );
-
-    if (!valid) {
-        throw new BadRequestError();
-    }
-
-    if (!found) {
-        throw new NotFoundError();
-    }
-
-    if (!legal) {
-        throw new BadRequestError({
-            errorCode: "user_already_voted",
-            message: "User already voted",
-        });
-    }
+    await pollsService.votePoll(pollId, user, optionIds);
 
     return new Response();
 };

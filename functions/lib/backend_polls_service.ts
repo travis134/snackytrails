@@ -1,20 +1,9 @@
+import { BadRequestError, NotFoundError } from "@shared/errors";
 import {
-    CreateOptionResult,
-    CreatePollResult,
-    DeleteOptionResult,
-    DeletePollResult,
-    ListOptionsResult,
-    ListPollsResult,
     Option,
     Poll,
     PollsService as PollsService,
-    ReadOptionResult,
-    ReadPollResult,
     Tally,
-    TallyPollResult,
-    UpdateOptionResult,
-    UpdatePollResult,
-    VotePollResult,
     isOption,
     isPoll,
     isTally,
@@ -27,7 +16,7 @@ export class BackendPollsService implements PollsService {
         this.pollsDb = pollsDb;
     }
 
-    async createPoll(poll: Poll): Promise<CreatePollResult> {
+    async createPoll(poll: Poll): Promise<string> {
         const { id, name, description, selections } = poll;
         const createPoll = `INSERT INTO polls (id, name, description, selections) VALUES (?, ?, ?, ?)`;
         await this.pollsDb
@@ -38,20 +27,20 @@ export class BackendPollsService implements PollsService {
         return id;
     }
 
-    async readPoll(pollId: string): Promise<ReadPollResult> {
+    async readPoll(pollId: string): Promise<Poll> {
         const getPoll = `SELECT * FROM polls WHERE id = ?`;
         const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
         if (!poll) {
-            return { found: false, poll: null };
+            throw new NotFoundError();
         }
         if (!isPoll(poll)) {
             throw new Error(`Invalid poll: ${JSON.stringify(poll)}`);
         }
 
-        return { found: true, poll };
+        return poll;
     }
 
-    async listPolls(): Promise<ListPollsResult> {
+    async listPolls(): Promise<Poll[]> {
         const listPolls = `SELECT * FROM polls WHERE ended IS NULL OR ended > datetime('now')`;
         const { results: polls } = await this.pollsDb.prepare(listPolls).all();
         for (const poll of polls) {
@@ -60,13 +49,10 @@ export class BackendPollsService implements PollsService {
             }
         }
 
-        return { polls: polls as unknown as Poll[] };
+        return polls as unknown as Poll[];
     }
 
-    async updatePoll(
-        pollId: string,
-        pollUpdate: Partial<Poll>
-    ): Promise<UpdatePollResult> {
+    async updatePoll(pollId: string, pollUpdate: Partial<Poll>): Promise<void> {
         const { name, description, selections, ended } = pollUpdate;
         const fields: string[] = [];
         const values: any[] = [];
@@ -87,13 +73,13 @@ export class BackendPollsService implements PollsService {
             values.push(ended);
         }
         if (fields.length === 0) {
-            return { valid: false, found: null };
+            throw new BadRequestError();
         }
 
         const getPoll = `SELECT * FROM polls WHERE id = ?`;
         const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
         if (!poll) {
-            return { valid: true, found: false };
+            throw new NotFoundError();
         }
 
         const updatePoll = `UPDATE polls SET ${fields.join(", ")} WHERE id = ?`;
@@ -101,28 +87,24 @@ export class BackendPollsService implements PollsService {
             .prepare(updatePoll)
             .bind(...values, pollId)
             .run();
-
-        return { valid: true, found: true };
     }
 
-    async deletePoll(pollId: string): Promise<DeletePollResult> {
+    async deletePoll(pollId: string): Promise<void> {
         const getPoll = `SELECT * FROM polls WHERE id = ?`;
         const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
         if (!poll) {
-            return { found: false };
+            throw new NotFoundError();
         }
 
         const deletePoll = `DELETE FROM polls WHERE id = ?`;
         await this.pollsDb.prepare(deletePoll).bind(pollId).run();
-
-        return { found: true };
     }
 
-    async tallyPoll(pollId: string): Promise<TallyPollResult> {
+    async tallyPoll(pollId: string): Promise<Tally[]> {
         const getPoll = `SELECT * FROM polls WHERE id = ?`;
         const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
         if (!poll) {
-            return { found: false, tallies: null };
+            throw new NotFoundError();
         }
 
         const getTallies = `
@@ -143,24 +125,27 @@ export class BackendPollsService implements PollsService {
             }
         }
 
-        return { found: true, tallies: tallies as unknown as Tally[] };
+        return tallies as unknown as Tally[];
     }
 
     async votePoll(
         pollId: string,
         user: string,
         optionIds: number[]
-    ): Promise<VotePollResult> {
+    ): Promise<void> {
         // Validate input
         if (optionIds.length === 0) {
-            return { valid: false, found: null, legal: null };
+            throw new BadRequestError({
+                errorCode: "no_options",
+                message: "You didn't select any options for this poll",
+            });
         }
 
         // Validate poll exists and hasn't ended
         const getPoll = `SELECT * FROM polls WHERE id = ? AND ended IS NULL OR ended > datetime('now')`;
         const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
         if (!poll) {
-            return { valid: null, found: false, legal: null };
+            throw new NotFoundError();
         }
         if (!isPoll(poll)) {
             throw new Error(`Invalid poll: ${JSON.stringify(poll)}`);
@@ -168,7 +153,10 @@ export class BackendPollsService implements PollsService {
 
         // Validate selection mode
         if (poll.selections === "single" && optionIds.length > 1) {
-            return { valid: false, found: true, legal: null };
+            throw new BadRequestError({
+                errorCode: "too_many_options",
+                message: "You selected too many options selected for this poll",
+            });
         }
 
         // Validate selected options
@@ -180,7 +168,10 @@ export class BackendPollsService implements PollsService {
             .bind(pollId, ...optionIds)
             .all();
         if (validationResults.results.length !== optionIds.length) {
-            return { valid: false, found: true, legal: null };
+            throw new BadRequestError({
+                errorCode: "invalid_options",
+                message: "You selected invalid options selected for this poll",
+            });
         }
 
         // Validate user not already voted
@@ -190,7 +181,10 @@ export class BackendPollsService implements PollsService {
             .bind(pollId, user)
             .first();
         if (votedResults) {
-            return { valid: true, found: true, legal: false };
+            throw new BadRequestError({
+                errorCode: "user_already_voted",
+                message: "Your vote has already been recorded",
+            });
         }
 
         const createResponse = `INSERT INTO responses (user, poll_id) VALUES (?, ?)`;
@@ -207,14 +201,9 @@ export class BackendPollsService implements PollsService {
                 .bind(responseId, optionId)
                 .run();
         }
-
-        return { valid: true, found: true, legal: true };
     }
 
-    async createOption(
-        pollId: string,
-        option: Option
-    ): Promise<CreateOptionResult> {
+    async createOption(pollId: string, option: Option): Promise<number> {
         const { text, image } = option;
         const createOption = `INSERT INTO options (poll_id, text, image) VALUES (?, ?, ?)`;
         const result = await this.pollsDb
@@ -226,26 +215,23 @@ export class BackendPollsService implements PollsService {
         return id;
     }
 
-    async readOption(
-        pollId: string,
-        optionId: number
-    ): Promise<ReadOptionResult> {
+    async readOption(pollId: string, optionId: number): Promise<Option> {
         const getPoll = `SELECT * FROM options WHERE poll_id = ? AND id = ?`;
         const option = await this.pollsDb
             .prepare(getPoll)
             .bind(pollId, optionId)
             .first();
         if (!option) {
-            return { found: false, option: null };
+            throw new NotFoundError();
         }
         if (!isOption(option)) {
             throw new Error(`Invalid option: ${JSON.stringify(option)}`);
         }
 
-        return { found: true, option };
+        return option;
     }
 
-    async listOptions(pollId: string): Promise<ListOptionsResult> {
+    async listOptions(pollId: string): Promise<Option[]> {
         const listOptions = `SELECT * FROM options WHERE poll_id = ?`;
         const { results: options } = await this.pollsDb
             .prepare(listOptions)
@@ -257,14 +243,14 @@ export class BackendPollsService implements PollsService {
             }
         }
 
-        return { options: options as unknown as Option[] };
+        return options as unknown as Option[];
     }
 
     async updateOption(
         pollId: string,
         optionId: number,
         optionUpdate: Partial<Option>
-    ): Promise<UpdateOptionResult> {
+    ): Promise<void> {
         const { text, image } = optionUpdate;
         const fields: string[] = [];
         const values: any[] = [];
@@ -277,7 +263,7 @@ export class BackendPollsService implements PollsService {
             values.push(image || null);
         }
         if (fields.length === 0) {
-            return { valid: false, found: null };
+            throw new BadRequestError();
         }
 
         const getPoll = `SELECT * FROM options WHERE poll_id = ? AND id = ?`;
@@ -286,7 +272,7 @@ export class BackendPollsService implements PollsService {
             .bind(pollId, optionId)
             .first();
         if (!option) {
-            return { valid: true, found: false };
+            throw new NotFoundError();
         }
 
         const updateOption = `UPDATE options SET ${fields.join(
@@ -296,26 +282,19 @@ export class BackendPollsService implements PollsService {
             .prepare(updateOption)
             .bind(...values, pollId, optionId)
             .run();
-
-        return { valid: true, found: true };
     }
 
-    async deleteOption(
-        pollId: string,
-        optionId: number
-    ): Promise<DeleteOptionResult> {
+    async deleteOption(pollId: string, optionId: number): Promise<void> {
         const getPoll = `SELECT * FROM options WHERE poll_id = ? AND id = ?`;
         const option = await this.pollsDb
             .prepare(getPoll)
             .bind(pollId, optionId)
             .first();
         if (!option) {
-            return { found: false };
+            throw new NotFoundError();
         }
 
         const deleteOption = `DELETE FROM options WHERE poll_id = ? AND id = ?`;
         await this.pollsDb.prepare(deleteOption).bind(pollId, optionId).run();
-
-        return { found: true };
     }
 }
