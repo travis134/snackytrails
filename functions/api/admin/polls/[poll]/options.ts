@@ -12,7 +12,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         throw new BadRequestError();
     }
 
-    const id = pollsService.createOption(pollId, option);
+    const id = await pollsService.createOption(pollId, option);
 
     return Response.json({ id });
 };
