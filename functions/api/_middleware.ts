@@ -77,7 +77,7 @@ const handleErrors: PagesFunction<Env> = async (context) => {
             error_code: ErrorCode.Unknown,
         };
         if (isAppError(error)) {
-            errorData = error;
+            errorData = { error: error.error, error_code: error.error_code };
         }
 
         console.error(error);
