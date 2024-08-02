@@ -2,39 +2,24 @@ import { D1PollsService } from "@lib/d1_polls_service";
 import { APIError, InternalServerError, isAPIError } from "@shared/errors";
 import { Env } from "@types";
 
-// Error handling
-const handleErrors: PagesFunction<Env> = async (context) => {
-    let response: Response;
-    try {
-        response = await context.next();
-    } catch (error) {
-        let apiError = new InternalServerError({ innerError: error });
-        if (isAPIError(error)) {
-            apiError = error;
-        }
-
-        console.error(apiError.innerError ?? apiError);
-
-        response = Response.json(
-            { error: apiError.message, error_code: apiError.errorCode },
-            {
-                status: apiError.status,
-            }
-        );
-    }
-
-    return response;
+// CORS
+export const onRequestOptions: PagesFunction = async () => {
+    return new Response(null, {
+        status: 204,
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Max-Age": "86400",
+        },
+    });
 };
 
-// Polls service dependency
-const injectPollsService: PagesFunction<Env> = async (context) => {
-    const { env } = context;
-    const { POLLS_DB } = env;
-
-    const pollsService = new D1PollsService({ pollsDb: POLLS_DB });
-    env.pollsService = pollsService;
-
-    return context.next();
+export const setCorsHeaders: PagesFunction = async (context) => {
+    const response = await context.next();
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    response.headers.set("Access-Control-Max-Age", "86400");
+    return response;
 };
 
 // Janky anonymous user ID
@@ -65,7 +50,43 @@ const logAccess: PagesFunction<Env> = async (context) => {
     return context.next();
 };
 
+// Polls service dependency
+const injectPollsService: PagesFunction<Env> = async (context) => {
+    const { env } = context;
+    const { POLLS_DB } = env;
+
+    const pollsService = new D1PollsService({ pollsDb: POLLS_DB });
+    env.pollsService = pollsService;
+
+    return context.next();
+};
+
+// Error handling
+const handleErrors: PagesFunction<Env> = async (context) => {
+    let response: Response;
+    try {
+        response = await context.next();
+    } catch (error) {
+        let apiError = new InternalServerError({ innerError: error });
+        if (isAPIError(error)) {
+            apiError = error;
+        }
+
+        console.error(apiError.innerError ?? apiError);
+
+        response = Response.json(
+            { error: apiError.message, error_code: apiError.errorCode },
+            {
+                status: apiError.status,
+            }
+        );
+    }
+
+    return response;
+};
+
 export const onRequest = [
+    setCorsHeaders,
     injectUser,
     logAccess,
     injectPollsService,
