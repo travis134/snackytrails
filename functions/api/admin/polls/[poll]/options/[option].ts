@@ -1,5 +1,5 @@
-import { BadRequestError, NotFoundError } from "@shared/errors";
-import { Option } from "@shared/types";
+import { AppError, ErrorCode } from "@shared/errors";
+import { isOptionUpdate } from "@shared/types";
 import { Env } from "@types";
 
 // Update an option
@@ -10,10 +10,20 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const optionId = Number(
         Array.isArray(optionParam) ? optionParam[0] : optionParam
     );
-    const optionUpdate: Partial<Option> = await context.request.json();
+    const optionUpdate = await context.request.json();
 
     if (isNaN(optionId)) {
-        throw new BadRequestError();
+        throw new AppError(
+            "Option values must be a number",
+            ErrorCode.OptionBadValue
+        );
+    }
+
+    if (!isOptionUpdate(optionUpdate)) {
+        throw new AppError(
+            `Invalid option update: ${optionUpdate}`,
+            ErrorCode.OptionUpdateInvalid
+        );
     }
 
     await pollsService.updateOption(pollId, optionId, optionUpdate);
@@ -31,7 +41,10 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
     );
 
     if (isNaN(optionId)) {
-        throw new BadRequestError();
+        throw new AppError(
+            "Option values must be a number",
+            ErrorCode.OptionBadValue
+        );
     }
 
     await pollsService.deleteOption(pollId, optionId);

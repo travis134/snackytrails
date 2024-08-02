@@ -1,4 +1,3 @@
-import { NotFoundError } from "@shared/errors";
 import { Env } from "@types";
 
 // Tally votes

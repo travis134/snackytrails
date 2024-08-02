@@ -1,5 +1,10 @@
 import { D1PollsService } from "@lib/d1_polls_service";
-import { APIError, InternalServerError, isAPIError } from "@shared/errors";
+import {
+    AppErrorData,
+    ErrorCode,
+    isAppError,
+    statusFromErrorCode,
+} from "@shared/errors";
 import { Env } from "@types";
 
 // CORS
@@ -67,19 +72,19 @@ const handleErrors: PagesFunction<Env> = async (context) => {
     try {
         response = await context.next();
     } catch (error) {
-        let apiError = new InternalServerError({ innerError: error });
-        if (isAPIError(error)) {
-            apiError = error;
+        let errorData: AppErrorData = {
+            error: error.message ?? "Unknown error",
+            error_code: ErrorCode.Unknown,
+        };
+        if (isAppError(error)) {
+            errorData = error;
         }
 
-        console.error(apiError.innerError ?? apiError);
+        console.error(error);
 
-        response = Response.json(
-            { error: apiError.message, error_code: apiError.errorCode },
-            {
-                status: apiError.status,
-            }
-        );
+        response = Response.json(errorData, {
+            status: statusFromErrorCode(errorData.error_code),
+        });
     }
 
     return response;

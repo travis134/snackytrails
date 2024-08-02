@@ -1,4 +1,4 @@
-import { BadRequestError, NotFoundError } from "@shared/errors";
+import { AppError, ErrorCode } from "@shared/errors";
 import { Env } from "@types";
 
 // Cast a vote
@@ -14,7 +14,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     for (const optionIdParam of optionIdParams) {
         const optionId = Number(optionIdParam);
         if (isNaN(optionId)) {
-            throw new BadRequestError();
+            throw new AppError(
+                "Option values must be a number",
+                ErrorCode.OptionBadValue
+            );
         }
 
         optionIds.push(optionId);

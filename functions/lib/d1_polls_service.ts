@@ -1,5 +1,16 @@
-import { BadRequestError, NotFoundError } from "@shared/errors";
-import { Option, Poll, Tally, isOption, isPoll, isTally } from "@shared/types";
+import { AppError, ErrorCode } from "@shared/errors";
+import {
+    Option,
+    OptionCreate,
+    OptionUpdate,
+    Poll,
+    PollCreate,
+    PollUpdate,
+    Tally,
+    isOption,
+    isPoll,
+    isTally,
+} from "@shared/types";
 import { PollsService } from "functions/types";
 
 export class D1PollsService implements PollsService {
@@ -9,8 +20,8 @@ export class D1PollsService implements PollsService {
         this.pollsDb = pollsDb;
     }
 
-    async createPoll(poll: Poll): Promise<string> {
-        const { id, name, description, selections } = poll;
+    async createPoll(pollCreate: PollCreate): Promise<string> {
+        const { id, name, description, selections } = pollCreate;
         const createPoll = `INSERT INTO polls (id, name, description, selections) VALUES (?, ?, ?, ?)`;
         await this.pollsDb
             .prepare(createPoll)
@@ -24,7 +35,7 @@ export class D1PollsService implements PollsService {
         const getPoll = `SELECT * FROM polls WHERE id = ?`;
         const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
         if (!poll) {
-            throw new NotFoundError();
+            throw new AppError("Poll not found", ErrorCode.PollNotFound);
         }
         if (!isPoll(poll)) {
             throw new Error(`Invalid poll: ${JSON.stringify(poll)}`);
@@ -38,14 +49,14 @@ export class D1PollsService implements PollsService {
         const { results: polls } = await this.pollsDb.prepare(listPolls).all();
         for (const poll of polls) {
             if (!isPoll(poll)) {
-                throw new Error(`Invalid poll: ${JSON.stringify(poll)}`);
+                throw new AppError("Invalid poll", ErrorCode.PollInvalid);
             }
         }
 
         return polls as unknown as Poll[];
     }
 
-    async updatePoll(pollId: string, pollUpdate: Partial<Poll>): Promise<void> {
+    async updatePoll(pollId: string, pollUpdate: PollUpdate): Promise<void> {
         const { name, description, selections, ended } = pollUpdate;
         const fields: string[] = [];
         const values: any[] = [];
@@ -61,18 +72,15 @@ export class D1PollsService implements PollsService {
             fields.push("selections = ?");
             values.push(selections);
         }
-        if (ended) {
+        if (ended || ended === null) {
             fields.push("ended = ?");
             values.push(ended);
-        }
-        if (fields.length === 0) {
-            throw new BadRequestError();
         }
 
         const getPoll = `SELECT * FROM polls WHERE id = ?`;
         const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
         if (!poll) {
-            throw new NotFoundError();
+            throw new AppError("Poll not found", ErrorCode.PollNotFound);
         }
 
         const updatePoll = `UPDATE polls SET ${fields.join(", ")} WHERE id = ?`;
@@ -86,7 +94,7 @@ export class D1PollsService implements PollsService {
         const getPoll = `SELECT * FROM polls WHERE id = ?`;
         const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
         if (!poll) {
-            throw new NotFoundError();
+            throw new AppError("Poll not found", ErrorCode.PollNotFound);
         }
 
         const deletePoll = `DELETE FROM polls WHERE id = ?`;
@@ -97,7 +105,7 @@ export class D1PollsService implements PollsService {
         const getPoll = `SELECT * FROM polls WHERE id = ?`;
         const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
         if (!poll) {
-            throw new NotFoundError();
+            throw new AppError("Poll not found", ErrorCode.PollNotFound);
         }
 
         const getTallies = `
@@ -114,7 +122,7 @@ export class D1PollsService implements PollsService {
             .all();
         for (const tally of tallies) {
             if (!isTally(tally)) {
-                throw new Error(`Invalid option: ${JSON.stringify(tally)}`);
+                throw new AppError("Invalid tally", ErrorCode.TallyInvalid);
             }
         }
 
@@ -128,28 +136,28 @@ export class D1PollsService implements PollsService {
     ): Promise<void> {
         // Validate input
         if (optionIds.length === 0) {
-            throw new BadRequestError({
-                errorCode: "no_options",
-                message: "You didn't select any options for this poll",
-            });
+            throw new AppError(
+                "You didn't select any options for this poll",
+                ErrorCode.VoteNoOptions
+            );
         }
 
         // Validate poll exists and hasn't ended
         const getPoll = `SELECT * FROM polls WHERE id = ? AND ended IS NULL OR ended > datetime('now')`;
         const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
         if (!poll) {
-            throw new NotFoundError();
+            throw new AppError("Poll not found", ErrorCode.PollNotFound);
         }
         if (!isPoll(poll)) {
-            throw new Error(`Invalid poll: ${JSON.stringify(poll)}`);
+            throw new AppError(`Invalid poll: ${poll}`, ErrorCode.PollInvalid);
         }
 
         // Validate selection mode
         if (poll.selections === "single" && optionIds.length > 1) {
-            throw new BadRequestError({
-                errorCode: "too_many_options",
-                message: "You selected too many options selected for this poll",
-            });
+            throw new AppError(
+                "You selected too many options selected for this poll",
+                ErrorCode.VoteTooManyOptions
+            );
         }
 
         // Validate selected options
@@ -161,10 +169,10 @@ export class D1PollsService implements PollsService {
             .bind(pollId, ...optionIds)
             .all();
         if (validationResults.results.length !== optionIds.length) {
-            throw new BadRequestError({
-                errorCode: "invalid_options",
-                message: "You selected invalid options selected for this poll",
-            });
+            throw new AppError(
+                "You selected invalid options selected for this poll",
+                ErrorCode.VoteInvalidOptions
+            );
         }
 
         // Validate user not already voted
@@ -174,10 +182,10 @@ export class D1PollsService implements PollsService {
             .bind(pollId, user)
             .first();
         if (votedResults) {
-            throw new BadRequestError({
-                errorCode: "user_already_voted",
-                message: "Your vote has already been recorded",
-            });
+            throw new AppError(
+                "Your vote has already been recorded",
+                ErrorCode.VoteUserAlreadyVoted
+            );
         }
 
         const createResponse = `INSERT INTO responses (user, poll_id) VALUES (?, ?)`;
@@ -196,7 +204,7 @@ export class D1PollsService implements PollsService {
         }
     }
 
-    async createOption(pollId: string, option: Option): Promise<number> {
+    async createOption(pollId: string, option: OptionCreate): Promise<number> {
         const { text, image } = option;
         const createOption = `INSERT INTO options (poll_id, text, image) VALUES (?, ?, ?)`;
         const result = await this.pollsDb
@@ -215,7 +223,7 @@ export class D1PollsService implements PollsService {
             .bind(pollId, optionId)
             .first();
         if (!option) {
-            throw new NotFoundError();
+            throw new AppError("Option not found", ErrorCode.OptionNotFound);
         }
         if (!isOption(option)) {
             throw new Error(`Invalid option: ${JSON.stringify(option)}`);
@@ -242,7 +250,7 @@ export class D1PollsService implements PollsService {
     async updateOption(
         pollId: string,
         optionId: number,
-        optionUpdate: Partial<Option>
+        optionUpdate: OptionUpdate
     ): Promise<void> {
         const { text, image } = optionUpdate;
         const fields: string[] = [];
@@ -255,9 +263,6 @@ export class D1PollsService implements PollsService {
             fields.push("image = ?");
             values.push(image || null);
         }
-        if (fields.length === 0) {
-            throw new BadRequestError();
-        }
 
         const getPoll = `SELECT * FROM options WHERE poll_id = ? AND id = ?`;
         const option = await this.pollsDb
@@ -265,7 +270,7 @@ export class D1PollsService implements PollsService {
             .bind(pollId, optionId)
             .first();
         if (!option) {
-            throw new NotFoundError();
+            throw new AppError("Option not found", ErrorCode.OptionNotFound);
         }
 
         const updateOption = `UPDATE options SET ${fields.join(
@@ -284,7 +289,7 @@ export class D1PollsService implements PollsService {
             .bind(pollId, optionId)
             .first();
         if (!option) {
-            throw new NotFoundError();
+            throw new AppError("Option not found", ErrorCode.OptionNotFound);
         }
 
         const deleteOption = `DELETE FROM options WHERE poll_id = ? AND id = ?`;

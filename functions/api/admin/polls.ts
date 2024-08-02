@@ -1,5 +1,5 @@
-import { BadRequestError } from "@shared/errors";
-import { isPoll } from "@shared/types";
+import { AppError, ErrorCode } from "@shared/errors";
+import { isPollCreate } from "@shared/types";
 import { Env } from "@types";
 
 // Create a new poll
@@ -7,8 +7,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const { pollsService } = context.env;
     const poll = await context.request.json();
 
-    if (!isPoll(poll)) {
-        throw new BadRequestError();
+    if (!isPollCreate(poll)) {
+        throw new AppError("Invalid poll create", ErrorCode.PollCreateInvalid);
     }
 
     const id = await pollsService.createPoll(poll);

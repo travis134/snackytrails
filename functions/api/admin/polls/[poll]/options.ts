@@ -1,5 +1,5 @@
-import { BadRequestError } from "@shared/errors";
-import { isOption } from "@shared/types";
+import { AppError, ErrorCode } from "@shared/errors";
+import { isOptionCreate } from "@shared/types";
 import { Env } from "@types";
 
 // Create a new option
@@ -7,13 +7,16 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const { pollsService } = context.env;
     const { poll: pollParam, option: optionParam } = context.params;
     const pollId = Array.isArray(pollParam) ? pollParam[0] : pollParam;
-    const option = await context.request.json();
+    const optionCreate = await context.request.json();
 
-    if (!isOption(option)) {
-        throw new BadRequestError();
+    if (!isOptionCreate(optionCreate)) {
+        throw new AppError(
+            `Invalid option create: ${optionCreate}`,
+            ErrorCode.OptionCreateInvalid
+        );
     }
 
-    const id = await pollsService.createOption(pollId, option);
+    const id = await pollsService.createOption(pollId, optionCreate);
 
     return Response.json({ id });
 };

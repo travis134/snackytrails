@@ -1,5 +1,5 @@
-import { BadRequestError, NotFoundError } from "@shared/errors";
-import { Poll } from "@shared/types";
+import { AppError, ErrorCode } from "@shared/errors";
+import { isPollUpdate, Poll } from "@shared/types";
 import { Env } from "@types";
 
 // Update a poll
@@ -7,7 +7,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const { pollsService } = context.env;
     const { poll: pollParam } = context.params;
     const pollId = Array.isArray(pollParam) ? pollParam[0] : pollParam;
-    const pollUpdate: Partial<Poll> = await context.request.json();
+    const pollUpdate = await context.request.json();
+
+    if (!isPollUpdate(pollUpdate)) {
+        throw new AppError(
+            `Invalid poll update: ${pollUpdate}`,
+            ErrorCode.OptionUpdateInvalid
+        );
+    }
 
     await pollsService.updatePoll(pollId, pollUpdate);
 
