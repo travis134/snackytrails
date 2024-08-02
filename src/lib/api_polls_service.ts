@@ -1,12 +1,11 @@
 import { Option, Poll, Tally, isOption, isPoll, isTally } from "@shared/types";
 import { PollsService } from "@types";
-import { URL } from "url";
 
 export class APIPollsService implements PollsService {
     baseUrl: string;
 
-    constructor({ baseURL }: { baseURL: string }) {
-        this.baseUrl = baseURL;
+    constructor({ baseUrl }: { baseUrl: string }) {
+        this.baseUrl = baseUrl;
     }
 
     async readPoll(pollId: string): Promise<Poll> {

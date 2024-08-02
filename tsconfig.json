@@ -14,13 +14,8 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
-        "jsx": "react-jsx",
-        "baseUrl": ".",
-        "paths": {
-            "@shared/*": ["shared/*"],
-            "@lib/*": ["src/lib/*"],
-            "@types": ["src/types.ts"]
-        }
+        "jsx": "react-jsx"
     },
+    "extends": "./tsconfig.paths.json",
     "exclude": ["functions"]
 }
