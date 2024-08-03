@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./bulma.css";
+import "./bulma.min.css";
 import Splash from "./Splash";
 
 const root = ReactDOM.createRoot(
