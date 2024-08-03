@@ -8,7 +8,7 @@ const Splash = () => {
             style={{ height: "100vh" }}
         >
             <img src={logo} alt="Snacky Trails" />
-            <p className="mt-4">Coming Soon!</p>
+            <p className="mt-4">Coming Soon! (preview)</p>
         </div>
     );
 };
