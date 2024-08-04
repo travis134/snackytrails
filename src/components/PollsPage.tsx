@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 
 import { Poll } from "@shared/types";
 import { PollsService } from "@types";
 
 import PollComponent from "@components/PollComponent";
+import LoadingComponent from "@components/LoadingComponent";
 
 interface PollsPageProps {
     pollsService: PollsService;
@@ -11,15 +12,30 @@ interface PollsPageProps {
 
 const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
     const [polls, setPolls] = useState<Poll[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchPolls = async () => {
             const pollsData = await pollsService.listPolls();
             setPolls(pollsData);
+            setIsLoading(false);
         };
 
         fetchPolls();
     }, [pollsService]);
+
+    let body: ReactNode;
+    if (isLoading) {
+        body = <LoadingComponent />;
+    } else {
+        body = (
+            <div className="columns is-multiline">
+                {polls.map((poll) => (
+                    <PollComponent key={poll.id} poll={poll} />
+                ))}
+            </div>
+        );
+    }
 
     return (
         <>
@@ -29,11 +45,7 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
                     <p className="subtitle">Check out these awesome polls</p>
                 </div>
             </section>
-            <div className="columns is-multiline">
-                {polls.map((poll) => (
-                    <PollComponent poll={poll} />
-                ))}
-            </div>
+            <section>{body}</section>
         </>
     );
 };
