@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Poll } from "@shared/types";
+import { PollRoute } from "@lib/routes";
 
 interface PollComponentProps {
     poll: Poll;
@@ -19,7 +20,10 @@ const PollComponent: React.FC<PollComponentProps> = ({ poll }) => {
                     <div className="content">{poll.description}</div>
                 </div>
                 <footer className="card-footer is-right-aligned">
-                    <a href={"/#"} className="card-footer-item">
+                    <a
+                        href={PollRoute.href({ id: poll.id })}
+                        className="card-footer-item"
+                    >
                         <span className="icon">
                             <i className="fas fa-arrow-right"></i>
                         </span>

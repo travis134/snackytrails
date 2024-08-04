@@ -9,10 +9,11 @@ import { HomeRoute, AboutRoute, PollsRoute, PollRoute } from "@lib/routes";
 import logo from "./assets/logo.svg";
 
 import LayoutComponent from "@components/LayoutComponent";
-import SplashPage from "@components/SplashPage";
-import PollsPage from "@components/PollsPage";
 import HeaderComponent from "@components/HeaderComponent";
 import FooterComponent from "@components/FooterComponent";
+import SplashPage from "@components/SplashPage";
+import PollsPage from "@components/PollsPage";
+import PollPage from "@components/PollPage";
 
 const apiHostName =
     process.env.REACT_APP_API_BASE_URL ?? "http://localhost:8788";
@@ -27,7 +28,7 @@ const router = createBrowserRouter([
     },
     {
         path: PollRoute.path,
-        element: <SplashPage />,
+        element: <PollPage pollsService={pollsService} />,
     },
 ]);
 
