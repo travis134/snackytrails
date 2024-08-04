@@ -75,8 +75,6 @@ export const isOption = (obj: any): obj is Option => {
 };
 
 export interface OptionCreate {
-    id: number;
-    poll_id: string;
     text: string;
     image?: string;
 }
@@ -85,8 +83,6 @@ export const isOptionCreate = (obj: any): obj is OptionCreate => {
     return (
         typeof obj === "object" &&
         obj !== null &&
-        typeof obj.id === "number" &&
-        typeof obj.poll_id === "string" &&
         typeof obj.text === "string" &&
         (typeof obj.image === "undefined" || typeof obj.image === "string")
     );
