@@ -19,7 +19,7 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
         };
 
         fetchPolls();
-    }, []);
+    }, [pollsService]);
 
     return (
         <>

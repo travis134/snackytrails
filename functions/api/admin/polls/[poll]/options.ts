@@ -5,7 +5,7 @@ import { Env } from "@types";
 // Create a new option
 export const onRequestPost: PagesFunction<Env> = async (context) => {
     const { pollsService } = context.env;
-    const { poll: pollParam, option: optionParam } = context.params;
+    const { poll: pollParam } = context.params;
     const pollId = Array.isArray(pollParam) ? pollParam[0] : pollParam;
     const optionCreate = await context.request.json();
 

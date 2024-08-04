@@ -4,7 +4,7 @@ import { PollsService } from "@types";
 export class APIPollsService implements PollsService {
     apiBaseUrl: string;
 
-    constructor({ apiBaseUrl: apiBaseUrl }: { apiBaseUrl: string }) {
+    constructor({ apiBaseUrl }: { apiBaseUrl: string }) {
         this.apiBaseUrl = apiBaseUrl;
     }
 

@@ -1,5 +1,5 @@
 import { AppError, ErrorCode } from "@shared/errors";
-import { isPollUpdate, Poll } from "@shared/types";
+import { isPollUpdate } from "@shared/types";
 import { Env } from "@types";
 
 // Update a poll

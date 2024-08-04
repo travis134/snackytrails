@@ -5,7 +5,7 @@ import { Env } from "@types";
 export const onRequestGet: PagesFunction<Env> = async (context) => {
     const { request } = context;
     const { pollsService, user } = context.env;
-    const { poll: pollParam, option: optionParam } = context.params;
+    const { poll: pollParam } = context.params;
     const pollId = Array.isArray(pollParam) ? pollParam[0] : pollParam;
     const url = new URL(request.url);
     const optionIdParams = url.searchParams.getAll("option");

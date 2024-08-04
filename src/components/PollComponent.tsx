@@ -19,7 +19,7 @@ const PollComponent: React.FC<PollComponentProps> = ({ poll }) => {
                     <div className="content">{poll.description}</div>
                 </div>
                 <footer className="card-footer is-right-aligned">
-                    <a href={""} className="card-footer-item">
+                    <a href={"/#"} className="card-footer-item">
                         <span className="icon">
                             <i className="fas fa-arrow-right"></i>
                         </span>
