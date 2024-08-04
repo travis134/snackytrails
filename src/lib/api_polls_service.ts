@@ -2,14 +2,14 @@ import { Option, Poll, Tally, isOption, isPoll, isTally } from "@shared/types";
 import { PollsService } from "@types";
 
 export class APIPollsService implements PollsService {
-    baseUrl: string;
+    apiBaseUrl: string;
 
-    constructor({ baseUrl }: { baseUrl: string }) {
-        this.baseUrl = baseUrl;
+    constructor({ apiBaseUrl: apiBaseUrl }: { apiBaseUrl: string }) {
+        this.apiBaseUrl = apiBaseUrl;
     }
 
     async readPoll(pollId: string): Promise<Poll> {
-        const url = new URL(`/api/polls/${pollId}`, this.baseUrl);
+        const url = new URL(`/api/polls/${pollId}`, this.apiBaseUrl);
         const response = await fetch(url, { method: "get" });
         const { poll } = await response.json();
         if (!isPoll(poll)) {
@@ -20,7 +20,7 @@ export class APIPollsService implements PollsService {
     }
 
     async listPolls(): Promise<Poll[]> {
-        const url = new URL(`/api/polls`, this.baseUrl);
+        const url = new URL(`/api/polls`, this.apiBaseUrl);
         const response = await fetch(url, { method: "get" });
         const { polls } = await response.json();
         for (const poll of polls) {
@@ -33,7 +33,7 @@ export class APIPollsService implements PollsService {
     }
 
     async tallyPoll(pollId: string): Promise<Tally[]> {
-        const url = new URL(`/api/polls/${pollId}/tally`, this.baseUrl);
+        const url = new URL(`/api/polls/${pollId}/tally`, this.apiBaseUrl);
         const response = await fetch(url, { method: "get" });
         const { tallies } = await response.json();
         for (const tally of tallies) {
@@ -46,7 +46,7 @@ export class APIPollsService implements PollsService {
     }
 
     async votePoll(pollId: string, optionIds: number[]): Promise<void> {
-        const url = new URL(`/api/polls/${pollId}/vote`, this.baseUrl);
+        const url = new URL(`/api/polls/${pollId}/vote`, this.apiBaseUrl);
         for (const optionId of optionIds) {
             url.searchParams.append("option", optionId.toString());
         }
@@ -57,7 +57,7 @@ export class APIPollsService implements PollsService {
     async readOption(pollId: string, optionId: number): Promise<Option> {
         const url = new URL(
             `/api/polls/${pollId}/options/${optionId}`,
-            this.baseUrl
+            this.apiBaseUrl
         );
         const response = await fetch(url, { method: "get" });
         const { option } = await response.json();
@@ -69,7 +69,7 @@ export class APIPollsService implements PollsService {
     }
 
     async listOptions(pollId: string): Promise<Option[]> {
-        const url = new URL(`/api/polls/${pollId}/options`, this.baseUrl);
+        const url = new URL(`/api/polls/${pollId}/options`, this.apiBaseUrl);
         const response = await fetch(url, { method: "get" });
         const { options } = await response.json();
         for (const option of options) {

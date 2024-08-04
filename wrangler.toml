@@ -3,7 +3,7 @@ pages_build_output_dir = "build"
 compatibility_date = "2024-07-18"
 
 [vars]
-REACT_APP_API_HOSTNAME = "snackytrails.us"
+REACT_APP_API_BASE_URL = "https://snackytrails.us"
 
 [[d1_databases]]
 binding = "POLLS_DB"
@@ -11,7 +11,7 @@ database_name = "polls"
 database_id = "5306ce1d-fb50-41f8-a0ea-5394bafd7c62"
 
 [env.preview.vars]
-REACT_APP_API_HOSTNAME = "preview.snackytrails.pages.dev"
+REACT_APP_API_BASE_URL = "http://preview.snackytrails.pages.dev"
 
 [[env.preview.d1_databases]]
 binding = "POLLS_DB"
