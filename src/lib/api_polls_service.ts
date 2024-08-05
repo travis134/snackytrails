@@ -1,4 +1,14 @@
-import { Option, Poll, Tally, isOption, isPoll, isTally } from "@shared/types";
+import { AppError, ErrorCode } from "@shared/errors";
+import {
+    Option,
+    Poll,
+    Tally,
+    Vote,
+    isOption,
+    isPoll,
+    isTally,
+    isVote,
+} from "@shared/types";
 import { PollsService } from "@types";
 
 export class APIPollsService implements PollsService {
@@ -13,7 +23,10 @@ export class APIPollsService implements PollsService {
         const response = await fetch(url, { method: "get" });
         const { poll } = await response.json();
         if (!isPoll(poll)) {
-            throw new Error(`Invalid poll: ${JSON.stringify(poll)}`);
+            throw new AppError(
+                `Invalid poll: ${JSON.stringify(poll)}`,
+                ErrorCode.PollInvalid
+            );
         }
 
         return poll;
@@ -24,9 +37,10 @@ export class APIPollsService implements PollsService {
         const response = await fetch(url, { method: "get" });
         const { polls } = await response.json();
         for (const poll of polls) {
-            if (!isPoll(poll)) {
-                throw new Error(`Invalid poll: ${JSON.stringify(poll)}`);
-            }
+            throw new AppError(
+                `Invalid poll: ${JSON.stringify(poll)}`,
+                ErrorCode.PollInvalid
+            );
         }
 
         return polls;
@@ -37,21 +51,25 @@ export class APIPollsService implements PollsService {
         const response = await fetch(url, { method: "get" });
         const { tallies } = await response.json();
         for (const tally of tallies) {
-            if (!isTally(tally)) {
-                throw new Error(`Invalid option: ${JSON.stringify(tally)}`);
-            }
+            throw new AppError(
+                `Invalid tally: ${JSON.stringify(tally)}`,
+                ErrorCode.TallyInvalid
+            );
         }
 
         return tallies as unknown as Tally[];
     }
 
-    async votePoll(pollId: string, optionIds: number[]): Promise<void> {
+    async votePoll(pollId: string, vote: Vote): Promise<void> {
         const url = new URL(`/api/polls/${pollId}/vote`, this.apiBaseUrl);
-        for (const optionId of optionIds) {
-            url.searchParams.append("option", optionId.toString());
+        if (!isVote(vote)) {
+            throw new AppError(
+                `Invalid vote: ${JSON.stringify(vote)}`,
+                ErrorCode.VoteInvalid
+            );
         }
 
-        await fetch(url, { method: "get" });
+        await fetch(url, { method: "post", body: JSON.stringify(vote) });
     }
 
     async readOption(pollId: string, optionId: number): Promise<Option> {
@@ -62,7 +80,10 @@ export class APIPollsService implements PollsService {
         const response = await fetch(url, { method: "get" });
         const { option } = await response.json();
         if (!isOption(option)) {
-            throw new Error(`Invalid option: ${JSON.stringify(option)}`);
+            throw new AppError(
+                `Invalid option: ${JSON.stringify(option)}`,
+                ErrorCode.OptionInvalid
+            );
         }
 
         return option;
@@ -73,9 +94,10 @@ export class APIPollsService implements PollsService {
         const response = await fetch(url, { method: "get" });
         const { options } = await response.json();
         for (const option of options) {
-            if (!isOption(option)) {
-                throw new Error(`Invalid option: ${JSON.stringify(option)}`);
-            }
+            throw new AppError(
+                `Invalid option: ${JSON.stringify(option)}`,
+                ErrorCode.OptionInvalid
+            );
         }
 
         return options;
