@@ -37,10 +37,12 @@ export class APIPollsService implements PollsService {
         const response = await fetch(url, { method: "get" });
         const { polls } = await response.json();
         for (const poll of polls) {
-            throw new AppError(
-                `Invalid poll: ${JSON.stringify(poll)}`,
-                ErrorCode.PollInvalid
-            );
+            if (!isPoll(poll)) {
+                throw new AppError(
+                    `Invalid poll: ${JSON.stringify(poll)}`,
+                    ErrorCode.PollInvalid
+                );
+            }
         }
 
         return polls;
@@ -51,10 +53,12 @@ export class APIPollsService implements PollsService {
         const response = await fetch(url, { method: "get" });
         const { tallies } = await response.json();
         for (const tally of tallies) {
-            throw new AppError(
-                `Invalid tally: ${JSON.stringify(tally)}`,
-                ErrorCode.TallyInvalid
-            );
+            if (!isTally(tally)) {
+                throw new AppError(
+                    `Invalid tally: ${JSON.stringify(tally)}`,
+                    ErrorCode.TallyInvalid
+                );
+            }
         }
 
         return tallies as unknown as Tally[];
@@ -94,10 +98,12 @@ export class APIPollsService implements PollsService {
         const response = await fetch(url, { method: "get" });
         const { options } = await response.json();
         for (const option of options) {
-            throw new AppError(
-                `Invalid option: ${JSON.stringify(option)}`,
-                ErrorCode.OptionInvalid
-            );
+            if (!isOption(option)) {
+                throw new AppError(
+                    `Invalid option: ${JSON.stringify(option)}`,
+                    ErrorCode.OptionInvalid
+                );
+            }
         }
 
         return options;

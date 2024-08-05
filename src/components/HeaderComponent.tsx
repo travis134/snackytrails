@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from "react";
 
 import Routes from "@lib/routes";
@@ -37,7 +38,6 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ logo }) => {
                         aria-expanded="false"
                         data-target="navBarMenu"
                         onClick={toggleMenu}
-                        href="/#"
                     >
                         <span aria-hidden="true"></span>
                         <span aria-hidden="true"></span>
