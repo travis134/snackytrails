@@ -8,21 +8,32 @@ import {
 import { Env } from "@types";
 
 // CORS
-export const onRequestOptions: PagesFunction = async () => {
+export const onRequestOptions: PagesFunction<Env> = async (context) => {
+    const { ORIGIN } = context.env;
     return new Response(null, {
         status: 204,
         headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "*",
-            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Origin": ORIGIN,
+            "Access-Control-Allow-Headers":
+                "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
             "Access-Control-Max-Age": "86400",
         },
     });
 };
 
-export const setCorsHeaders: PagesFunction = async (context) => {
+export const setCorsHeaders: PagesFunction<Env> = async (context) => {
     const response = await context.next();
-    response.headers.set("Access-Control-Allow-Origin", "*");
+    const { ORIGIN } = context.env;
+    response.headers.set("Access-Control-Allow-Origin", ORIGIN);
+    response.headers.set(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    );
+    response.headers.set(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PUT, DELETE, OPTIONS"
+    );
     response.headers.set("Access-Control-Max-Age", "86400");
     return response;
 };
@@ -73,11 +84,11 @@ const handleErrors: PagesFunction<Env> = async (context) => {
         response = await context.next();
     } catch (error) {
         let errorData: AppErrorData = {
-            error: error.message ?? "Unknown error",
+            error: "Unknown error",
             error_code: ErrorCode.Unknown,
         };
         if (isAppError(error)) {
-            errorData = { error: error.error, error_code: error.error_code };
+            errorData = error;
         }
 
         console.error(error);

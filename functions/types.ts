@@ -11,6 +11,7 @@ import {
 
 export interface Env {
     API_KEY: string;
+    ORIGIN: string;
     POLLS_DB: D1Database;
     pollsService: PollsService;
     user: string;
