@@ -31,7 +31,9 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
         body = (
             <div className="columns is-multiline">
                 {polls.map((poll) => (
-                    <PollComponent key={poll.id} poll={poll} />
+                    <div className="column is-one-third" key={poll.id}>
+                        <PollComponent key={poll.id} poll={poll} />
+                    </div>
                 ))}
             </div>
         );

@@ -14,9 +14,7 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
     return (
         <>
             {header}
-            <main className="section has-background-primary-light">
-                {children}
-            </main>
+            <main className="section">{children}</main>
             {footer}
         </>
     );

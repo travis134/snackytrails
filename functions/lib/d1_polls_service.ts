@@ -7,6 +7,7 @@ import {
     PollCreate,
     PollUpdate,
     Tally,
+    Vote,
     isOption,
     isPoll,
     isTally,
@@ -129,11 +130,9 @@ export class D1PollsService implements PollsService {
         return tallies as unknown as Tally[];
     }
 
-    async votePoll(
-        pollId: string,
-        user: string,
-        optionIds: number[]
-    ): Promise<void> {
+    async votePoll(pollId: string, user: string, vote: Vote): Promise<void> {
+        const { option_ids: optionIds } = vote;
+
         // Validate input
         if (optionIds.length === 0) {
             throw new AppError(

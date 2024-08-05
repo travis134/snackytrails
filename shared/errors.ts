@@ -12,6 +12,7 @@ export enum ErrorCode {
     PollUpdateInvalid = "poll_update_invalid",
     PollNotFound = "poll_not_found",
     TallyInvalid = "tally_invalid",
+    VoteInvalid = "vote_invalid",
     VoteNoOptions = "vote_no_options",
     VoteTooManyOptions = "vote_too_many_options",
     VoteInvalidOptions = "vote_invalid_options",
@@ -42,6 +43,8 @@ export const statusFromErrorCode = (errorCode: ErrorCode): number => {
         case ErrorCode.PollNotFound:
             return 404;
         case ErrorCode.TallyInvalid:
+            return 400;
+        case ErrorCode.VoteInvalid:
             return 400;
         case ErrorCode.VoteNoOptions:
             return 400;

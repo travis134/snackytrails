@@ -5,7 +5,7 @@ import "./bulma-custom.scss";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import { APIPollsService } from "@lib/api_polls_service";
-import { HomeRoute, AboutRoute, PollsRoute, PollRoute } from "@lib/routes";
+import Routes from "@lib/routes";
 import logo from "./assets/logo.svg";
 
 import LayoutComponent from "@components/LayoutComponent";
@@ -20,14 +20,14 @@ const apiHostName =
 const pollsService = new APIPollsService({ apiBaseUrl: apiHostName });
 
 const router = createBrowserRouter([
-    { path: HomeRoute.path, element: <SplashPage /> },
-    { path: AboutRoute.path, element: <SplashPage /> },
+    { path: Routes.HomeRoute.path, element: <SplashPage /> },
+    { path: Routes.AboutRoute.path, element: <SplashPage /> },
     {
-        path: PollsRoute.path,
+        path: Routes.PollsRoute.path,
         element: <PollsPage pollsService={pollsService} />,
     },
     {
-        path: PollRoute.path,
+        path: Routes.PollRoute.path,
         element: <PollPage pollsService={pollsService} />,
     },
 ]);

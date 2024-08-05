@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { HomeRoute, AboutRoute, PollsRoute } from "@lib/routes";
+import Routes from "@lib/routes";
 
 interface HeaderComponentProps {
     logo: string;
@@ -21,7 +21,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ logo }) => {
                 aria-label="main navigation"
             >
                 <div className="navbar-brand">
-                    <a className="navbar-item" href={HomeRoute.href()}>
+                    <a className="navbar-item" href={Routes.HomeRoute.href()}>
                         <img
                             src={logo}
                             alt="Snacky Trails"
@@ -51,13 +51,22 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ logo }) => {
                     className={`navbar-menu ${isActive ? "is-active" : ""}`}
                 >
                     <div className="navbar-start">
-                        <a className="navbar-item" href={HomeRoute.href()}>
+                        <a
+                            className="navbar-item"
+                            href={Routes.HomeRoute.href()}
+                        >
                             Home
                         </a>
-                        <a className="navbar-item" href={PollsRoute.href()}>
+                        <a
+                            className="navbar-item"
+                            href={Routes.PollsRoute.href()}
+                        >
                             Polls
                         </a>
-                        <a className="navbar-item" href={AboutRoute.href()}>
+                        <a
+                            className="navbar-item"
+                            href={Routes.AboutRoute.href()}
+                        >
                             About
                         </a>
                     </div>

@@ -5,6 +5,7 @@ import { Poll, Option } from "@shared/types";
 import { PollsService } from "@types";
 
 import LoadingComponent from "@components/LoadingComponent";
+import PollVoteComponent from "@components/PollVoteComponent";
 
 interface PollPageProps {
     pollsService: PollsService;
@@ -34,56 +35,10 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
     if (isLoading) {
         body = <LoadingComponent />;
     } else {
-        body = (
-            <div className="card column is-one-third is-touch">
-                <header className="card-header">
-                    <p className="card-header-title">{poll!.name}</p>
-                </header>
-                <div className="card-content">
-                    <div className="content">
-                        <p>{poll!.description}</p>
-                        <p>
-                            <strong>Selection Type:</strong> {poll!.selections}
-                        </p>
-                        <p>
-                            <strong>Created:</strong>{" "}
-                            {new Date(poll!.created).toLocaleDateString()}
-                        </p>
-                        {poll!.ended && (
-                            <p>
-                                <strong>Ended:</strong>{" "}
-                                {new Date(poll!.ended).toLocaleDateString()}
-                            </p>
-                        )}
-                        <div className="options">
-                            {options.map((option) => (
-                                <div
-                                    key={option.id}
-                                    className="box is-clickable"
-                                >
-                                    {option.image && (
-                                        <figure className="image is-128x128">
-                                            <img
-                                                src={option.image}
-                                                alt={option.text}
-                                            />
-                                        </figure>
-                                    )}
-                                    <p>{option.text}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
+        body = <PollVoteComponent poll={poll!} options={options} />;
     }
 
-    return (
-        <>
-            <section>{body}</section>
-        </>
-    );
+    return <section>{body}</section>;
 };
 
 export default PollPage;

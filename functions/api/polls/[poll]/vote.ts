@@ -1,29 +1,20 @@
 import { AppError, ErrorCode } from "@shared/errors";
+import { isVote } from "@shared/types";
 import { Env } from "@types";
 
 // Cast a vote
-export const onRequestGet: PagesFunction<Env> = async (context) => {
+export const onRequestPost: PagesFunction<Env> = async (context) => {
     const { request } = context;
     const { pollsService, user } = context.env;
     const { poll: pollParam } = context.params;
     const pollId = Array.isArray(pollParam) ? pollParam[0] : pollParam;
-    const url = new URL(request.url);
-    const optionIdParams = url.searchParams.getAll("option");
+    const vote = await context.request.json();
 
-    const optionIds = [];
-    for (const optionIdParam of optionIdParams) {
-        const optionId = Number(optionIdParam);
-        if (isNaN(optionId)) {
-            throw new AppError(
-                "Option values must be a number",
-                ErrorCode.OptionBadValue
-            );
-        }
-
-        optionIds.push(optionId);
+    if (!isVote(vote)) {
+        throw new AppError(`Invalid poll vote: ${vote}`, ErrorCode.VoteInvalid);
     }
 
-    await pollsService.votePoll(pollId, user, optionIds);
+    await pollsService.votePoll(pollId, user, vote);
 
     return new Response();
 };

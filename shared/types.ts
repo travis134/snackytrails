@@ -127,3 +127,16 @@ export const isTally = (obj: any): obj is Tally => {
         typeof obj.responses === "number"
     );
 };
+
+export interface Vote {
+    option_ids: number[];
+}
+
+export const isVote = (obj: any): obj is Vote => {
+    return (
+        typeof obj === "object" &&
+        obj !== null &&
+        Array.isArray(obj.option_ids) &&
+        obj.option_ids.every((option_id: any) => typeof option_id === "number")
+    );
+};

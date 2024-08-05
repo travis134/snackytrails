@@ -7,6 +7,7 @@ import {
     PollCreate,
     PollUpdate,
     Tally,
+    Vote,
 } from "@shared/types";
 
 export interface Env {
@@ -24,7 +25,7 @@ export interface PollsService {
     updatePoll(pollId: string, pollUpdate: PollUpdate): Promise<void>;
     deletePoll(pollId: string): Promise<void>;
     tallyPoll(pollId: string): Promise<Tally[]>;
-    votePoll(pollId: string, user: string, optionIds: number[]): Promise<void>;
+    votePoll(pollId: string, user: string, vote: Vote): Promise<void>;
 
     createOption(pollId: string, option: OptionCreate): Promise<number>;
     readOption(pollId: string, optionId: number): Promise<Option>;
