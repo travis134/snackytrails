@@ -2,7 +2,7 @@ import React from "react";
 
 const FooterComponent: React.FC = () => {
     return (
-        <footer className="footer">
+        <footer className="footer has-background-inherit">
             <div className="content has-text-centered">
                 <p className="has-text-weight-light">Savor the Journey</p>
                 <p>
