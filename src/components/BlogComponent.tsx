@@ -9,13 +9,9 @@ interface BlogComponentProps {
 
 const BlogComponent: React.FC<BlogComponentProps> = ({ blog }) => {
     const content = marked.parse(blog.content, { async: false }) as string;
-    const formattedDate = new Date(blog.created).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-    });
+    const formattedDate = new Date(
+        Date.parse(`${blog.created}Z`)
+    ).toLocaleString();
 
     return (
         <article className="message">

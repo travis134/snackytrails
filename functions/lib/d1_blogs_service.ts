@@ -19,6 +19,16 @@ export class D1BlogsService implements BlogsService {
 
     async createBlog(blogCreate: BlogCreate): Promise<string> {
         const { id, author, content } = blogCreate;
+
+        const getBlog = `SELECT * FROM blogs WHERE id = ?`;
+        const blog = await this.blogsDb.prepare(getBlog).bind(id).first<Blog>();
+        if (blog) {
+            throw new AppError(
+                "Blog already exists",
+                ErrorCode.BlogCreateInvalid
+            );
+        }
+
         const createBlog = `INSERT INTO blogs (id, author, content) VALUES (?, ?, ?)`;
         await this.blogsDb.prepare(createBlog).bind(id, author, content).run();
 

@@ -26,6 +26,16 @@ export class D1PollsService implements PollsService {
 
     async createPoll(pollCreate: PollCreate): Promise<string> {
         const { id, name, description, selections } = pollCreate;
+
+        const getPoll = `SELECT * FROM polls WHERE id = ?`;
+        const poll = await this.pollsDb.prepare(getPoll).bind(id).first<Poll>();
+        if (poll) {
+            throw new AppError(
+                "Poll already exists",
+                ErrorCode.PollCreateInvalid
+            );
+        }
+
         const createPoll = `INSERT INTO polls (id, name, description, selections) VALUES (?, ?, ?, ?)`;
         await this.pollsDb
             .prepare(createPoll)
