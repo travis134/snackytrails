@@ -11,6 +11,10 @@ binding = "POLLS_DB"
 database_name = "polls"
 database_id = "5306ce1d-fb50-41f8-a0ea-5394bafd7c62"
 
+[[r2_buckets]]
+binding = "IMAGES_BUCKET"
+bucket_name = "snackytrails" 
+
 [env.preview.vars]
 REACT_APP_API_BASE_URL = "https://preview.snackytrails.pages.dev"
 ORIGIN = "https://preview.snackytrails.pages.dev"

@@ -1,4 +1,6 @@
 import type { D1Database } from "@cloudflare/workers-types";
+import { R2Bucket } from "@cloudflare/workers-types";
+
 import {
     Option,
     OptionCreate,
@@ -14,7 +16,9 @@ export interface Env {
     API_KEY: string;
     ORIGIN: string;
     POLLS_DB: D1Database;
+    IMAGES_BUCKET: R2Bucket;
     pollsService: PollsService;
+    imagesService: ImagesService;
     user: string;
 }
 
@@ -36,4 +40,9 @@ export interface PollsService {
         optionUpdate: OptionUpdate
     ): Promise<void>;
     deleteOption(pollId: string, optionId: number): Promise<void>;
+}
+
+export interface ImagesService {
+    uploadImage(key: string, data: ReadableStream): Promise<void>;
+    deleteImage(key: string): Promise<void>;
 }

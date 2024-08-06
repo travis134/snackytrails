@@ -17,6 +17,8 @@ export enum ErrorCode {
     VoteTooManyOptions = "vote_too_many_options",
     VoteInvalidOptions = "vote_invalid_options",
     VoteUserAlreadyVoted = "vote_user_already_voted",
+    ImageUploadInvalid = "image_upload_invalid",
+    ImageDeleteInvalid = "image_delete_invalid",
     Unknown = "unknown",
 }
 
@@ -53,6 +55,10 @@ export const statusFromErrorCode = (errorCode: ErrorCode): number => {
         case ErrorCode.VoteInvalidOptions:
             return 400;
         case ErrorCode.VoteUserAlreadyVoted:
+            return 400;
+        case ErrorCode.ImageUploadInvalid:
+            return 400;
+        case ErrorCode.ImageDeleteInvalid:
             return 400;
         case ErrorCode.Unknown:
             return 500;

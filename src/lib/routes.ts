@@ -28,7 +28,7 @@ const PollRoute: RouteConfig = {
     },
 };
 
-const Routes = {
+const Routes: Record<string, RouteConfig> = {
     HomeRoute,
     AboutRoute,
     PollsRoute,

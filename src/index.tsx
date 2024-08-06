@@ -14,6 +14,7 @@ import FooterComponent from "@components/FooterComponent";
 import SplashPage from "@components/SplashPage";
 import PollsPage from "@components/PollsPage";
 import PollPage from "@components/PollPage";
+import AboutPage from "@components/AboutPage";
 
 const apiHostName =
     process.env.REACT_APP_API_BASE_URL ?? "http://localhost:8788";
@@ -21,7 +22,7 @@ const pollsService = new APIPollsService({ apiBaseUrl: apiHostName });
 
 const router = createBrowserRouter([
     { path: Routes.HomeRoute.path, element: <SplashPage /> },
-    { path: Routes.AboutRoute.path, element: <SplashPage /> },
+    { path: Routes.AboutRoute.path, element: <AboutPage /> },
     {
         path: Routes.PollsRoute.path,
         element: <PollsPage pollsService={pollsService} />,

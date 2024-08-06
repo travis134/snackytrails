@@ -38,7 +38,7 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
         body = <PollVoteComponent poll={poll!} options={options} />;
     }
 
-    return <section>{body}</section>;
+    return <div className="container">{body}</div>;
 };
 
 export default PollPage;
