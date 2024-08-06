@@ -20,6 +20,11 @@ export const isPoll = (obj: any): obj is Poll => {
     );
 };
 
+export interface PaginatedPolls {
+    polls: Poll[];
+    more: boolean;
+}
+
 export interface PollCreate {
     id: string;
     name: string;
@@ -140,3 +145,55 @@ export const isVote = (obj: any): obj is Vote => {
         obj.option_ids.every((option_id: any) => typeof option_id === "number")
     );
 };
+
+export interface Blog {
+    id: string;
+    author: string;
+    content: string;
+    created: string;
+}
+
+export const isBlog = (obj: any): obj is Blog => {
+    return (
+        typeof obj === "object" &&
+        obj !== null &&
+        typeof obj.id === "string" &&
+        typeof obj.author === "string" &&
+        typeof obj.content === "string" &&
+        typeof obj.created === "string"
+    );
+};
+
+export interface BlogCreate {
+    id: string;
+    author: string;
+    content: string;
+}
+
+export const isBlogCreate = (obj: any): obj is BlogCreate => {
+    return (
+        typeof obj === "object" &&
+        obj !== null &&
+        typeof obj.id === "string" &&
+        typeof obj.author === "string" &&
+        typeof obj.content === "string"
+    );
+};
+
+export interface BlogUpdate {
+    author?: string;
+    content?: string;
+}
+
+export const isBlogUpdate = (obj: any): obj is BlogUpdate => {
+    return (
+        typeof obj === "object" &&
+        obj !== null &&
+        (obj.authior !== undefined || obj.content !== undefined)
+    );
+};
+
+export interface PaginatedBlogs {
+    blogs: Blog[];
+    more: boolean;
+}

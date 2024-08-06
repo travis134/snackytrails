@@ -19,6 +19,10 @@ export enum ErrorCode {
     VoteUserAlreadyVoted = "vote_user_already_voted",
     ImageUploadInvalid = "image_upload_invalid",
     ImageDeleteInvalid = "image_delete_invalid",
+    BlogInvalid = "blog_invalid",
+    BlogCreateInvalid = "blog_create_invalid",
+    BlogUpdateInvalid = "blog_update_invalid",
+    BlogNotFound = "blog_not_found",
     Unknown = "unknown",
 }
 
@@ -60,6 +64,14 @@ export const statusFromErrorCode = (errorCode: ErrorCode): number => {
             return 400;
         case ErrorCode.ImageDeleteInvalid:
             return 400;
+        case ErrorCode.BlogInvalid:
+            return 400;
+        case ErrorCode.BlogCreateInvalid:
+            return 400;
+        case ErrorCode.BlogUpdateInvalid:
+            return 400;
+        case ErrorCode.BlogNotFound:
+            return 404;
         case ErrorCode.Unknown:
             return 500;
     }

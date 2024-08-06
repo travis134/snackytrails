@@ -1,61 +1,61 @@
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
 
-import { Poll } from "@shared/types";
-import { PollsService } from "@types";
+import { Blog } from "@shared/types";
+import { BlogsService } from "@types";
 
 import LoadingComponent from "@components/LoadingComponent";
 import EmptyState from "@components/EmptyComponent";
-import PollComponent from "@components/PollComponent";
+import BlogComponent from "@components/BlogComponent";
 
-const limit = 10;
+const limit = 1;
 
-interface PollsPageProps {
-    pollsService: PollsService;
+interface BlogPageProps {
+    blogsService: BlogsService;
 }
 
-const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
-    const [polls, setPolls] = useState<Poll[]>([]);
+const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
+    const [blogs, setBlogs] = useState<Blog[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [offset, setOffset] = useState(limit);
     const [more, setMore] = useState(false);
 
     useEffect(() => {
-        const fetchPolls = async () => {
-            const { polls: pollsData, more: hasMore } =
-                await pollsService.listPolls(limit, 0);
-            setPolls(pollsData);
+        const fetchBlogs = async () => {
+            const { blogs: blogsData, more: hasMore } =
+                await blogsService.listBlogs(limit, 0);
+            setBlogs(blogsData);
             setMore(hasMore);
             setIsLoading(false);
         };
 
-        fetchPolls();
-    }, [pollsService]);
+        fetchBlogs();
+    }, [blogsService]);
 
-    const fetchMorePolls = useCallback(async () => {
+    const fetchMoreBlogs = useCallback(async () => {
         setIsLoadingMore(true);
-        const { polls: pollsData, more } = await pollsService.listPolls(
+        const { blogs: blogsData, more } = await blogsService.listBlogs(
             limit,
             offset
         );
-        setPolls((prevPolls) => [...prevPolls, ...pollsData]);
+        setBlogs((prevBlogs) => [...prevBlogs, ...blogsData]);
         setMore(more);
         setOffset((prevOffset) => prevOffset + limit);
         setIsLoadingMore(true);
-    }, [pollsService, offset]);
+    }, [blogsService, offset]);
 
     let body: ReactNode;
     if (isLoading) {
         body = <LoadingComponent />;
-    } else if (polls.length === 0) {
+    } else if (blogs.length === 0) {
         body = <EmptyState />;
     } else {
         body = (
             <>
                 <div className="columns is-multiline">
-                    {polls.map((poll) => (
-                        <div className="column is-one-third" key={poll.id}>
-                            <PollComponent key={poll.id} poll={poll} />
+                    {blogs.map((blog) => (
+                        <div className="column is-one-third" key={blog.id}>
+                            <BlogComponent key={blog.id} blog={blog} />
                         </div>
                     ))}
                 </div>
@@ -63,7 +63,7 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
                     <div className="has-text-centered mt-4">
                         <button
                             className="button is-primary"
-                            onClick={() => fetchMorePolls()}
+                            onClick={() => fetchMoreBlogs()}
                             disabled={isLoadingMore}
                         >
                             See more
@@ -78,8 +78,8 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
         <div className="container">
             <section className="hero">
                 <div className="hero-body">
-                    <p className="title">We want to hear from you!</p>
-                    <p className="subtitle">Check out these awesome polls</p>
+                    <p className="title">See what we've been up to</p>
+                    <p className="subtitle">Check out these incredible blogs</p>
                 </div>
             </section>
             <section>{body}</section>
@@ -87,4 +87,4 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
     );
 };
 
-export default PollsPage;
+export default BlogPage;

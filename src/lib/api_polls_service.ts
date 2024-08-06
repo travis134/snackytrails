@@ -1,6 +1,7 @@
 import { AppError, ErrorCode } from "@shared/errors";
 import {
     Option,
+    PaginatedPolls,
     Poll,
     Tally,
     Vote,
@@ -32,10 +33,12 @@ export class APIPollsService implements PollsService {
         return poll;
     }
 
-    async listPolls(): Promise<Poll[]> {
+    async listPolls(limit: number, offset: number): Promise<PaginatedPolls> {
         const url = new URL(`/api/polls`, this.apiBaseUrl);
+        url.searchParams.append("limit", limit.toString(10));
+        url.searchParams.append("offset", offset.toString(10));
         const response = await fetch(url, { method: "get" });
-        const { polls } = await response.json();
+        const { polls, more } = await response.json();
         for (const poll of polls) {
             if (!isPoll(poll)) {
                 throw new AppError(
@@ -45,7 +48,7 @@ export class APIPollsService implements PollsService {
             }
         }
 
-        return polls;
+        return { polls, more };
     }
 
     async tallyPoll(pollId: string): Promise<Tally[]> {

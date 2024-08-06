@@ -13,6 +13,11 @@ const AboutRoute: RouteConfig = {
     href: () => "/about",
 };
 
+const BlogRoute: RouteConfig = {
+    path: "/blog",
+    href: () => "/blog",
+};
+
 const PollsRoute: RouteConfig = {
     path: "/polls",
     href: () => "/polls",
@@ -31,6 +36,7 @@ const PollRoute: RouteConfig = {
 const Routes: Record<string, RouteConfig> = {
     HomeRoute,
     AboutRoute,
+    BlogRoute,
     PollsRoute,
     PollRoute,
 };

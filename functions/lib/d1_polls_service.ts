@@ -1,8 +1,11 @@
+import { D1Database } from "@cloudflare/workers-types";
+
 import { AppError, ErrorCode } from "@shared/errors";
 import {
     Option,
     OptionCreate,
     OptionUpdate,
+    PaginatedPolls,
     Poll,
     PollCreate,
     PollUpdate,
@@ -34,7 +37,10 @@ export class D1PollsService implements PollsService {
 
     async readPoll(pollId: string): Promise<Poll> {
         const getPoll = `SELECT * FROM polls WHERE id = ?`;
-        const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
+        const poll = await this.pollsDb
+            .prepare(getPoll)
+            .bind(pollId)
+            .first<Poll>();
         if (!poll) {
             throw new AppError("Poll not found", ErrorCode.PollNotFound);
         }
@@ -45,16 +51,36 @@ export class D1PollsService implements PollsService {
         return poll;
     }
 
-    async listPolls(): Promise<Poll[]> {
-        const listPolls = `SELECT * FROM polls WHERE ended IS NULL OR ended > datetime('now')`;
-        const { results: polls } = await this.pollsDb.prepare(listPolls).all();
+    async listPolls(limit: number, offset: number): Promise<PaginatedPolls> {
+        const maxLimit = 10;
+        limit = Math.min(limit, maxLimit);
+
+        const listPolls = `
+            SELECT * FROM polls 
+            WHERE ended IS NULL OR ended > datetime('now')
+            ORDER BY created DESC
+            LIMIT ? OFFSET ?
+        `;
+        const { results: polls } = await this.pollsDb
+            .prepare(listPolls)
+            .bind(limit, offset)
+            .all<Poll>();
         for (const poll of polls) {
             if (!isPoll(poll)) {
                 throw new AppError("Invalid poll", ErrorCode.PollInvalid);
             }
         }
 
-        return polls as unknown as Poll[];
+        const totalPollsQuery = `
+            SELECT COUNT(*) as total FROM polls 
+            WHERE ended IS NULL OR ended > datetime('now')
+        `;
+        const totalPolls = await this.pollsDb
+            .prepare(totalPollsQuery)
+            .first<number>("total");
+        const more = offset + limit < totalPolls;
+
+        return { polls, more };
     }
 
     async updatePoll(pollId: string, pollUpdate: PollUpdate): Promise<void> {
@@ -79,7 +105,10 @@ export class D1PollsService implements PollsService {
         }
 
         const getPoll = `SELECT * FROM polls WHERE id = ?`;
-        const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
+        const poll = await this.pollsDb
+            .prepare(getPoll)
+            .bind(pollId)
+            .first<Poll>();
         if (!poll) {
             throw new AppError("Poll not found", ErrorCode.PollNotFound);
         }
@@ -93,7 +122,10 @@ export class D1PollsService implements PollsService {
 
     async deletePoll(pollId: string): Promise<void> {
         const getPoll = `SELECT * FROM polls WHERE id = ?`;
-        const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
+        const poll = await this.pollsDb
+            .prepare(getPoll)
+            .bind(pollId)
+            .first<Poll>();
         if (!poll) {
             throw new AppError("Poll not found", ErrorCode.PollNotFound);
         }
@@ -104,7 +136,10 @@ export class D1PollsService implements PollsService {
 
     async tallyPoll(pollId: string): Promise<Tally[]> {
         const getPoll = `SELECT * FROM polls WHERE id = ?`;
-        const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
+        const poll = await this.pollsDb
+            .prepare(getPoll)
+            .bind(pollId)
+            .first<Poll>();
         if (!poll) {
             throw new AppError("Poll not found", ErrorCode.PollNotFound);
         }
@@ -120,14 +155,14 @@ export class D1PollsService implements PollsService {
         const { results: tallies } = await this.pollsDb
             .prepare(getTallies)
             .bind(pollId)
-            .all();
+            .all<Tally>();
         for (const tally of tallies) {
             if (!isTally(tally)) {
                 throw new AppError("Invalid tally", ErrorCode.TallyInvalid);
             }
         }
 
-        return tallies as unknown as Tally[];
+        return tallies;
     }
 
     async votePoll(pollId: string, user: string, vote: Vote): Promise<void> {
@@ -143,7 +178,10 @@ export class D1PollsService implements PollsService {
 
         // Validate poll exists and hasn't ended
         const getPoll = `SELECT * FROM polls WHERE id = ? AND ended IS NULL OR ended > datetime('now')`;
-        const poll = await this.pollsDb.prepare(getPoll).bind(pollId).first();
+        const poll = await this.pollsDb
+            .prepare(getPoll)
+            .bind(pollId)
+            .first<Poll>();
         if (!poll) {
             throw new AppError("Poll not found", ErrorCode.PollNotFound);
         }
@@ -220,7 +258,7 @@ export class D1PollsService implements PollsService {
         const option = await this.pollsDb
             .prepare(getPoll)
             .bind(pollId, optionId)
-            .first();
+            .first<Option>();
         if (!option) {
             throw new AppError("Option not found", ErrorCode.OptionNotFound);
         }
@@ -236,14 +274,14 @@ export class D1PollsService implements PollsService {
         const { results: options } = await this.pollsDb
             .prepare(listOptions)
             .bind(pollId)
-            .all();
+            .all<Option>();
         for (const option of options) {
             if (!isOption(option)) {
                 throw new Error(`Invalid option: ${JSON.stringify(option)}`);
             }
         }
 
-        return options as unknown as Option[];
+        return options;
     }
 
     async updateOption(
@@ -264,11 +302,11 @@ export class D1PollsService implements PollsService {
         }
 
         const getPoll = `SELECT * FROM options WHERE poll_id = ? AND id = ?`;
-        const option = await this.pollsDb
+        const poll = await this.pollsDb
             .prepare(getPoll)
             .bind(pollId, optionId)
-            .first();
-        if (!option) {
+            .first<Poll>();
+        if (!poll) {
             throw new AppError("Option not found", ErrorCode.OptionNotFound);
         }
 

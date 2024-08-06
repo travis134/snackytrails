@@ -1,11 +1,24 @@
-import { Option, Poll, Tally, Vote } from "@shared/types";
+import {
+    Blog,
+    Option,
+    PaginatedBlogs,
+    PaginatedPolls,
+    Poll,
+    Tally,
+    Vote,
+} from "@shared/types";
 
 export interface PollsService {
     readPoll(pollId: string): Promise<Poll>;
-    listPolls(): Promise<Poll[]>;
+    listPolls(limit: number, offset: number): Promise<PaginatedPolls>;
     tallyPoll(pollId: string): Promise<Tally[]>;
     votePoll(pollId: string, vote: Vote): Promise<void>;
 
     readOption(pollId: string, optionId: number): Promise<Option>;
     listOptions(pollId: string): Promise<Option[]>;
+}
+
+export interface BlogsService {
+    readBlog(blogId: string): Promise<Blog>;
+    listBlogs(limit: number, offset: number): Promise<PaginatedBlogs>;
 }

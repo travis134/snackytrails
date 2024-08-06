@@ -11,6 +11,11 @@ binding = "POLLS_DB"
 database_name = "polls"
 database_id = "5306ce1d-fb50-41f8-a0ea-5394bafd7c62"
 
+[[d1_databases]]
+binding = "BLOGS_DB"
+database_name = "blogs"
+database_id = "485df0dd-b432-4475-b585-6b8d2d03cee3"
+
 [[r2_buckets]]
 binding = "IMAGES_BUCKET"
 bucket_name = "snackytrails" 
@@ -23,3 +28,8 @@ ORIGIN = "https://preview.snackytrails.pages.dev"
 binding = "POLLS_DB"
 atabase_name = "polls-preview"
 database_id = "284f4a0b-abbb-4178-a8bd-faa8a4417ba2"
+
+[[env.preview.d1_databases]]
+binding = "BLOGS_DB"
+database_name = "blogs-preview"
+database_id = "61a91c30-1728-4704-bfb9-121b1a9450e7"

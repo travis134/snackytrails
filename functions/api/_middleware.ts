@@ -1,3 +1,4 @@
+import { D1BlogsService } from "@lib/d1_blogs_service";
 import { D1PollsService } from "@lib/d1_polls_service";
 import { R2ImagesService } from "@lib/r2_images_service";
 import {
@@ -78,6 +79,17 @@ const injectPollsService: PagesFunction<Env> = async (context) => {
     return context.next();
 };
 
+// Blogs service dependency
+const injectBlogsService: PagesFunction<Env> = async (context) => {
+    const { env } = context;
+    const { BLOGS_DB } = env;
+
+    const blogsService = new D1BlogsService({ blogsDb: BLOGS_DB });
+    env.blogsService = blogsService;
+
+    return context.next();
+};
+
 // Images service dependency
 const injectImagesService: PagesFunction<Env> = async (context) => {
     const { env } = context;
@@ -118,6 +130,7 @@ export const onRequest = [
     injectUser,
     logAccess,
     injectPollsService,
+    injectBlogsService,
     injectImagesService,
     handleErrors,
 ];
