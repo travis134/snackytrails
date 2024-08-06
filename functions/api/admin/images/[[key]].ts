@@ -6,7 +6,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const { imagesService } = context.env;
     const { key: keyParam } = context.params;
     const key = Array.isArray(keyParam) ? keyParam.join("/") : keyParam;
-    const data = await context.request.body;
+    const data = context.request.body;
 
     if (key.length <= 0) {
         throw new AppError(

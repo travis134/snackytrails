@@ -1,4 +1,5 @@
 import { D1PollsService } from "@lib/d1_polls_service";
+import { R2ImagesService } from "@lib/r2_images_service";
 import {
     AppErrorData,
     ErrorCode,
@@ -77,6 +78,17 @@ const injectPollsService: PagesFunction<Env> = async (context) => {
     return context.next();
 };
 
+// Images service dependency
+const injectImagesService: PagesFunction<Env> = async (context) => {
+    const { env } = context;
+    const { IMAGES_BUCKET } = env;
+
+    const imagesService = new R2ImagesService({ imagesBucket: IMAGES_BUCKET });
+    env.imagesService = imagesService;
+
+    return context.next();
+};
+
 // Error handling
 const handleErrors: PagesFunction<Env> = async (context) => {
     let response: Response;
@@ -106,5 +118,6 @@ export const onRequest = [
     injectUser,
     logAccess,
     injectPollsService,
+    injectImagesService,
     handleErrors,
 ];
