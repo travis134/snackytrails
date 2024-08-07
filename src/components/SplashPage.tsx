@@ -1,8 +1,10 @@
 import React from "react";
 
-import logo from "../assets/logo.svg";
+interface SplashPageProps {
+    logo: string;
+}
 
-const SplashPage = () => {
+const SplashPage: React.FC<SplashPageProps> = ({ logo }) => {
     return (
         <div className="container is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
             <img src={logo} alt="Snacky Trails" />

@@ -12,6 +12,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import { APIBlogsService } from "@lib/api_blogs_service";
 import { APIPollsService } from "@lib/api_polls_service";
 import Routes from "@lib/routes";
+import icon from "./assets/icon.svg";
 import logo from "./assets/logo.svg";
 
 import LayoutComponent from "@components/LayoutComponent";
@@ -33,7 +34,7 @@ const router = createBrowserRouter(
         <Route
             element={
                 <LayoutComponent
-                    header={<HeaderComponent logo={logo} />}
+                    header={<HeaderComponent icon={icon} />}
                     footer={<FooterComponent />}
                 />
             }
@@ -41,7 +42,7 @@ const router = createBrowserRouter(
             <Route
                 index
                 path={Routes.HomeRoute.path}
-                element={<SplashPage />}
+                element={<SplashPage logo={logo} />}
             />
             <Route path={Routes.AboutRoute.path} element={<AboutPage />} />
             <Route

@@ -5,10 +5,10 @@ import { matchPath, useLocation } from "react-router-dom";
 import Routes from "@lib/routes";
 
 interface HeaderComponentProps {
-    logo: string;
+    icon: string;
 }
 
-const HeaderComponent: React.FC<HeaderComponentProps> = ({ logo }) => {
+const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
     const { pathname } = useLocation();
     const [isActive, setIsActive] = useState(false);
 
@@ -26,7 +26,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ logo }) => {
                 <div className="navbar-brand">
                     <a className="navbar-item" href={Routes.HomeRoute.href()}>
                         <img
-                            src={logo}
+                            src={icon}
                             alt="Snacky Trails"
                             style={{ maxHeight: "50px" }}
                         />
