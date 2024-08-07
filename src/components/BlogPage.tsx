@@ -7,7 +7,7 @@ import LoadingComponent from "@components/LoadingComponent";
 import EmptyState from "@components/EmptyComponent";
 import BlogComponent from "@components/BlogComponent";
 
-const limit = 1;
+const limit = 10;
 
 interface BlogPageProps {
     blogsService: BlogsService;
@@ -41,7 +41,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
         setBlogs((prevBlogs) => [...prevBlogs, ...blogsData]);
         setMore(more);
         setOffset((prevOffset) => prevOffset + limit);
-        setIsLoadingMore(true);
+        setIsLoadingMore(false);
     }, [blogsService, offset]);
 
     let body: ReactNode;
@@ -52,38 +52,36 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
     } else {
         body = (
             <>
-                <div className="columns is-multiline">
-                    {blogs.map((blog) => (
-                        <div className="column is-one-third" key={blog.id}>
-                            <BlogComponent key={blog.id} blog={blog} />
-                        </div>
-                    ))}
-                </div>
+                {blogs.map((blog) => (
+                    <BlogComponent key={blog.id} blog={blog} />
+                ))}
                 {more && (
-                    <div className="has-text-centered mt-4">
-                        <button
-                            className="button is-primary"
-                            onClick={() => fetchMoreBlogs()}
-                            disabled={isLoadingMore}
-                        >
-                            See more
-                        </button>
-                    </div>
+                    <button
+                        className={`button is-primary is-fullwidth ${
+                            isLoading && "is-loading"
+                        }`}
+                        onClick={() => fetchMoreBlogs()}
+                        disabled={isLoadingMore}
+                    >
+                        See more
+                    </button>
                 )}
             </>
         );
     }
 
     return (
-        <div className="container">
+        <>
             <section className="hero">
                 <div className="hero-body">
                     <p className="title">See what we've been up to</p>
                     <p className="subtitle">Check out these incredible blogs</p>
                 </div>
             </section>
-            <section>{body}</section>
-        </div>
+            <div className="container">
+                <section>{body}</section>
+            </div>
+        </>
     );
 };
 

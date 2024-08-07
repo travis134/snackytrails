@@ -25,6 +25,8 @@ export class APIBlogsService implements BlogsService {
 
     async listBlogs(limit: number, offset: number): Promise<PaginatedBlogs> {
         const url = new URL(`/api/blogs`, this.apiBaseUrl);
+        url.searchParams.append("limit", limit.toString(10));
+        url.searchParams.append("offset", offset.toString(10));
         const response = await fetch(url, { method: "get" });
         const { blogs, more } = await response.json();
         for (const blog of blogs) {

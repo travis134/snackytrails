@@ -1,6 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+    createBrowserRouter,
+    createRoutesFromElements,
+    Route,
+    RouterProvider,
+} from "react-router-dom";
 import "./bulma-custom.scss";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
@@ -23,33 +28,43 @@ const apiHostName =
 const blogsService = new APIBlogsService({ apiBaseUrl: apiHostName });
 const pollsService = new APIPollsService({ apiBaseUrl: apiHostName });
 
-const router = createBrowserRouter([
-    { path: Routes.HomeRoute.path, element: <SplashPage /> },
-    { path: Routes.AboutRoute.path, element: <AboutPage /> },
-    {
-        path: Routes.BlogRoute.path,
-        element: <BlogPage blogsService={blogsService} />,
-    },
-    {
-        path: Routes.PollsRoute.path,
-        element: <PollsPage pollsService={pollsService} />,
-    },
-    {
-        path: Routes.PollRoute.path,
-        element: <PollPage pollsService={pollsService} />,
-    },
-]);
+const router = createBrowserRouter(
+    createRoutesFromElements(
+        <Route
+            element={
+                <LayoutComponent
+                    header={<HeaderComponent logo={logo} />}
+                    footer={<FooterComponent />}
+                />
+            }
+        >
+            <Route
+                index
+                path={Routes.HomeRoute.path}
+                element={<SplashPage />}
+            />
+            <Route path={Routes.AboutRoute.path} element={<AboutPage />} />
+            <Route
+                path={Routes.BlogRoute.path}
+                element={<BlogPage blogsService={blogsService} />}
+            />
+            <Route
+                path={Routes.PollsRoute.path}
+                element={<PollsPage pollsService={pollsService} />}
+            />
+            <Route
+                path={Routes.PollRoute.path}
+                element={<PollPage pollsService={pollsService} />}
+            />
+        </Route>
+    )
+);
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
 );
 root.render(
     <React.StrictMode>
-        <LayoutComponent
-            header={<HeaderComponent logo={logo} />}
-            footer={<FooterComponent />}
-        >
-            <RouterProvider router={router} />
-        </LayoutComponent>
+        <RouterProvider router={router} />
     </React.StrictMode>
 );

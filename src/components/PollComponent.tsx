@@ -21,10 +21,7 @@ const PollComponent: React.FC<PollComponentProps> = ({ poll }) => {
                     href={Routes.PollRoute.href({ id: poll.id })}
                     className="card-footer-item"
                 >
-                    <span className="icon">
-                        <i className="fas fa-arrow-right"></i>
-                    </span>
-                    <span>Make your voice heard!</span>
+                    Make your voice heard!
                 </a>
             </footer>
         </div>

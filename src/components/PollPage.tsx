@@ -34,11 +34,25 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
     let body: ReactNode;
     if (isLoading) {
         body = <LoadingComponent />;
-    } else {
-        body = <PollVoteComponent poll={poll!} options={options} />;
+    } else if (poll) {
+        body = <PollVoteComponent poll={poll} options={options} />;
     }
 
-    return <div className="container">{body}</div>;
+    return (
+        <>
+            {poll && (
+                <section className="hero">
+                    <div className="hero-body">
+                        <p className="title">{poll.name}</p>
+                        <p className="subtitle">{poll.description}</p>
+                    </div>
+                </section>
+            )}
+            <div className="container">
+                <section>{body}</section>
+            </div>
+        </>
+    );
 };
 
 export default PollPage;

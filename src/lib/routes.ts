@@ -9,22 +9,22 @@ const HomeRoute: RouteConfig = {
 };
 
 const AboutRoute: RouteConfig = {
-    path: "/about",
+    path: "about",
     href: () => "/about",
 };
 
 const BlogRoute: RouteConfig = {
-    path: "/blog",
+    path: "blog",
     href: () => "/blog",
 };
 
 const PollsRoute: RouteConfig = {
-    path: "/polls",
+    path: "polls",
     href: () => "/polls",
 };
 
 const PollRoute: RouteConfig = {
-    path: "/polls/:id",
+    path: "polls/:id",
     href: (params?: Record<string, string | number>) => {
         if (!params || !params.id) {
             throw new Error("PollRoute requires an id parameter");

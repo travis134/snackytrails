@@ -41,7 +41,7 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
         setPolls((prevPolls) => [...prevPolls, ...pollsData]);
         setMore(more);
         setOffset((prevOffset) => prevOffset + limit);
-        setIsLoadingMore(true);
+        setIsLoadingMore(false);
     }, [pollsService, offset]);
 
     let body: ReactNode;
@@ -52,38 +52,36 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
     } else {
         body = (
             <>
-                <div className="columns is-multiline">
-                    {polls.map((poll) => (
-                        <div className="column is-one-third" key={poll.id}>
-                            <PollComponent key={poll.id} poll={poll} />
-                        </div>
-                    ))}
-                </div>
+                {polls.map((poll) => (
+                    <PollComponent key={poll.id} poll={poll} />
+                ))}
                 {more && (
-                    <div className="has-text-centered mt-4">
-                        <button
-                            className="button is-primary"
-                            onClick={() => fetchMorePolls()}
-                            disabled={isLoadingMore}
-                        >
-                            See more
-                        </button>
-                    </div>
+                    <button
+                        className={`button is-primary is-fullwidth ${
+                            isLoading && "is-loading"
+                        }`}
+                        onClick={() => fetchMorePolls()}
+                        disabled={isLoadingMore}
+                    >
+                        See more
+                    </button>
                 )}
             </>
         );
     }
 
     return (
-        <div className="container">
+        <>
             <section className="hero">
                 <div className="hero-body">
                     <p className="title">We want to hear from you!</p>
                     <p className="subtitle">Check out these awesome polls</p>
                 </div>
             </section>
-            <section>{body}</section>
-        </div>
+            <div className="container">
+                <section>{body}</section>
+            </div>
+        </>
     );
 };
 
