@@ -6,6 +6,7 @@ import { PollsService } from "@types";
 
 import LoadingComponent from "@components/LoadingComponent";
 import PollVoteComponent from "@components/PollVoteComponent";
+import ErrorComponent from "./ErrorComponent";
 
 interface PollPageProps {
     pollsService: PollsService;
@@ -16,14 +17,19 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
     const [poll, setPoll] = useState<Poll | null>(null);
     const [options, setOptions] = useState<Option[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchPolls = async () => {
-            const pollData = await pollsService.readPoll(pollId!);
-            setPoll(pollData);
+            try {
+                const pollData = await pollsService.readPoll(pollId!);
+                setPoll(pollData);
 
-            const optionsData = await pollsService.listOptions(pollId!);
-            setOptions(optionsData);
+                const optionsData = await pollsService.listOptions(pollId!);
+                setOptions(optionsData);
+            } catch (error) {
+                setError(error as any);
+            }
 
             setIsLoading(false);
         };
@@ -34,6 +40,8 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
     let body: ReactNode;
     if (isLoading) {
         body = <LoadingComponent />;
+    } else if (error) {
+        body = <ErrorComponent error={error} />;
     } else if (poll) {
         body = <PollVoteComponent poll={poll} options={options} />;
     }

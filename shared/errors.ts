@@ -104,6 +104,6 @@ export class AppError extends Error implements AppErrorData {
     }
 }
 
-export const isAppError = (error: unknown): error is AppError => {
-    return error instanceof AppError;
+export const isAppError = (obj: any): obj is AppError => {
+    return typeof obj === "object" && obj !== null && obj.name === "AppError";
 };
