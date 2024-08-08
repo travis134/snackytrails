@@ -85,17 +85,15 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
     }
 
     return (
-        <>
+        <div className="container">
             <section className="hero">
                 <div className="hero-body">
                     <p className="title">See what we've been up to</p>
                     <p className="subtitle">Check out these incredible blogs</p>
                 </div>
             </section>
-            <div className="container">
-                <section>{body}</section>
-            </div>
-        </>
+            <section>{body}</section>
+        </div>
     );
 };
 

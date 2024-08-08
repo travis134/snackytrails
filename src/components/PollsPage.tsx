@@ -85,17 +85,15 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
     }
 
     return (
-        <>
+        <div className="container">
             <section className="hero">
                 <div className="hero-body">
                     <p className="title">We want to hear from you!</p>
                     <p className="subtitle">Check out these awesome polls</p>
                 </div>
             </section>
-            <div className="container">
-                <section>{body}</section>
-            </div>
-        </>
+            <section>{body}</section>
+        </div>
     );
 };
 
