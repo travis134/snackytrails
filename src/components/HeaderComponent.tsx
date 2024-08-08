@@ -54,7 +54,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                         <a
                             className={`navbar-item ${
                                 matchPath(Routes.BlogRoute.path, pathname) &&
-                                "is-selected"
+                                "is-selected has-text-primary-dark"
                             }`}
                             href={Routes.BlogRoute.href()}
                         >
@@ -67,7 +67,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                                         Routes.PollRoute.path,
                                         pathname
                                     )) &&
-                                "is-selected"
+                                "is-selected has-text-primary-dark"
                             }`}
                             href={Routes.PollsRoute.href()}
                         >
@@ -76,7 +76,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                         <a
                             className={`navbar-item ${
                                 matchPath(Routes.AboutRoute.path, pathname) &&
-                                "is-selected"
+                                "is-selected has-text-primary-dark"
                             }`}
                             href={Routes.AboutRoute.href()}
                         >
