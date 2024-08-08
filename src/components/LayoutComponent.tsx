@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import { Outlet } from "react-router-dom";
+import ErrorBoundary from "./ErrorBoundary";
 
 interface LayoutComponentProps {
     header: ReactNode;
@@ -13,7 +14,9 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
     return (
         <>
             {header}
-            <Outlet />
+            <ErrorBoundary>
+                <Outlet />
+            </ErrorBoundary>
             {footer}
         </>
     );

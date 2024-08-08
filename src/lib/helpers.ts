@@ -4,14 +4,7 @@ export const appFetch = async (
     input: RequestInfo | URL,
     init?: RequestInit | undefined
 ): Promise<Response> => {
-    let response: Response;
-    try {
-        response = await fetch(input, init);
-    } catch (error) {
-        console.error(error);
-        throw new AppError("An unknown error occurred.", ErrorCode.Unknown);
-    }
-
+    const response = await fetch(input, init);
     if (!response.ok) {
         const data = await response.json();
         if (isAppErrorData(data)) {

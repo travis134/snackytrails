@@ -6,7 +6,7 @@ import { PollsService } from "@types";
 
 import LoadingComponent from "@components/LoadingComponent";
 import PollVoteComponent from "@components/PollVoteComponent";
-import ErrorComponent from "./ErrorComponent";
+import ErrorComponent from "@components/ErrorComponent";
 
 interface PollPageProps {
     pollsService: PollsService;
@@ -17,7 +17,7 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
     const [poll, setPoll] = useState<Poll | null>(null);
     const [options, setOptions] = useState<Option[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<Error>();
 
     useEffect(() => {
         const fetchPolls = async () => {

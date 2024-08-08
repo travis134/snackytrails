@@ -1,6 +1,6 @@
 import React from "react";
 
-const EmptyState: React.FC = () => (
+const EmptyComponent: React.FC = () => (
     <div className="section">
         <div className="container has-text-centered">
             <div className="notification">
@@ -11,4 +11,4 @@ const EmptyState: React.FC = () => (
     </div>
 );
 
-export default EmptyState;
+export default EmptyComponent;

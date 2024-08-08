@@ -4,7 +4,8 @@ import { Blog } from "@shared/types";
 import { BlogsService } from "@types";
 
 import LoadingComponent from "@components/LoadingComponent";
-import EmptyState from "@components/EmptyComponent";
+import EmptyComponent from "@components/EmptyComponent";
+import ErrorComponent from "@components/ErrorComponent";
 import BlogComponent from "@components/BlogComponent";
 
 const limit = 10;
@@ -16,16 +17,22 @@ interface BlogPageProps {
 const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
     const [blogs, setBlogs] = useState<Blog[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<Error>();
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [offset, setOffset] = useState(limit);
     const [more, setMore] = useState(false);
 
     useEffect(() => {
         const fetchBlogs = async () => {
-            const { blogs: blogsData, more: hasMore } =
-                await blogsService.listBlogs(limit, 0);
-            setBlogs(blogsData);
-            setMore(hasMore);
+            try {
+                const { blogs: blogsData, more: hasMore } =
+                    await blogsService.listBlogs(limit, 0);
+                setBlogs(blogsData);
+                setMore(hasMore);
+            } catch (error) {
+                setError(error as any);
+            }
+
             setIsLoading(false);
         };
 
@@ -34,13 +41,18 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
 
     const fetchMoreBlogs = useCallback(async () => {
         setIsLoadingMore(true);
-        const { blogs: blogsData, more } = await blogsService.listBlogs(
-            limit,
-            offset
-        );
-        setBlogs((prevBlogs) => [...prevBlogs, ...blogsData]);
-        setMore(more);
-        setOffset((prevOffset) => prevOffset + limit);
+        try {
+            const { blogs: blogsData, more } = await blogsService.listBlogs(
+                limit,
+                offset
+            );
+            setBlogs((prevBlogs) => [...prevBlogs, ...blogsData]);
+            setMore(more);
+            setOffset((prevOffset) => prevOffset + limit);
+        } catch (error) {
+            setError(error as any);
+        }
+
         setIsLoadingMore(false);
     }, [blogsService, offset]);
 
@@ -48,7 +60,9 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
     if (isLoading) {
         body = <LoadingComponent />;
     } else if (blogs.length === 0) {
-        body = <EmptyState />;
+        body = <EmptyComponent />;
+    } else if (error) {
+        body = <ErrorComponent error={error} />;
     } else {
         body = (
             <>

@@ -4,7 +4,8 @@ import { Poll } from "@shared/types";
 import { PollsService } from "@types";
 
 import LoadingComponent from "@components/LoadingComponent";
-import EmptyState from "@components/EmptyComponent";
+import EmptyComponent from "@components/EmptyComponent";
+import ErrorComponent from "@components/ErrorComponent";
 import PollComponent from "@components/PollComponent";
 
 const limit = 10;
@@ -16,16 +17,22 @@ interface PollsPageProps {
 const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
     const [polls, setPolls] = useState<Poll[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<Error>();
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [offset, setOffset] = useState(limit);
     const [more, setMore] = useState(false);
 
     useEffect(() => {
         const fetchPolls = async () => {
-            const { polls: pollsData, more: hasMore } =
-                await pollsService.listPolls(limit, 0);
-            setPolls(pollsData);
-            setMore(hasMore);
+            try {
+                const { polls: pollsData, more: hasMore } =
+                    await pollsService.listPolls(limit, 0);
+                setPolls(pollsData);
+                setMore(hasMore);
+            } catch (error) {
+                setError(error as any);
+            }
+
             setIsLoading(false);
         };
 
@@ -34,13 +41,18 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
 
     const fetchMorePolls = useCallback(async () => {
         setIsLoadingMore(true);
-        const { polls: pollsData, more } = await pollsService.listPolls(
-            limit,
-            offset
-        );
-        setPolls((prevPolls) => [...prevPolls, ...pollsData]);
-        setMore(more);
-        setOffset((prevOffset) => prevOffset + limit);
+        try {
+            const { polls: pollsData, more } = await pollsService.listPolls(
+                limit,
+                offset
+            );
+            setPolls((prevPolls) => [...prevPolls, ...pollsData]);
+            setMore(more);
+            setOffset((prevOffset) => prevOffset + limit);
+        } catch (error) {
+            setError(error as any);
+        }
+
         setIsLoadingMore(false);
     }, [pollsService, offset]);
 
@@ -48,7 +60,9 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
     if (isLoading) {
         body = <LoadingComponent />;
     } else if (polls.length === 0) {
-        body = <EmptyState />;
+        body = <EmptyComponent />;
+    } else if (error) {
+        body = <ErrorComponent error={error} />;
     } else {
         body = (
             <>
