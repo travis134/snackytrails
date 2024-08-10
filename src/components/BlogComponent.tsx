@@ -49,15 +49,18 @@ const BlogComponent: React.FC<BlogComponentProps> = ({ blog }) => {
     }, [blog.content]);
 
     return (
-        <article className="message">
-            <div className="message-body">
+        <article className="card mb-5">
+            <div className="card-content">
                 <div
                     className="content"
                     dangerouslySetInnerHTML={{ __html: content }}
                 />
-                <p>
-                    - {blog.author} @{" "}
-                    <time dateTime={mungedTime}>{formattedDate}</time>
+                <p className="has-text-right has-text-grey">
+                    - {blog.author}{" "}
+                    <span className="has-text-weight-light">@ </span>
+                    <time dateTime={mungedTime} className="is-italic">
+                        {formattedDate}
+                    </time>
                 </p>
             </div>
         </article>
