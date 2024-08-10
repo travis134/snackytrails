@@ -42,6 +42,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                         <span aria-hidden="true"></span>
                         <span aria-hidden="true"></span>
                         <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
                     </a>
                 </div>
 

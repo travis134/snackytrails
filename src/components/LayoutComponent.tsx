@@ -15,7 +15,9 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
         <>
             {header}
             <ErrorBoundary>
-                <Outlet />
+                <div className="m-5">
+                    <Outlet />
+                </div>
             </ErrorBoundary>
             {footer}
         </>
