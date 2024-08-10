@@ -16,7 +16,7 @@ interface BlogPageProps {
 
 const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
     const [blogs, setBlogs] = useState<Blog[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error>();
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [offset, setOffset] = useState(limit);
