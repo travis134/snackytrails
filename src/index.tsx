@@ -23,6 +23,7 @@ import AboutPage from "@components/AboutPage";
 import BlogPage from "@components/BlogPage";
 import PollsPage from "@components/PollsPage";
 import PollPage from "@components/PollPage";
+import PollResultsPage from "@components/PollResultsPage";
 
 const apiHostName =
     process.env.REACT_APP_API_BASE_URL ?? "http://localhost:8788";
@@ -56,6 +57,10 @@ const router = createBrowserRouter(
             <Route
                 path={Routes.PollRoute.path}
                 element={<PollPage pollsService={pollsService} />}
+            />
+            <Route
+                path={Routes.PollResultsRoute.path}
+                element={<PollResultsPage pollsService={pollsService} />}
             />
         </Route>
     )

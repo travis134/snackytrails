@@ -33,12 +33,22 @@ const PollRoute: RouteConfig = {
     },
 };
 
+const PollResultsRoute: RouteConfig = {
+    path: "polls/:id/results",
+    href: (params?: Record<string, string | number>) => {
+        if (!params || !params.id) {
+            throw new Error("PollRoute requires an id parameter");
+        }
+        return `/polls/${params.id}/results`;
+    },
+};
 const Routes: Record<string, RouteConfig> = {
     HomeRoute,
     AboutRoute,
     BlogRoute,
     PollsRoute,
     PollRoute,
+    PollResultsRoute,
 };
 
 export default Routes;
