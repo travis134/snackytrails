@@ -19,17 +19,16 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
     return (
         <header>
             <nav
-                className="navbar has-background-primary-light"
+                className="navbar is-fixed-top is-white"
                 role="navigation"
                 aria-label="main navigation"
             >
                 <div className="navbar-brand">
                     <a className="navbar-item" href={Routes.HomeRoute.href()}>
-                        <img
-                            src={icon}
-                            alt="Snacky Trails"
-                            style={{ maxHeight: "50px" }}
-                        />
+                        <img src={icon} alt="Snacky Trails" />
+                        <p className="has-text-weight-bold has-text-primary">
+                            Snacky Trails
+                        </p>
                     </a>
                     <a
                         role="button"
@@ -54,7 +53,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                         <a
                             className={`navbar-item ${
                                 matchPath(Routes.BlogRoute.path, pathname) &&
-                                "is-selected has-text-light"
+                                "is-selected"
                             }`}
                             href={Routes.BlogRoute.href()}
                         >
@@ -67,7 +66,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                                         Routes.PollRoute.path,
                                         pathname
                                     )) &&
-                                "is-selected has-text-light"
+                                "is-selected"
                             }`}
                             href={Routes.PollsRoute.href()}
                         >
@@ -76,7 +75,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                         <a
                             className={`navbar-item ${
                                 matchPath(Routes.AboutRoute.path, pathname) &&
-                                "is-selected has-text-light"
+                                "is-selected"
                             }`}
                             href={Routes.AboutRoute.href()}
                         >
@@ -86,14 +85,15 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
 
                     <div className="navbar-end">
                         <div className="navbar-item">
-                            <div className="buttons">
-                                <a
-                                    className="button is-primary has-text-light"
-                                    href="mailto:info@snackytrails.us"
-                                >
-                                    Contact us
-                                </a>
-                            </div>
+                            <a
+                                className="button is-primary has-text-white"
+                                href="mailto:info@snackytrails.us"
+                            >
+                                <span className="icon">
+                                    <i className="fas fa-envelope"></i>
+                                </span>
+                                <span>Contact Us</span>
+                            </a>
                         </div>
                     </div>
                 </div>

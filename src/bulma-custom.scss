@@ -4,7 +4,7 @@
 
 $primary: #e07b39;
 $text: #1a1a1a;
-$link: $primary;
+$link: #e4640f;
 $info: #004680;
 $success: #8fbc8f;
 $warning: #ffc857;
@@ -13,12 +13,19 @@ $danger: #d32f2f;
 @import "bulma/versions/bulma-no-dark-mode.scss";
 
 html {
-    background-color: $white;
     background-image: radial-gradient(
-        circle,
-        change-color($primary, $lightness: 85%),
-        1px,
-        transparent 1px
-    );
-    background-size: 18px 18px;
+            circle,
+            change-color($primary, $lightness: 90%),
+            1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            to bottom,
+            $white,
+            change-color($primary, $lightness: 60%)
+        );
+    background-color: change-color($primary, $lightness: 60%);
+    background-size: 18px 18px, 100% 100vh;
+    background-blend-mode: multiply, normal;
+    background-repeat: repeat, no-repeat;
 }

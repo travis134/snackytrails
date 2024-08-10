@@ -47,7 +47,7 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
     }
 
     return (
-        <div className="container">
+        <>
             {poll && (
                 <section className="hero">
                     <div className="hero-body">
@@ -57,7 +57,7 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
                 </section>
             )}
             <section>{body}</section>
-        </div>
+        </>
     );
 };
 

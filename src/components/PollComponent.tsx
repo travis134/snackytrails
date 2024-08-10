@@ -9,7 +9,7 @@ interface PollComponentProps {
 
 const PollComponent: React.FC<PollComponentProps> = ({ poll }) => {
     return (
-        <div className="card">
+        <div className="card m-5">
             <header className="card-header">
                 <p className="card-header-title">{poll.name}</p>
             </header>

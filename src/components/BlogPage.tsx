@@ -16,7 +16,7 @@ interface BlogPageProps {
 
 const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
     const [blogs, setBlogs] = useState<Blog[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<Error>();
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [offset, setOffset] = useState(limit);
@@ -25,10 +25,12 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
-                const { blogs: blogsData, more: hasMore } =
-                    await blogsService.listBlogs(limit, 0);
+                const { blogs: blogsData, more } = await blogsService.listBlogs(
+                    limit,
+                    0
+                );
                 setBlogs(blogsData);
-                setMore(hasMore);
+                setMore(more);
             } catch (error) {
                 setError(error as any);
             }
@@ -85,7 +87,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
     }
 
     return (
-        <div className="container">
+        <>
             <section className="hero">
                 <div className="hero-body">
                     <p className="title">See what we've been up to</p>
@@ -93,7 +95,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
                 </div>
             </section>
             <section>{body}</section>
-        </div>
+        </>
     );
 };
 
