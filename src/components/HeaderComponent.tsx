@@ -19,7 +19,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
     return (
         <header>
             <nav
-                className="navbar"
+                className="navbar has-background-primary-light"
                 role="navigation"
                 aria-label="main navigation"
             >
@@ -54,7 +54,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                         <a
                             className={`navbar-item ${
                                 matchPath(Routes.BlogRoute.path, pathname) &&
-                                "is-selected"
+                                "is-selected has-text-light"
                             }`}
                             href={Routes.BlogRoute.href()}
                         >
@@ -67,7 +67,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                                         Routes.PollRoute.path,
                                         pathname
                                     )) &&
-                                "is-selected"
+                                "is-selected has-text-light"
                             }`}
                             href={Routes.PollsRoute.href()}
                         >
@@ -76,7 +76,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                         <a
                             className={`navbar-item ${
                                 matchPath(Routes.AboutRoute.path, pathname) &&
-                                "is-selected"
+                                "is-selected has-text-light"
                             }`}
                             href={Routes.AboutRoute.href()}
                         >
@@ -88,7 +88,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                         <div className="navbar-item">
                             <div className="buttons">
                                 <a
-                                    className="button is-primary"
+                                    className="button is-primary has-text-light"
                                     href="mailto:info@snackytrails.us"
                                 >
                                     Contact us

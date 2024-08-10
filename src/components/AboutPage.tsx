@@ -60,28 +60,28 @@ const AboutPage: React.FC = () => {
             <section className="section">
                 <div className="content">
                     <h2 className="title is-3">Our Values</h2>
-                    <div className="box">
+                    <div className="box mb-5">
                         <h3 className="title is-4">Transparency</h3>
                         <p>
-                            Open and honest discussions create healthy
+                            Open and honest discussions create a healthy
                             community.
                         </p>
                     </div>
-                    <div className="box">
+                    <div className="box mb-5">
                         <h3 className="title is-4">Integrity</h3>
                         <p>
                             Keeping it real and doing the right thing, no matter
                             what.
                         </p>
                     </div>
-                    <div className="box">
+                    <div className="box mb-5">
                         <h3 className="title is-4">Inclusivity</h3>
                         <p>
                             Celebrating diversity and making sure everyone feels
                             at home.
                         </p>
                     </div>
-                    <div className="box">
+                    <div className="box mb-5">
                         <h3 className="title is-4">Sustainability</h3>
                         <p>
                             Committed to protecting our planet and promoting

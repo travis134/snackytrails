@@ -1,9 +1,24 @@
-@use "bulma/versions/bulma-no-dark-mode.scss" with (
-    $text: #1a1a1a,
-    $link: #e07b39,
-    $primary: #e07b39,
-    $info: #008080,
-    $success: #8fbc8f,
-    $warning: #ffc857,
-    $danger: #d32f2f
-);
+@charset "utf-8";
+@import "bulma/sass/utilities/initial-variables";
+@import "bulma/sass/utilities/functions";
+
+$primary: #e07b39;
+$text: #1a1a1a;
+$link: $primary;
+$info: #004680;
+$success: #8fbc8f;
+$warning: #ffc857;
+$danger: #d32f2f;
+
+@import "bulma/versions/bulma-no-dark-mode.scss";
+
+html {
+    background-color: $white;
+    background-image: radial-gradient(
+        circle,
+        change-color($primary, $lightness: 85%),
+        1px,
+        transparent 1px
+    );
+    background-size: 18px 18px;
+}
