@@ -42,7 +42,6 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                         <span aria-hidden="true"></span>
                         <span aria-hidden="true"></span>
                         <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
                     </a>
                 </div>
 
@@ -54,7 +53,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                         <a
                             className={`navbar-item ${
                                 matchPath(Routes.BlogRoute.path, pathname) &&
-                                "is-selected has-text-primary-dark"
+                                "is-selected"
                             }`}
                             href={Routes.BlogRoute.href()}
                         >
@@ -67,7 +66,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                                         Routes.PollRoute.path,
                                         pathname
                                     )) &&
-                                "is-selected has-text-primary-dark"
+                                "is-selected"
                             }`}
                             href={Routes.PollsRoute.href()}
                         >
@@ -76,7 +75,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                         <a
                             className={`navbar-item ${
                                 matchPath(Routes.AboutRoute.path, pathname) &&
-                                "is-selected has-text-primary-dark"
+                                "is-selected"
                             }`}
                             href={Routes.AboutRoute.href()}
                         >
