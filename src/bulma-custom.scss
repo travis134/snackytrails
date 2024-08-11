@@ -21,7 +21,7 @@ html {
         ),
         linear-gradient(
             to bottom,
-            rgba(255, 255, 255, 1) max(2.5rem, 5vh),
+            rgba(255, 255, 255, 1) max(3rem, 5vh),
             rgba(255, 255, 255, 0.9) max(5rem, 10vh),
             transparent max(20rem, 40vh)
         ),
@@ -32,7 +32,7 @@ html {
         ),
         url("https://images.snackytrails.us/background.jpg");
     background-color: change-color($primary, $lightness: 60%);
-    background-size: 18px 18px, 100% 100%, 100% 100%, cover;
+    background-size: 18px 18px, 100% 100%, 100% 100%, 100% auto;
     background-blend-mode: multiply, normal, normal, normal;
     background-repeat: repeat, no-repeat, no-repeat, no-repeat;
     background-attachment: fixed, fixed, fixed, fixed;
