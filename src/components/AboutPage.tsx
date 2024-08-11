@@ -13,7 +13,7 @@ const AboutPage: React.FC = () => {
                 </div>
             </section>
             <section className="section">
-                <div className="box">
+                <div className="box mb-5">
                     <div className="content">
                         <h2 className="title is-3">Our Story</h2>
                         <p>
@@ -57,9 +57,7 @@ const AboutPage: React.FC = () => {
                         </p>
                     </div>
                 </div>
-            </section>
 
-            <section className="section">
                 <div className="box">
                     <div className="content">
                         <h2 className="title is-3">Our Values</h2>

@@ -21,11 +21,13 @@ html {
         ),
         linear-gradient(
             to bottom,
-            $white,
-            change-color($primary, $lightness: 60%)
-        );
+            rgba(255, 255, 255, 1) 10vh,
+            rgba(255, 255, 255, 0.9) 20vh,
+            rgba(255, 255, 255, 0) 40vh
+        ),
+        url("https://images.snackytrails.us/background.png");
     background-color: change-color($primary, $lightness: 60%);
-    background-size: 18px 18px, 100% 100vh;
-    background-blend-mode: multiply, normal;
-    background-repeat: repeat, no-repeat;
+    background-size: 18px 18px, 100% 100vh, 100% auto;
+    background-blend-mode: multiply, normal, normal;
+    background-repeat: repeat, no-repeat, no-repeat;
 }
