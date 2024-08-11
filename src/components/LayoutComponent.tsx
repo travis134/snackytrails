@@ -13,6 +13,7 @@ const LayoutComponent: React.FC<LayoutComponentProps> = ({
 }) => {
     return (
         <>
+            <div id="background" />
             {header}
             <ErrorBoundary>
                 <div className="container p-5">

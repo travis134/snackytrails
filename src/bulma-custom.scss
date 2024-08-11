@@ -9,32 +9,34 @@ $info: #004680;
 $success: #8fbc8f;
 $warning: #ffc857;
 $danger: #d32f2f;
+$background: change-color($primary, $lightness: 60%);
 
 @import "bulma/versions/bulma-no-dark-mode.scss";
 
 html {
+    background-color: $background;
+}
+
+#background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: min(100vh, calc(100vw * (3220 / 1812)));
+    width: 100%;
     background-image: radial-gradient(
             circle,
-            change-color($primary, $lightness: 90%),
-            1px,
+            rgba($background, 0.5) 1px,
             transparent 1px
         ),
+        linear-gradient(to bottom, $white 3.5rem, transparent min(30rem, 80%)),
         linear-gradient(
             to bottom,
-            rgba(255, 255, 255, 1) max(3rem, 5vh),
-            rgba(255, 255, 255, 0.9) max(5rem, 10vh),
-            transparent max(20rem, 40vh)
-        ),
-        linear-gradient(
-            to bottom,
-            transparent max(20rem, 40vh),
-            change-color($primary, $lightness: 60%) max(50rem, 100vh)
+            transparent min(calc(100vw * (3220 / 1812) * 0.5), 50%),
+            $background min(calc(100vw * (3220 / 1812)), 100%)
         ),
         url("https://images.snackytrails.us/background.jpg");
-    background-color: change-color($primary, $lightness: 60%);
-    background-size: 18px 18px, 100% 100%, 100% 100%, 100% auto;
-    background-blend-mode: multiply, normal, normal, normal;
+    background-size: 18px 18px, auto, auto, 100% auto;
+    background-blend-mode: darken, normal, normal, normal;
     background-repeat: repeat, no-repeat, no-repeat, no-repeat;
-    background-attachment: fixed, fixed, fixed, fixed;
     background-position: 0%, 0%, 0%, center 0%;
 }
