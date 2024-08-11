@@ -32,9 +32,9 @@ html {
         ),
         url("https://images.snackytrails.us/background.jpg");
     background-color: change-color($primary, $lightness: 60%);
-    background-size: 18px 18px, 100% 100%, 100% 100%, auto;
+    background-size: 18px 18px, 100% 100%, 100% 100%, cover;
     background-blend-mode: multiply, normal, normal, normal;
     background-repeat: repeat, no-repeat, no-repeat, no-repeat;
     background-attachment: fixed, fixed, fixed, fixed;
-    background-position: 0%, 0%, 0%, center 0%;
+    background-position: 0%, 0%, 0%, center;
 }
