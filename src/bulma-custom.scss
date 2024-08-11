@@ -21,14 +21,14 @@ html {
         ),
         linear-gradient(
             to bottom,
-            rgba(255, 255, 255, 1) 4rem,
-            rgba(255, 255, 255, 0.9) 10vh,
-            transparent 40vh
+            rgba(255, 255, 255, 1) max(4rem, 5vh),
+            rgba(255, 255, 255, 0.9) max(8rem, 10vh),
+            transparent max(16rem, 40vh)
         ),
         linear-gradient(
             to bottom,
-            transparent 40vh,
-            change-color($primary, $lightness: 60%) 100vh
+            transparent max(16rem, 40vh),
+            change-color($primary, $lightness: 60%) max(40rem, 100vh)
         ),
         url("https://images.snackytrails.us/background.jpg");
     background-color: change-color($primary, $lightness: 60%);
