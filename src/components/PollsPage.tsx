@@ -66,20 +66,24 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
     } else {
         body = (
             <>
-                {polls.map((poll) => (
-                    <PollComponent key={poll.id} poll={poll} />
-                ))}
-                {more && (
-                    <button
-                        className={`button is-primary is-fullwidth ${
-                            isLoading && "is-loading"
-                        }`}
-                        onClick={() => fetchMorePolls()}
-                        disabled={isLoadingMore}
-                    >
-                        See more
-                    </button>
-                )}
+                <div className="columns">
+                    {polls.map((poll) => (
+                        <div className="column">
+                            <PollComponent key={poll.id} poll={poll} />
+                        </div>
+                    ))}
+                    {more && (
+                        <button
+                            className={`button is-primary is-fullwidth ${
+                                isLoading && "is-loading"
+                            }`}
+                            onClick={() => fetchMorePolls()}
+                            disabled={isLoadingMore}
+                        >
+                            See more
+                        </button>
+                    )}
+                </div>
             </>
         );
     }
@@ -92,7 +96,7 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
                     <p className="subtitle">Check out these awesome polls</p>
                 </div>
             </section>
-            <section>{body}</section>
+            <section className="section">{body}</section>
         </>
     );
 };

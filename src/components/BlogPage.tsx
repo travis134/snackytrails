@@ -94,7 +94,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
                     <p className="subtitle">Check out these incredible blogs</p>
                 </div>
             </section>
-            <section>{body}</section>
+            <section className="section">{body}</section>
         </>
     );
 };

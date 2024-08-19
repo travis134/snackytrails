@@ -9,22 +9,21 @@ interface PollComponentProps {
 
 const PollComponent: React.FC<PollComponentProps> = ({ poll }) => {
     return (
-        <div className="card m-5">
-            <header className="card-header">
-                <p className="card-header-title">{poll.name}</p>
-            </header>
-            <div className="card-content">
-                <div className="content">{poll.description}</div>
+        <a href={Routes.PollRoute.href({ id: poll.id })}>
+            <div className="card">
+                <header className="card-header">
+                    <p className="card-header-title">{poll.name}</p>
+                </header>
+                <div className="card-content">
+                    <div className="content">{poll.description}</div>
+                </div>
+                <footer className="card-footer">
+                    <p className="card-footer-item has-text-link">
+                        Make your voice heard!
+                    </p>
+                </footer>
             </div>
-            <footer className="card-footer">
-                <a
-                    href={Routes.PollRoute.href({ id: poll.id })}
-                    className="card-footer-item"
-                >
-                    Make your voice heard!
-                </a>
-            </footer>
-        </div>
+        </a>
     );
 };
 

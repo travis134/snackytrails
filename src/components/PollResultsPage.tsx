@@ -66,7 +66,7 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
                     </div>
                 </section>
             )}
-            <section>{body}</section>
+            <section className="section">{body}</section>
         </>
     );
 };

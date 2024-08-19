@@ -9,9 +9,21 @@ $info: #004680;
 $success: #8fbc8f;
 $warning: #ffc857;
 $danger: #d32f2f;
-$background: change-color($primary, $lightness: 60%);
 
 @import "bulma/versions/bulma-no-dark-mode.scss";
+
+$background: change-color($primary, $lightness: 60%);
+$background-aspect: calc(1812 / 3220);
+$background-top: $navbar-height;
+$background-fade-top-end: 80%;
+$background-fade-bottom-start: min(
+    calc(100vw * 1 / $background-aspect * 0.2),
+    20%
+);
+$background-fade-bottom-end: min(calc(100vw * 1 / $background-aspect), 100%);
+$background-height: calc(
+    min(100vh, calc(100vw * 1 / $background-aspect)) - $background-top
+);
 
 html {
     background-color: $background;
@@ -19,20 +31,21 @@ html {
 
 #background {
     position: absolute;
-    top: 0;
     left: 0;
-    height: min(100vh, calc(100vw * (3220 / 1812)));
+    top: $background-top;
     width: 100%;
+    height: $background-height;
+    z-index: -1;
     background-image: radial-gradient(
             circle,
             rgba($background, 0.5) 1px,
             transparent 1px
         ),
-        linear-gradient(to bottom, $white 3.5rem, transparent min(30rem, 80%)),
+        linear-gradient(to bottom, $white, transparent $background-fade-top-end),
         linear-gradient(
             to bottom,
-            transparent min(calc(100vw * (3220 / 1812) * 0.5), 50%),
-            $background min(calc(100vw * (3220 / 1812)), 100%)
+            transparent $background-fade-bottom-start,
+            $background $background-fade-bottom-end
         ),
         url("https://images.snackytrails.us/background.jpg");
     background-size: 18px 18px, auto, auto, 100% auto;

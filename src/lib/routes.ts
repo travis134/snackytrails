@@ -1,6 +1,6 @@
 interface RouteConfig {
     path: string;
-    href: (params?: Record<string, string | number>) => string;
+    href: (params?: Record<string, any>) => string;
 }
 
 const HomeRoute: RouteConfig = {
@@ -37,9 +37,19 @@ const PollResultsRoute: RouteConfig = {
     path: "polls/:id/results",
     href: (params?: Record<string, string | number>) => {
         if (!params || !params.id) {
-            throw new Error("PollRoute requires an id parameter");
+            throw new Error("PollResultsRoute requires an id parameter");
         }
-        return `/polls/${params.id}/results`;
+        let options: URLSearchParams | null = null;
+        const { optionIds } = params;
+        if (Array.isArray(optionIds)) {
+            options = new URLSearchParams();
+            for (const optionId of optionIds) {
+                options.append("option", optionId);
+            }
+        }
+        return `/polls/${params.id}/results${
+            options && "?" + options.toString()
+        }`;
     },
 };
 const Routes: Record<string, RouteConfig> = {

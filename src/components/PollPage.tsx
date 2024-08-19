@@ -5,8 +5,8 @@ import { Poll, Option } from "@shared/types";
 import { PollsService } from "@types";
 
 import LoadingComponent from "@components/LoadingComponent";
-import PollVoteComponent from "@components/PollVoteComponent";
 import ErrorComponent from "@components/ErrorComponent";
+import PollOptionComponent from "./PollOptionComponent";
 
 interface PollPageProps {
     pollsService: PollsService;
@@ -43,7 +43,21 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
     } else if (error) {
         body = <ErrorComponent error={error} />;
     } else if (poll) {
-        body = <PollVoteComponent poll={poll} options={options} />;
+        body = (
+            <>
+                <div className="columns">
+                    {options.map((option) => (
+                        <div className="column">
+                            <PollOptionComponent
+                                key={option.id}
+                                poll={poll}
+                                option={option}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </>
+        );
     }
 
     return (
@@ -56,7 +70,7 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
                     </div>
                 </section>
             )}
-            <section>{body}</section>
+            <section className="section">{body}</section>
         </>
     );
 };
