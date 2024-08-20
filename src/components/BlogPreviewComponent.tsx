@@ -17,15 +17,16 @@ const BlogPreviewComponent: React.FC<BlogPreviewComponentProps> = ({
     const subtitle = `- ${blog.author} @ ${formattedDate}`;
 
     return (
-        <article className="box mb-5">
-            <a href={Routes.BlogRoute.href({ id: blog.id })}>
+        <a href={Routes.BlogRoute.href({ id: blog.id })}>
+            <article className="box mb-5">
                 <h4 className="subtitle has-text-link">{blog.id}</h4>
-            </a>
-            <div className="preview mt-5 ">
-                <BlogContentComponent blog={blog} />
-            </div>
-            <p>{subtitle}</p>
-        </article>
+
+                <div className="preview mt-5 ">
+                    <BlogContentComponent blog={blog} />
+                </div>
+                <p>{subtitle}</p>
+            </article>
+        </a>
     );
 };
 
