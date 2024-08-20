@@ -92,10 +92,14 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
             <div className="modal-background"></div>
             <div className="modal-card">
                 <header className="modal-card-head">
-                    <p className="modal-card-title">Whoa there!</p>
+                    <p className="modal-card-title">Whoa there, partner!</p>
                 </header>
                 <section className="modal-card-body">
-                    <p>We already recorded your vote on this poll.</p>
+                    <p>
+                        You've already wrangled your vote in this poll. No
+                        double-dipping in these parts-- just sit tight and enjoy
+                        the ride!
+                    </p>
                 </section>
                 <footer className="modal-card-foot">
                     <div className="buttons ">
