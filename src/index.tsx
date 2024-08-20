@@ -20,6 +20,7 @@ import HeaderComponent from "@components/HeaderComponent";
 import FooterComponent from "@components/FooterComponent";
 import SplashPage from "@components/SplashPage";
 import AboutPage from "@components/AboutPage";
+import BlogsPage from "@components/BlogsPage";
 import BlogPage from "@components/BlogPage";
 import PollsPage from "@components/PollsPage";
 import PollPage from "@components/PollPage";
@@ -46,6 +47,10 @@ const router = createBrowserRouter(
                 element={<SplashPage logo={logo} />}
             />
             <Route path={Routes.AboutRoute.path} element={<AboutPage />} />
+            <Route
+                path={Routes.BlogsRoute.path}
+                element={<BlogsPage blogsService={blogsService} />}
+            />
             <Route
                 path={Routes.BlogRoute.path}
                 element={<BlogPage blogsService={blogsService} />}

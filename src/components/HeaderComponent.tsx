@@ -52,10 +52,10 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                     <div className="navbar-start">
                         <a
                             className={`navbar-item ${
-                                matchPath(Routes.BlogRoute.path, pathname) &&
+                                matchPath(Routes.BlogsRoute.path, pathname) &&
                                 "is-selected"
                             }`}
-                            href={Routes.BlogRoute.href()}
+                            href={Routes.BlogsRoute.href()}
                         >
                             Blog
                         </a>

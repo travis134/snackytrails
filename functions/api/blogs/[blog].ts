@@ -6,7 +6,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const { blog: blogParam } = context.params;
     const blogId = Array.isArray(blogParam) ? blogParam[0] : blogParam;
 
-    const paginatedBlogs = await blogsService.readBlog(blogId);
+    const blog = await blogsService.readBlog(blogId);
 
-    return Response.json(paginatedBlogs);
+    return Response.json({ blog });
 };

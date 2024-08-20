@@ -13,9 +13,19 @@ const AboutRoute: RouteConfig = {
     href: () => "/about",
 };
 
-const BlogRoute: RouteConfig = {
+const BlogsRoute: RouteConfig = {
     path: "blog",
     href: () => "/blog",
+};
+
+const BlogRoute: RouteConfig = {
+    path: "blog/:id",
+    href: (params?: Record<string, string | number>) => {
+        if (!params || !params.id) {
+            throw new Error("BlogRoute requires an id parameter");
+        }
+        return `/blog/${params.id}`;
+    },
 };
 
 const PollsRoute: RouteConfig = {
@@ -45,6 +55,7 @@ const PollResultsRoute: RouteConfig = {
 const Routes: Record<string, RouteConfig> = {
     HomeRoute,
     AboutRoute,
+    BlogsRoute,
     BlogRoute,
     PollsRoute,
     PollRoute,

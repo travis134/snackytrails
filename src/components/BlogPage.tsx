@@ -1,36 +1,29 @@
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 import { Blog } from "@shared/types";
+import Routes from "@lib/routes";
 import { BlogsService } from "@types";
 
 import LoadingComponent from "@components/LoadingComponent";
-import EmptyComponent from "@components/EmptyComponent";
 import ErrorComponent from "@components/ErrorComponent";
 import BlogComponent from "@components/BlogComponent";
-
-const limit = 10;
 
 interface BlogPageProps {
     blogsService: BlogsService;
 }
 
 const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
-    const [blogs, setBlogs] = useState<Blog[]>([]);
+    const { id: blogId } = useParams<{ id: string }>();
+    const [blog, setBlog] = useState<Blog | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error>();
-    const [isLoadingMore, setIsLoadingMore] = useState(false);
-    const [offset, setOffset] = useState(limit);
-    const [more, setMore] = useState(false);
 
     useEffect(() => {
-        const fetchBlogs = async () => {
+        const fetchBlog = async () => {
             try {
-                const { blogs: blogsData, more } = await blogsService.listBlogs(
-                    limit,
-                    0
-                );
-                setBlogs(blogsData);
-                setMore(more);
+                const blogData = await blogsService.readBlog(blogId!);
+                setBlog(blogData);
             } catch (error) {
                 setError(error as any);
             }
@@ -38,50 +31,24 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
             setIsLoading(false);
         };
 
-        fetchBlogs();
-    }, [blogsService]);
-
-    const fetchMoreBlogs = useCallback(async () => {
-        setIsLoadingMore(true);
-        try {
-            const { blogs: blogsData, more } = await blogsService.listBlogs(
-                limit,
-                offset
-            );
-            setBlogs((prevBlogs) => [...prevBlogs, ...blogsData]);
-            setMore(more);
-            setOffset((prevOffset) => prevOffset + limit);
-        } catch (error) {
-            setError(error as any);
-        }
-
-        setIsLoadingMore(false);
-    }, [blogsService, offset]);
+        fetchBlog();
+    }, [blogsService, blogId]);
 
     let body: ReactNode;
     if (isLoading) {
         body = <LoadingComponent />;
-    } else if (blogs.length === 0) {
-        body = <EmptyComponent />;
     } else if (error) {
         body = <ErrorComponent error={error} />;
     } else {
         body = (
             <>
-                {blogs.map((blog) => (
-                    <BlogComponent key={blog.id} blog={blog} />
-                ))}
-                {more && (
-                    <button
-                        className={`button is-white has-text-primary is-fullwidth ${
-                            isLoadingMore && "is-loading"
-                        }`}
-                        onClick={() => fetchMoreBlogs()}
-                        disabled={isLoadingMore}
-                    >
-                        See more
-                    </button>
-                )}
+                <BlogComponent blog={blog!} />
+                <a
+                    className={"button is-white has-text-primary is-fullwidth"}
+                    href={Routes.BlogsRoute.href()}
+                >
+                    Read other blogs
+                </a>
             </>
         );
     }

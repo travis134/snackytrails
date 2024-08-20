@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Renderer, marked } from "marked";
 
+import Routes from "@lib/routes";
+
 import hljs from "highlight.js/lib/core";
 import "highlight.js/styles/github-dark.css";
 import javascript from "highlight.js/lib/languages/javascript";
@@ -50,7 +52,9 @@ const BlogComponent: React.FC<BlogComponentProps> = ({ blog }) => {
 
     return (
         <article className="box mb-5">
-            <h4 className="title is-5 has-text-primary">{blog.id}</h4>
+            <a href={Routes.BlogRoute.href({ id: blog.id })}>
+                <h4 className="title is-5 has-text-primary">{blog.id}</h4>
+            </a>
             <div
                 className="content mt-5 mb-5"
                 dangerouslySetInnerHTML={{ __html: content }}
