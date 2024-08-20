@@ -6,9 +6,9 @@ import { Poll, Option, Vote } from "@shared/types";
 import Routes from "@lib/routes";
 import { PollsService } from "@types";
 
-import LoadingComponent from "@components/LoadingComponent";
 import ErrorComponent from "@components/ErrorComponent";
-import OptionComponent from "@components/OptionComponent";
+import OptionsComponent from "@components/OptionsComponent";
+import OptionsSkeletonComponent from "@components/OptionsSkeletonComponent";
 
 interface PollPageProps {
     pollsService: PollsService;
@@ -125,7 +125,7 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
     if (isLoading) {
         title = "Loading";
         subtitle = "Hold your horses while we load this awesome poll";
-        body = <LoadingComponent />;
+        body = <OptionsSkeletonComponent />;
     } else if (error) {
         title = "Uh oh, partner!";
         subtitle =
@@ -136,21 +136,11 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
         subtitle = poll!.description;
         body = (
             <>
-                <div className="fixed-grid has-1-cols-mobile has-1-cols-tablet has-2-cols-desktop mb-5">
-                    <div className="grid">
-                        {options.map((option) => (
-                            <div className="cell" key={option.id}>
-                                <OptionComponent
-                                    option={option}
-                                    isSelected={selectedOptionIds.includes(
-                                        option.id
-                                    )}
-                                    onClick={onClickOption}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                <OptionsComponent
+                    options={options}
+                    selectedOptionIds={selectedOptionIds}
+                    onClickOption={onClickOption}
+                />
                 {selectedOptionIds.length > 0 && (
                     <button
                         className={`button is-white has-text-primary is-fullwidth ${

@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import { Outlet } from "react-router-dom";
-import ErrorBoundary from "./ErrorBoundary";
+
+import ErrorBoundary from "@components/ErrorBoundary";
 
 interface LayoutComponentProps {
     header: ReactNode;

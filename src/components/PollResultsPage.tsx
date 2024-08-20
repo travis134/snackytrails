@@ -4,9 +4,9 @@ import { useParams } from "react-router-dom";
 import { Poll, Option, Tally } from "@shared/types";
 import { PollsService } from "@types";
 
-import LoadingComponent from "@components/LoadingComponent";
-import PollTallyComponent from "@components/PollTallyComponent";
 import ErrorComponent from "@components/ErrorComponent";
+import TallyComponent from "@components/TallyComponent";
+import TallySkeletonComponent from "@components/TallySkeletonComponent";
 
 interface PollPageProps {
     pollsService: PollsService;
@@ -44,16 +44,12 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
 
     let body: ReactNode;
     if (isLoading) {
-        body = <LoadingComponent />;
+        body = <TallySkeletonComponent />;
     } else if (error) {
         body = <ErrorComponent error={error} />;
     } else if (poll) {
         body = (
-            <PollTallyComponent
-                poll={poll}
-                options={options}
-                tallies={tallies}
-            />
+            <TallyComponent poll={poll} options={options} tallies={tallies} />
         );
     }
 

@@ -5,9 +5,9 @@ import { Blog } from "@shared/types";
 import Routes from "@lib/routes";
 import { BlogsService } from "@types";
 
-import LoadingComponent from "@components/LoadingComponent";
 import ErrorComponent from "@components/ErrorComponent";
 import BlogContentComponent from "@components/BlogContentComponent";
+import BlogContentSkeletonComponent from "./BlogContentSkeletonComponent";
 
 interface BlogPageProps {
     blogsService: BlogsService;
@@ -41,7 +41,11 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
     if (isLoading) {
         title = "Loading";
         subtitle = "Hold your horses while we load this awesome blog";
-        body = <LoadingComponent />;
+        body = (
+            <article className="box mb-5">
+                <BlogContentSkeletonComponent />
+            </article>
+        );
     } else if (error) {
         title = "Uh oh, partner!";
         subtitle =

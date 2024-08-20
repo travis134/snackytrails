@@ -2,13 +2,13 @@ import React from "react";
 
 import { Option, Poll, Tally } from "@shared/types";
 
-interface PollTallyComponentProps {
+interface TallyComponentProps {
     poll: Poll;
     options: Option[];
     tallies: Tally[];
 }
 
-const PollTallyComponent: React.FC<PollTallyComponentProps> = ({
+const TallyComponent: React.FC<TallyComponentProps> = ({
     poll,
     options,
     tallies,
@@ -49,11 +49,11 @@ const PollTallyComponent: React.FC<PollTallyComponentProps> = ({
                 </ul>
             </div>
 
-            <p className="has-text-right has-text-grey">
+            <p className="has-text-grey">
                 Poll created on: {new Date(poll.created).toLocaleDateString()}
             </p>
             {poll.ended && (
-                <p className="has-text-right has-text-danger">
+                <p className="has-text-danger">
                     Poll ended on: {new Date(poll.ended).toLocaleDateString()}
                 </p>
             )}
@@ -61,4 +61,4 @@ const PollTallyComponent: React.FC<PollTallyComponentProps> = ({
     );
 };
 
-export default PollTallyComponent;
+export default TallyComponent;

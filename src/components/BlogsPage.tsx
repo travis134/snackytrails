@@ -3,10 +3,10 @@ import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import { Blog } from "@shared/types";
 import { BlogsService } from "@types";
 
-import LoadingComponent from "@components/LoadingComponent";
 import EmptyComponent from "@components/EmptyComponent";
 import ErrorComponent from "@components/ErrorComponent";
-import BlogPreviewComponent from "@components/BlogPreviewComponent";
+import BlogsComponent from "@components/BlogsComponent";
+import BlogsSkeletonComponent from "@components/BlogsSkeletonComponent";
 
 const limit = 10;
 
@@ -62,7 +62,7 @@ const BlogsPage: React.FC<BlogsPageProps> = ({ blogsService }) => {
 
     let body: ReactNode;
     if (isLoading) {
-        body = <LoadingComponent />;
+        body = <BlogsSkeletonComponent />;
     } else if (blogs.length === 0) {
         body = <EmptyComponent />;
     } else if (error) {
@@ -70,9 +70,7 @@ const BlogsPage: React.FC<BlogsPageProps> = ({ blogsService }) => {
     } else {
         body = (
             <>
-                {blogs.map((blog) => (
-                    <BlogPreviewComponent key={blog.id} blog={blog} />
-                ))}
+                <BlogsComponent blogs={blogs} />
                 {more && (
                     <button
                         className={`button is-primary is-light is-fullwidth ${

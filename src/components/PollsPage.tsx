@@ -3,10 +3,10 @@ import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import { Poll } from "@shared/types";
 import { PollsService } from "@types";
 
-import LoadingComponent from "@components/LoadingComponent";
 import EmptyComponent from "@components/EmptyComponent";
 import ErrorComponent from "@components/ErrorComponent";
-import PollComponent from "@components/PollComponent";
+import PollsComponent from "@components/PollsComponent";
+import PollsSkeletonComponent from "@components/PollsSkeletonComponent";
 
 const limit = 10;
 
@@ -60,7 +60,7 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
 
     let body: ReactNode;
     if (isLoading) {
-        body = <LoadingComponent />;
+        body = <PollsSkeletonComponent />;
     } else if (polls.length === 0) {
         body = <EmptyComponent />;
     } else if (error) {
@@ -68,15 +68,7 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
     } else {
         body = (
             <>
-                <div className="fixed-grid has-1-cols-mobile has-1-cols-tablet has-2-cols-desktop mb-5">
-                    <div className="grid">
-                        {polls.map((poll) => (
-                            <div className="cell" key={poll.id}>
-                                <PollComponent poll={poll} />
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                <PollsComponent polls={polls} />
                 {more && (
                     <button
                         className={`button is-primary is-light is-fullwidth ${
