@@ -7,7 +7,7 @@ import { BlogsService } from "@types";
 
 import LoadingComponent from "@components/LoadingComponent";
 import ErrorComponent from "@components/ErrorComponent";
-import BlogComponent from "@components/BlogComponent";
+import BlogContentComponent from "@components/BlogContentComponent";
 
 interface BlogPageProps {
     blogsService: BlogsService;
@@ -19,6 +19,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error>();
 
+    // Load page data
     useEffect(() => {
         const fetchBlog = async () => {
             try {
@@ -34,15 +35,29 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
         fetchBlog();
     }, [blogsService, blogId]);
 
+    let title: string;
+    let subtitle: string;
     let body: ReactNode;
     if (isLoading) {
+        title = "Loading";
+        subtitle = "Hold your horses while we load this awesome blog";
         body = <LoadingComponent />;
     } else if (error) {
+        title = "Uh oh, partner!";
+        subtitle =
+            "Looks like this blog got lost on the trail. How about a quick refresh to see if it finds its way?";
         body = <ErrorComponent error={error} />;
     } else {
+        title = blog!.id;
+        const mungedTime = blog!.created.split(" ").join("T") + ".000Z";
+        const formattedDate = new Date(mungedTime).toLocaleString();
+        subtitle = `${blog!.author} @ ${formattedDate}`;
+
         body = (
             <>
-                <BlogComponent blog={blog!} />
+                <article className="box mb-5">
+                    <BlogContentComponent blog={blog!} />
+                </article>
                 <a
                     className={"button is-white has-text-primary is-fullwidth"}
                     href={Routes.BlogsRoute.href()}
@@ -57,8 +72,8 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
         <>
             <section className="hero">
                 <div className="hero-body">
-                    <p className="title">See what we've been up to</p>
-                    <p className="subtitle">Check out these incredible blogs</p>
+                    <p className="title">{title}</p>
+                    <p className="subtitle">{subtitle}</p>
                 </div>
             </section>
             <section className="section">{body}</section>

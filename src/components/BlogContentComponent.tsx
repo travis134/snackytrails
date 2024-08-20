@@ -1,31 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { Renderer, marked } from "marked";
 
-import Routes from "@lib/routes";
-
 import hljs from "highlight.js/lib/core";
 import "highlight.js/styles/github-dark.css";
-import javascript from "highlight.js/lib/languages/javascript";
 import plaintext from "highlight.js/lib/languages/plaintext";
+import scss from "highlight.js/lib/languages/scss";
 import sql from "highlight.js/lib/languages/sql";
 import typescript from "highlight.js/lib/languages/typescript";
 
 import { Blog } from "@shared/types";
 
-hljs.registerLanguage("javascript", javascript);
 hljs.registerLanguage("plaintext", plaintext);
+hljs.registerLanguage("scss", scss);
 hljs.registerLanguage("sql", sql);
 hljs.registerLanguage("typescript", typescript);
 
-interface BlogComponentProps {
+interface BlogContentComponentProps {
     blog: Blog;
 }
 
-const BlogComponent: React.FC<BlogComponentProps> = ({ blog }) => {
+const BlogContentComponent: React.FC<BlogContentComponentProps> = ({
+    blog,
+}) => {
     const [content, setContent] = useState("");
-    const mungedTime = blog.created.split(" ").join("T") + ".000Z";
-    const formattedDate = new Date(mungedTime).toLocaleString();
 
+    // Translate markdown to html and perform code highlighting
     useEffect(() => {
         const renderer = new Renderer();
         renderer.code = ({ text, lang }) => {
@@ -51,23 +50,11 @@ const BlogComponent: React.FC<BlogComponentProps> = ({ blog }) => {
     }, [blog.content]);
 
     return (
-        <article className="box mb-5">
-            <a href={Routes.BlogRoute.href({ id: blog.id })}>
-                <h4 className="title is-5 has-text-primary">{blog.id}</h4>
-            </a>
-            <div
-                className="content mt-5 mb-5"
-                dangerouslySetInnerHTML={{ __html: content }}
-            />
-            <p className="has-text-right has-text-grey">
-                - {blog.author}{" "}
-                <span className="has-text-weight-light">@ </span>
-                <time dateTime={mungedTime} className="is-italic">
-                    {formattedDate}
-                </time>
-            </p>
-        </article>
+        <div
+            className="content"
+            dangerouslySetInnerHTML={{ __html: content }}
+        />
     );
 };
 
-export default BlogComponent;
+export default BlogContentComponent;

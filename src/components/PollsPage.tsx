@@ -22,6 +22,7 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
     const [offset, setOffset] = useState(limit);
     const [more, setMore] = useState(false);
 
+    // Load page data
     useEffect(() => {
         const fetchPolls = async () => {
             try {
@@ -39,6 +40,7 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
         fetchPolls();
     }, [pollsService]);
 
+    // Load more page data
     const fetchMorePolls = useCallback(async () => {
         setIsLoadingMore(true);
         try {

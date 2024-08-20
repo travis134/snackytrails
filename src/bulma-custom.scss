@@ -53,3 +53,28 @@ html {
     background-repeat: repeat, no-repeat, no-repeat, no-repeat;
     background-position: 0%, 0%, 0%, center 0%;
 }
+
+$preview-height: 20em;
+$preview-fade-start: 10em;
+$preview-fade-end: 100%;
+
+.preview {
+    height: $preview-height;
+    position: relative;
+    overflow: hidden;
+}
+
+.preview::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: $preview-fade-start;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        $white $preview-fade-end
+    );
+    pointer-events: none;
+}

@@ -26,10 +26,10 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error>();
 
+    // Handle toggling selected options
     const onClickOption = async (clickedOption: Option) => {
         const alreadySelected = selectedOptionIds.includes(clickedOption.id);
 
-        // Toggle the selected option.
         if (alreadySelected) {
             setSelectedOptionIds(
                 selectedOptionIds.filter(
@@ -45,10 +45,12 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
         }
     };
 
+    // Navigate to the poll results page
     const seeResults = useCallback(() => {
         navigate(Routes.PollResultsRoute.href({ id: poll!.id }));
     }, [navigate, poll]);
 
+    // Handle user submission of their vote
     const doVote = useCallback(async () => {
         setIsVoting(true);
 
@@ -70,6 +72,7 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
         }
     }, [pollsService, poll, selectedOptionIds, seeResults]);
 
+    // Load page data
     useEffect(() => {
         const fetchPolls = async () => {
             try {
@@ -116,12 +119,21 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
         </div>
     );
 
+    let title: string;
+    let subtitle: string;
     let body: ReactNode;
     if (isLoading) {
+        title = "Loading";
+        subtitle = "Hold your horses while we load this awesome poll";
         body = <LoadingComponent />;
     } else if (error) {
+        title = "Uh oh, partner!";
+        subtitle =
+            "Looks like this poll got lost on the trail. How about a quick refresh to see if it finds its way?";
         body = <ErrorComponent error={error} />;
-    } else if (poll) {
+    } else {
+        title = poll!.name;
+        subtitle = poll!.description;
         body = (
             <>
                 <div className="fixed-grid has-1-cols-mobile has-1-cols-tablet has-2-cols-desktop mb-5">
@@ -157,14 +169,13 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
 
     return (
         <>
-            {poll && (
-                <section className="hero">
-                    <div className="hero-body">
-                        <p className="title">{poll.name}</p>
-                        <p className="subtitle">{poll.description}</p>
-                    </div>
-                </section>
-            )}
+            <section className="hero">
+                <div className="hero-body">
+                    <p className="title">{title}</p>
+                    <p className="subtitle">{subtitle}</p>
+                </div>
+            </section>
+
             <section className="section">{body}</section>
         </>
     );

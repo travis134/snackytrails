@@ -6,7 +6,7 @@ import { BlogsService } from "@types";
 import LoadingComponent from "@components/LoadingComponent";
 import EmptyComponent from "@components/EmptyComponent";
 import ErrorComponent from "@components/ErrorComponent";
-import BlogComponent from "@components/BlogComponent";
+import BlogPreviewComponent from "@components/BlogPreviewComponent";
 
 const limit = 10;
 
@@ -22,6 +22,7 @@ const BlogsPage: React.FC<BlogsPageProps> = ({ blogsService }) => {
     const [offset, setOffset] = useState(limit);
     const [more, setMore] = useState(false);
 
+    // Load page data
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
@@ -41,6 +42,7 @@ const BlogsPage: React.FC<BlogsPageProps> = ({ blogsService }) => {
         fetchBlogs();
     }, [blogsService]);
 
+    // Load more page data
     const fetchMoreBlogs = useCallback(async () => {
         setIsLoadingMore(true);
         try {
@@ -69,7 +71,7 @@ const BlogsPage: React.FC<BlogsPageProps> = ({ blogsService }) => {
         body = (
             <>
                 {blogs.map((blog) => (
-                    <BlogComponent key={blog.id} blog={blog} />
+                    <BlogPreviewComponent key={blog.id} blog={blog} />
                 ))}
                 {more && (
                     <button

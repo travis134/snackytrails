@@ -20,6 +20,7 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error>();
 
+    // Load page data
     useEffect(() => {
         const fetchPolls = async () => {
             try {
