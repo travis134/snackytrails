@@ -22,6 +22,7 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
     const [selectedOptionIds, setSelectedOptionIds] = useState<number[]>([]);
     const [alreadyVotedErrorVisible, setAlreadyVotedErrorVisible] =
         useState<boolean>(false);
+    const [isVoting, setIsVoting] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error>();
 
@@ -36,7 +37,11 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
                 )
             );
         } else {
-            setSelectedOptionIds([...selectedOptionIds, clickedOption.id]);
+            if (poll!.selections === "single") {
+                setSelectedOptionIds([clickedOption.id]);
+            } else {
+                setSelectedOptionIds([...selectedOptionIds, clickedOption.id]);
+            }
         }
     };
 
@@ -45,29 +50,25 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
     }, [navigate, poll]);
 
     const doVote = useCallback(async () => {
-        setIsLoading(true);
+        setIsVoting(true);
 
         try {
             const vote: Vote = { option_ids: selectedOptionIds };
             await pollsService.votePoll(poll!.id, vote);
             seeResults();
         } catch (error) {
-            if (
+            const alreadyVotedError =
                 isAppError(error) &&
-                error.error_code === ErrorCode.VoteUserAlreadyVoted
-            ) {
+                error.error_code === ErrorCode.VoteUserAlreadyVoted;
+
+            if (alreadyVotedError) {
                 setAlreadyVotedErrorVisible(true);
-                setIsLoading(false);
+                return;
             }
+
+            throw error;
         }
     }, [pollsService, poll, selectedOptionIds, seeResults]);
-
-    useEffect(() => {
-        // One-shot for polls that only allow a single selection.
-        if (selectedOptionIds.length === 1 && poll!.selections === "single") {
-            doVote();
-        }
-    }, [navigate, pollsService, poll, selectedOptionIds, doVote]);
 
     useEffect(() => {
         const fetchPolls = async () => {
@@ -97,7 +98,7 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
                 <section className="modal-card-body">
                     <p>
                         You've already wrangled your vote in this poll. No
-                        double-dipping in these parts-- just sit tight and enjoy
+                        double-dipping in these parts, just sit tight and enjoy
                         the ride!
                     </p>
                 </section>
@@ -123,29 +124,32 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
     } else if (poll) {
         body = (
             <>
-                <div className="grid mb-5">
-                    {options.map((option) => (
-                        <div className="cell" key={option.id}>
-                            <OptionComponent
-                                poll={poll}
-                                option={option}
-                                isSelected={selectedOptionIds.includes(
-                                    option.id
-                                )}
-                                onClick={onClickOption}
-                            />
-                        </div>
-                    ))}
+                <div className="fixed-grid has-1-cols-mobile has-1-cols-tablet has-2-cols-desktop mb-5">
+                    <div className="grid">
+                        {options.map((option) => (
+                            <div className="cell" key={option.id}>
+                                <OptionComponent
+                                    option={option}
+                                    isSelected={selectedOptionIds.includes(
+                                        option.id
+                                    )}
+                                    onClick={onClickOption}
+                                />
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                {poll.selections === "multiple" &&
-                    selectedOptionIds.length > 0 && (
-                        <button
-                            className={`button is-primary is-light is-fullwidth`}
-                            onClick={() => doVote()}
-                        >
-                            Vote
-                        </button>
-                    )}
+                {selectedOptionIds.length > 0 && (
+                    <button
+                        className={`button is-white has-text-primary is-fullwidth ${
+                            isVoting && "is-loading"
+                        }`}
+                        onClick={() => doVote()}
+                        disabled={isVoting}
+                    >
+                        Vote
+                    </button>
+                )}
                 {alreadyVotedModal}
             </>
         );

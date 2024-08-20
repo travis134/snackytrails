@@ -73,7 +73,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
                 ))}
                 {more && (
                     <button
-                        className={`button is-primary is-light is-fullwidth ${
+                        className={`button is-white has-text-primary is-fullwidth ${
                             isLoadingMore && "is-loading"
                         }`}
                         onClick={() => fetchMoreBlogs()}

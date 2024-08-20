@@ -1,27 +1,21 @@
 import React from "react";
 
-import { Option, Poll } from "@shared/types";
+import { Option } from "@shared/types";
 
 interface OptionComponentProps {
-    poll: Poll;
     option: Option;
     isSelected: boolean;
     onClick: (option: Option) => Promise<void>;
 }
 
 const OptionComponent: React.FC<OptionComponentProps> = ({
-    poll,
     option,
     isSelected,
     onClick,
 }) => {
-    let actionText = "Vote";
-    if (poll.selections === "multiple") {
-        if (isSelected) {
-            actionText = "Selected";
-        } else {
-            actionText = "Select";
-        }
+    let actionText = "Select";
+    if (isSelected) {
+        actionText = "Selected";
     }
 
     return (
@@ -38,9 +32,7 @@ const OptionComponent: React.FC<OptionComponentProps> = ({
             </div>
             <footer
                 className={`card-footer ${
-                    poll.selections === "multiple" &&
-                    isSelected &&
-                    "has-background-primary-dark"
+                    isSelected && "has-background-primary-dark"
                 }`}
             >
                 <p className="card-footer-item has-text-link">{actionText}</p>

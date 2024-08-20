@@ -66,12 +66,14 @@ const PollsPage: React.FC<PollsPageProps> = ({ pollsService }) => {
     } else {
         body = (
             <>
-                <div className="grid mb-5">
-                    {polls.map((poll) => (
-                        <div className="cell" key={poll.id}>
-                            <PollComponent poll={poll} />
-                        </div>
-                    ))}
+                <div className="fixed-grid has-1-cols-mobile has-1-cols-tablet has-2-cols-desktop mb-5">
+                    <div className="grid">
+                        {polls.map((poll) => (
+                            <div className="cell" key={poll.id}>
+                                <PollComponent poll={poll} />
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 {more && (
                     <button
