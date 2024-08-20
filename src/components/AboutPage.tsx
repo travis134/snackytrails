@@ -1,17 +1,14 @@
 import React from "react";
 
+import HeroComponent from "@components/HeroComponent";
+
 const AboutPage: React.FC = () => {
     return (
         <>
-            <section className="hero">
-                <div className="hero-body">
-                    <p className="title">About us</p>
-                    <p className="subtitle">
-                        Get to know a little about who we are, where we've been,
-                        and what we stand for.
-                    </p>
-                </div>
-            </section>
+            <HeroComponent
+                title="About us"
+                subtitle="Get to know a little about who we are, where we've been, and what we stand for."
+            />
             <section className="section">
                 <div className="box">
                     <div className="content">

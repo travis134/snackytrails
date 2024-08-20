@@ -5,6 +5,8 @@ import { BlogsService } from "@types";
 
 import EmptyComponent from "@components/EmptyComponent";
 import ErrorComponent from "@components/ErrorComponent";
+import HeroComponent from "@components/HeroComponent";
+import HeroSkeletonComponent from "@components/HeroSkeletonComponent";
 import BlogsComponent from "@components/BlogsComponent";
 import BlogsSkeletonComponent from "@components/BlogsSkeletonComponent";
 
@@ -60,14 +62,24 @@ const BlogsPage: React.FC<BlogsPageProps> = ({ blogsService }) => {
         setIsLoadingMore(false);
     }, [blogsService, offset]);
 
+    let hero: ReactNode;
     let body: ReactNode;
     if (isLoading) {
+        hero = <HeroSkeletonComponent />;
         body = <BlogsSkeletonComponent />;
     } else if (blogs.length === 0) {
+        hero = <HeroSkeletonComponent />;
         body = <EmptyComponent />;
     } else if (error) {
+        hero = <HeroSkeletonComponent />;
         body = <ErrorComponent error={error} />;
     } else {
+        hero = (
+            <HeroComponent
+                title="See what we've been up to"
+                subtitle="Check out these incredible blogs"
+            />
+        );
         body = (
             <>
                 <BlogsComponent blogs={blogs} />
@@ -88,12 +100,7 @@ const BlogsPage: React.FC<BlogsPageProps> = ({ blogsService }) => {
 
     return (
         <>
-            <section className="hero">
-                <div className="hero-body">
-                    <p className="title">See what we've been up to</p>
-                    <p className="subtitle">Check out these incredible blogs</p>
-                </div>
-            </section>
+            {hero}
             <section className="section">{body}</section>
         </>
     );

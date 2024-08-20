@@ -5,6 +5,8 @@ import { Poll, Option, Tally } from "@shared/types";
 import { PollsService } from "@types";
 
 import ErrorComponent from "@components/ErrorComponent";
+import HeroComponent from "@components/HeroComponent";
+import HeroSkeletonComponent from "@components/HeroSkeletonComponent";
 import TallyComponent from "@components/TallyComponent";
 import TallySkeletonComponent from "@components/TallySkeletonComponent";
 
@@ -42,27 +44,26 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
         fetchPolls();
     }, [pollsService, pollId]);
 
+    let hero: ReactNode;
     let body: ReactNode;
     if (isLoading) {
+        hero = <HeroSkeletonComponent />;
         body = <TallySkeletonComponent />;
     } else if (error) {
+        hero = <HeroSkeletonComponent />;
         body = <ErrorComponent error={error} />;
-    } else if (poll) {
+    } else {
+        hero = (
+            <HeroComponent title={poll!.name} subtitle={poll!.description} />
+        );
         body = (
-            <TallyComponent poll={poll} options={options} tallies={tallies} />
+            <TallyComponent poll={poll!} options={options} tallies={tallies} />
         );
     }
 
     return (
         <>
-            {poll && (
-                <section className="hero">
-                    <div className="hero-body">
-                        <p className="title">{poll.name}</p>
-                        <p className="subtitle">{poll.description}</p>
-                    </div>
-                </section>
-            )}
+            {hero}
             <section className="section">{body}</section>
         </>
     );

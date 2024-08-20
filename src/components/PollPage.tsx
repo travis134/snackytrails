@@ -7,6 +7,8 @@ import Routes from "@lib/routes";
 import { PollsService } from "@types";
 
 import ErrorComponent from "@components/ErrorComponent";
+import HeroComponent from "@components/HeroComponent";
+import HeroSkeletonComponent from "@components/HeroSkeletonComponent";
 import OptionsComponent from "@components/OptionsComponent";
 import OptionsSkeletonComponent from "@components/OptionsSkeletonComponent";
 
@@ -119,21 +121,18 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
         </div>
     );
 
-    let title: string;
-    let subtitle: string;
+    let hero: ReactNode;
     let body: ReactNode;
     if (isLoading) {
-        title = "Loading";
-        subtitle = "Hold your horses while we load this awesome poll";
+        hero = <HeroSkeletonComponent />;
         body = <OptionsSkeletonComponent />;
     } else if (error) {
-        title = "Uh oh, partner!";
-        subtitle =
-            "Looks like this poll got lost on the trail. How about a quick refresh to see if it finds its way?";
+        hero = <HeroSkeletonComponent />;
         body = <ErrorComponent error={error} />;
     } else {
-        title = poll!.name;
-        subtitle = poll!.description;
+        hero = (
+            <HeroComponent title={poll!.name} subtitle={poll!.description} />
+        );
         body = (
             <>
                 <OptionsComponent
@@ -159,13 +158,7 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
 
     return (
         <>
-            <section className="hero">
-                <div className="hero-body">
-                    <p className="title">{title}</p>
-                    <p className="subtitle">{subtitle}</p>
-                </div>
-            </section>
-
+            {hero}
             <section className="section">{body}</section>
         </>
     );

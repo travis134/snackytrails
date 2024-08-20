@@ -6,6 +6,8 @@ import Routes from "@lib/routes";
 import { BlogsService } from "@types";
 
 import ErrorComponent from "@components/ErrorComponent";
+import HeroComponent from "@components/HeroComponent";
+import HeroSkeletonComponent from "@components/HeroSkeletonComponent";
 import BlogContentComponent from "@components/BlogContentComponent";
 import BlogContentSkeletonComponent from "./BlogContentSkeletonComponent";
 
@@ -35,28 +37,25 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
         fetchBlog();
     }, [blogsService, blogId]);
 
-    let title: string;
-    let subtitle: string;
+    let hero: ReactNode;
     let body: ReactNode;
     if (isLoading) {
-        title = "Loading";
-        subtitle = "Hold your horses while we load this awesome blog";
+        hero = <HeroSkeletonComponent />;
         body = (
             <article className="box mb-5">
                 <BlogContentSkeletonComponent />
             </article>
         );
     } else if (error) {
-        title = "Uh oh, partner!";
-        subtitle =
-            "Looks like this blog got lost on the trail. How about a quick refresh to see if it finds its way?";
+        hero = <HeroSkeletonComponent />;
         body = <ErrorComponent error={error} />;
     } else {
-        title = blog!.id;
+        const title = blog!.id;
         const mungedTime = blog!.created.split(" ").join("T") + ".000Z";
         const formattedDate = new Date(mungedTime).toLocaleString();
-        subtitle = `${blog!.author} @ ${formattedDate}`;
+        const subtitle = `${blog!.author} @ ${formattedDate}`;
 
+        hero = <HeroComponent title={title} subtitle={subtitle} />;
         body = (
             <>
                 <article className="box mb-5">
@@ -74,12 +73,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
 
     return (
         <>
-            <section className="hero">
-                <div className="hero-body">
-                    <p className="title">{title}</p>
-                    <p className="subtitle">{subtitle}</p>
-                </div>
-            </section>
+            {hero}
             <section className="section">{body}</section>
         </>
     );
