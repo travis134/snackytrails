@@ -39,17 +39,7 @@ const PollResultsRoute: RouteConfig = {
         if (!params || !params.id) {
             throw new Error("PollResultsRoute requires an id parameter");
         }
-        let options: URLSearchParams | null = null;
-        const { optionIds } = params;
-        if (Array.isArray(optionIds)) {
-            options = new URLSearchParams();
-            for (const optionId of optionIds) {
-                options.append("option", optionId);
-            }
-        }
-        return `/polls/${params.id}/results${
-            options && "?" + options.toString()
-        }`;
+        return `/polls/${params.id}/results`;
     },
 };
 const Routes: Record<string, RouteConfig> = {

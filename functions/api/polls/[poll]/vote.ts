@@ -4,7 +4,6 @@ import { Env } from "@types";
 
 // Cast a vote
 export const onRequestPost: PagesFunction<Env> = async (context) => {
-    const { request } = context;
     const { pollsService, user } = context.env;
     const { poll: pollParam } = context.params;
     const pollId = Array.isArray(pollParam) ? pollParam[0] : pollParam;
