@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { Blog } from "@shared/types";
