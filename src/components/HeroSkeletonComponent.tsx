@@ -2,12 +2,12 @@ import React from "react";
 
 const HeroSkeletonComponent: React.FC = () => {
     return (
-        <section className="hero mt-2">
+        <section className="hero">
             <div className="hero-body">
-                <p className="title skeleton-lines mb-2">
+                <p className="title skeleton-lines">
                     <div />
                 </p>
-                <p className="subtitle skeleton-lines mb-2">
+                <p className="subtitle skeleton-lines">
                     <div />
                 </p>
             </div>
