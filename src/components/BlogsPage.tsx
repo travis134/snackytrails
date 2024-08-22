@@ -1,7 +1,6 @@
 import React, { ReactNode } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import { Blog } from "@shared/types";
 import { BlogsService } from "@types";
 
 import EmptyComponent from "@components/EmptyComponent";

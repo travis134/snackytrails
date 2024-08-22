@@ -2,7 +2,6 @@ import React, { ReactNode } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
-import { Poll, Option, Tally } from "@shared/types";
 import { PollsService } from "@types";
 
 import ErrorComponent from "@components/ErrorComponent";
