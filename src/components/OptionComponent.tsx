@@ -5,7 +5,7 @@ import { Option } from "@shared/types";
 interface OptionComponentProps {
     option: Option;
     isSelected: boolean;
-    onClick: (option: Option) => Promise<void>;
+    onClick: (option: Option) => void;
 }
 
 const OptionComponent: React.FC<OptionComponentProps> = ({

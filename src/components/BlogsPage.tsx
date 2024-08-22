@@ -1,4 +1,5 @@
-import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import React, { ReactNode } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { Blog } from "@shared/types";
 import { BlogsService } from "@types";
@@ -17,62 +18,36 @@ interface BlogsPageProps {
 }
 
 const BlogsPage: React.FC<BlogsPageProps> = ({ blogsService }) => {
-    const [blogs, setBlogs] = useState<Blog[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<Error>();
-    const [isLoadingMore, setIsLoadingMore] = useState(false);
-    const [offset, setOffset] = useState(limit);
-    const [more, setMore] = useState(false);
+    const {
+        data,
+        error,
+        isLoading,
+        isFetchingNextPage,
+        fetchNextPage,
+        hasNextPage,
+    } = useInfiniteQuery({
+        queryKey: ["blogs"],
+        queryFn: ({ pageParam = 0 }) =>
+            blogsService.listBlogs(limit, pageParam),
+        getNextPageParam: (lastPage, allPages) =>
+            lastPage.more ? allPages.length * limit : undefined,
+        initialPageParam: 0,
+    });
 
-    // Load page data
-    useEffect(() => {
-        const fetchBlogs = async () => {
-            try {
-                const { blogs: blogsData, more } = await blogsService.listBlogs(
-                    limit,
-                    0
-                );
-                setBlogs(blogsData);
-                setMore(more);
-            } catch (error) {
-                setError(error as any);
-            }
-
-            setIsLoading(false);
-        };
-
-        fetchBlogs();
-    }, [blogsService]);
-
-    // Load more page data
-    const fetchMoreBlogs = useCallback(async () => {
-        setIsLoadingMore(true);
-        try {
-            const { blogs: blogsData, more } = await blogsService.listBlogs(
-                limit,
-                offset
-            );
-            setBlogs((prevBlogs) => [...prevBlogs, ...blogsData]);
-            setMore(more);
-            setOffset((prevOffset) => prevOffset + limit);
-        } catch (error) {
-            setError(error as any);
-        }
-
-        setIsLoadingMore(false);
-    }, [blogsService, offset]);
+    const blogs = data?.pages.flatMap((page) => page.blogs) || [];
 
     let hero: ReactNode;
     let body: ReactNode;
+
     if (isLoading) {
         hero = <HeroSkeletonComponent />;
         body = <BlogsSkeletonComponent />;
+    } else if (error) {
+        hero = <HeroSkeletonComponent />;
+        body = <ErrorComponent error={error as any} />;
     } else if (blogs.length === 0) {
         hero = <HeroSkeletonComponent />;
         body = <EmptyComponent />;
-    } else if (error) {
-        hero = <HeroSkeletonComponent />;
-        body = <ErrorComponent error={error} />;
     } else {
         hero = (
             <HeroComponent
@@ -83,13 +58,13 @@ const BlogsPage: React.FC<BlogsPageProps> = ({ blogsService }) => {
         body = (
             <>
                 <BlogsComponent blogs={blogs} />
-                {more && (
+                {hasNextPage && (
                     <button
                         className={`button is-primary is-light is-fullwidth ${
-                            isLoadingMore && "is-loading"
+                            isFetchingNextPage && "is-loading"
                         }`}
-                        onClick={() => fetchMoreBlogs()}
-                        disabled={isLoadingMore}
+                        onClick={() => fetchNextPage()}
+                        disabled={isFetchingNextPage}
                     >
                         See more
                     </button>

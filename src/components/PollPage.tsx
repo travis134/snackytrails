@@ -1,8 +1,9 @@
-import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import React, { ReactNode, useCallback, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 import { ErrorCode, isAppError } from "@shared/errors";
-import { Poll, Option, Vote } from "@shared/types";
+import { Option, Vote } from "@shared/types";
 import Routes from "@lib/routes";
 import { PollsService } from "@types";
 
@@ -12,6 +13,42 @@ import HeroSkeletonComponent from "@components/HeroSkeletonComponent";
 import OptionsComponent from "@components/OptionsComponent";
 import OptionsSkeletonComponent from "@components/OptionsSkeletonComponent";
 
+interface AlreadyVotedModalProps {
+    viewResults: () => void;
+}
+
+const AlreadyVotedModal: React.FC<AlreadyVotedModalProps> = ({
+    viewResults,
+}) => {
+    return (
+        <div className="modal is-active">
+            <div className="modal-background"></div>
+            <div className="modal-card">
+                <header className="modal-card-head">
+                    <p className="modal-card-title">Whoa there, partner!</p>
+                </header>
+                <section className="modal-card-body">
+                    <p>
+                        You've already wrangled your vote in this poll. No
+                        double-dipping in these parts, just sit tight and enjoy
+                        the ride!
+                    </p>
+                </section>
+                <footer className="modal-card-foot">
+                    <div className="buttons ">
+                        <button
+                            className="button is-primary has-text-white"
+                            onClick={viewResults}
+                        >
+                            See results
+                        </button>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    );
+};
+
 interface PollPageProps {
     pollsService: PollsService;
 }
@@ -19,17 +56,33 @@ interface PollPageProps {
 const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
     const navigate = useNavigate();
     const { id: pollId } = useParams<{ id: string }>();
-    const [poll, setPoll] = useState<Poll | null>(null);
-    const [options, setOptions] = useState<Option[]>([]);
     const [selectedOptionIds, setSelectedOptionIds] = useState<number[]>([]);
-    const [alreadyVotedErrorVisible, setAlreadyVotedErrorVisible] =
-        useState<boolean>(false);
-    const [isVoting, setIsVoting] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<Error>();
 
-    // Handle toggling selected options
-    const onClickOption = async (clickedOption: Option) => {
+    // Fetch poll data
+    const {
+        data: poll,
+        error: pollError,
+        isLoading: isPollLoading,
+    } = useQuery({
+        queryKey: ["poll", pollId],
+        queryFn: () => pollsService.readPoll(pollId!),
+    });
+
+    // Fetch poll options data
+    const {
+        data: options,
+        error: optionsError,
+        isLoading: isOptionsLoading,
+    } = useQuery({
+        queryKey: ["pollOptions", pollId],
+        queryFn: () => pollsService.listOptions(pollId!),
+    });
+
+    const pollLoading = isPollLoading || isOptionsLoading;
+    let error = pollError || optionsError;
+
+    // Let the user toggle selections on and off
+    const onClickOption = (clickedOption: Option) => {
         const alreadySelected = selectedOptionIds.includes(clickedOption.id);
 
         if (alreadySelected) {
@@ -47,88 +100,45 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
         }
     };
 
-    // Navigate to the poll results page
-    const seeResults = useCallback(() => {
-        navigate(Routes.PollResultsRoute.href({ id: poll!.id }));
-    }, [navigate, poll]);
+    // Take the user to the poll results page
+    const viewResults = () => {
+        navigate(Routes.PollResultsRoute.href({ id: pollId! }));
+    };
 
-    // Handle user submission of their vote
-    const doVote = useCallback(async () => {
-        setIsVoting(true);
+    // Handle the user's submission of their vote
+    const {
+        mutate: voteMutate,
+        error: voteError,
+        isPending: voteIsPending,
+    } = useMutation({
+        mutationFn: (vote: Vote) => pollsService.votePoll(pollId!, vote),
+        onSuccess: viewResults,
+    });
+    const submitVote = useCallback(() => {
+        voteMutate({ option_ids: selectedOptionIds });
+    }, [selectedOptionIds, voteMutate]);
 
-        try {
-            const vote: Vote = { option_ids: selectedOptionIds };
-            await pollsService.votePoll(poll!.id, vote);
-            seeResults();
-        } catch (error) {
-            const alreadyVotedError =
-                isAppError(error) &&
-                error.error_code === ErrorCode.VoteUserAlreadyVoted;
-
-            if (alreadyVotedError) {
-                setAlreadyVotedErrorVisible(true);
-                return;
-            }
-
-            throw error;
-        }
-    }, [pollsService, poll, selectedOptionIds, seeResults]);
-
-    // Load page data
-    useEffect(() => {
-        const fetchPolls = async () => {
-            try {
-                const pollData = await pollsService.readPoll(pollId!);
-                setPoll(pollData);
-
-                const optionsData = await pollsService.listOptions(pollId!);
-                setOptions(optionsData);
-            } catch (error) {
-                setError(error as any);
-            }
-
-            setIsLoading(false);
-        };
-
-        fetchPolls();
-    }, [pollsService, pollId]);
-
-    const alreadyVotedModal = (
-        <div className={`modal ${alreadyVotedErrorVisible && "is-active"}`}>
-            <div className="modal-background"></div>
-            <div className="modal-card">
-                <header className="modal-card-head">
-                    <p className="modal-card-title">Whoa there, partner!</p>
-                </header>
-                <section className="modal-card-body">
-                    <p>
-                        You've already wrangled your vote in this poll. No
-                        double-dipping in these parts, just sit tight and enjoy
-                        the ride!
-                    </p>
-                </section>
-                <footer className="modal-card-foot">
-                    <div className="buttons ">
-                        <button
-                            className="button is-primary has-text-white"
-                            onClick={() => seeResults()}
-                        >
-                            See results
-                        </button>
-                    </div>
-                </footer>
-            </div>
-        </div>
-    );
+    // Let the user know that they've already voted if that's the error we
+    // receive so they don't needlessly retry
+    let isAlreadyVotedModalVisible = false;
+    if (
+        isAppError(voteError) &&
+        voteError.error_code === ErrorCode.VoteUserAlreadyVoted
+    ) {
+        isAlreadyVotedModalVisible = true;
+    } else {
+        // If this isn't a known error, handle it as a page error
+        error ||= voteError;
+    }
 
     let hero: ReactNode;
     let body: ReactNode;
-    if (isLoading) {
+    if (pollLoading) {
         hero = <HeroSkeletonComponent />;
         body = <OptionsSkeletonComponent />;
     } else if (error) {
         hero = <HeroSkeletonComponent />;
-        body = <ErrorComponent error={error} />;
+        body = <ErrorComponent error={error as any} />;
     } else {
         hero = (
             <HeroComponent title={poll!.name} subtitle={poll!.description} />
@@ -136,22 +146,24 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
         body = (
             <>
                 <OptionsComponent
-                    options={options}
+                    options={options!}
                     selectedOptionIds={selectedOptionIds}
                     onClickOption={onClickOption}
                 />
                 {selectedOptionIds.length > 0 && (
                     <button
                         className={`button is-white has-text-primary is-fullwidth ${
-                            isVoting && "is-loading"
+                            voteIsPending && "is-loading"
                         }`}
-                        onClick={() => doVote()}
-                        disabled={isVoting}
+                        onClick={submitVote}
+                        disabled={voteIsPending}
                     >
                         Vote
                     </button>
                 )}
-                {alreadyVotedModal}
+                {isAlreadyVotedModalVisible && (
+                    <AlreadyVotedModal viewResults={viewResults} />
+                )}
             </>
         );
     }

@@ -1,5 +1,6 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode } from "react";
 import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 import { Poll, Option, Tally } from "@shared/types";
 import { PollsService } from "@types";
@@ -16,33 +17,39 @@ interface PollPageProps {
 
 const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
     const { id: pollId } = useParams<{ id: string }>();
-    const [poll, setPoll] = useState<Poll | null>(null);
-    const [options, setOptions] = useState<Option[]>([]);
-    const [tallies, setTallies] = useState<Tally[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<Error>();
 
-    // Load page data
-    useEffect(() => {
-        const fetchPolls = async () => {
-            try {
-                const pollData = await pollsService.readPoll(pollId!);
-                setPoll(pollData);
+    // Fetch poll data
+    const {
+        data: poll,
+        error: pollError,
+        isLoading: isPollLoading,
+    } = useQuery({
+        queryKey: ["poll", pollId],
+        queryFn: () => pollsService.readPoll(pollId!),
+    });
 
-                const optionsData = await pollsService.listOptions(pollId!);
-                setOptions(optionsData);
+    // Fetch options data
+    const {
+        data: options,
+        error: optionsError,
+        isLoading: isOptionsLoading,
+    } = useQuery({
+        queryKey: ["pollOptions", pollId],
+        queryFn: () => pollsService.listOptions(pollId!),
+    });
 
-                const talliesData = await pollsService.tallyPoll(pollId!);
-                setTallies(talliesData);
-            } catch (error) {
-                setError(error as any);
-            }
+    // Fetch tally data
+    const {
+        data: tallies,
+        error: talliesError,
+        isLoading: isTalliesLoading,
+    } = useQuery({
+        queryKey: ["pollTallies", pollId],
+        queryFn: () => pollsService.tallyPoll(pollId!),
+    });
 
-            setIsLoading(false);
-        };
-
-        fetchPolls();
-    }, [pollsService, pollId]);
+    const isLoading = isPollLoading || isOptionsLoading || isTalliesLoading;
+    const error = pollError || optionsError || talliesError;
 
     let hero: ReactNode;
     let body: ReactNode;
@@ -51,13 +58,17 @@ const PollPage: React.FC<PollPageProps> = ({ pollsService }) => {
         body = <TallySkeletonComponent />;
     } else if (error) {
         hero = <HeroSkeletonComponent />;
-        body = <ErrorComponent error={error} />;
+        body = <ErrorComponent error={error as any} />;
     } else {
         hero = (
             <HeroComponent title={poll!.name} subtitle={poll!.description} />
         );
         body = (
-            <TallyComponent poll={poll!} options={options} tallies={tallies} />
+            <TallyComponent
+                poll={poll!}
+                options={options!}
+                tallies={tallies!}
+            />
         );
     }
 

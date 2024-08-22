@@ -6,6 +6,8 @@ import {
     Route,
     RouterProvider,
 } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "./bulma-custom.scss";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
@@ -25,6 +27,8 @@ import BlogPage from "@components/BlogPage";
 import PollsPage from "@components/PollsPage";
 import PollPage from "@components/PollPage";
 import PollResultsPage from "@components/PollResultsPage";
+
+const queryClient = new QueryClient();
 
 const apiHostName =
     process.env.REACT_APP_API_BASE_URL ?? "http://localhost:8788";
@@ -76,6 +80,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
     <React.StrictMode>
-        <RouterProvider router={router} />
+        <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+            <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
     </React.StrictMode>
 );

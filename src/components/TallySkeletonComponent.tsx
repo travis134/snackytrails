@@ -6,13 +6,13 @@ const TallySkeletonComponent: React.FC = () => {
             <div className="content">
                 <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
                     {Array.from({ length: 4 }).map((_, i) => (
-                        <li key={i} className="mb-5">
+                        <li key={i} className="mt-2 mb-5">
                             <div className="media">
                                 <div className="media-content">
-                                    <p className="is-size-5 skeleton-lines">
+                                    <div className="is-size-5 skeleton-lines mb-4">
+                                        <div className="mb-2" />
                                         <div />
-                                        <div />
-                                    </p>
+                                    </div>
                                     <div />
                                 </div>
                             </div>
@@ -21,9 +21,9 @@ const TallySkeletonComponent: React.FC = () => {
                 </ul>
             </div>
 
-            <p className="skeleton-lines">
+            <div className="skeleton-lines">
                 <div />
-            </p>
+            </div>
         </div>
     );
 };

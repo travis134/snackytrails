@@ -7,7 +7,7 @@ import OptionComponent from "@components/OptionComponent";
 interface OptionsComponentProps {
     options: Option[];
     selectedOptionIds: number[];
-    onClickOption: (option: Option) => Promise<void>;
+    onClickOption: (option: Option) => void;
 }
 
 const OptionsComponent: React.FC<OptionsComponentProps> = ({

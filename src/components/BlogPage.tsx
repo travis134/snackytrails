@@ -1,7 +1,7 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode } from "react";
 import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
-import { Blog } from "@shared/types";
 import Routes from "@lib/routes";
 import { BlogsService } from "@types";
 
@@ -17,28 +17,19 @@ interface BlogPageProps {
 
 const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
     const { id: blogId } = useParams<{ id: string }>();
-    const [blog, setBlog] = useState<Blog | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<Error>();
 
-    // Load page data
-    useEffect(() => {
-        const fetchBlog = async () => {
-            try {
-                const blogData = await blogsService.readBlog(blogId!);
-                setBlog(blogData);
-            } catch (error) {
-                setError(error as any);
-            }
-
-            setIsLoading(false);
-        };
-
-        fetchBlog();
-    }, [blogsService, blogId]);
+    const {
+        data: blog,
+        error,
+        isLoading,
+    } = useQuery({
+        queryKey: ["blog", blogId],
+        queryFn: () => blogsService.readBlog(blogId!),
+    });
 
     let hero: ReactNode;
     let body: ReactNode;
+
     if (isLoading) {
         hero = <HeroSkeletonComponent />;
         body = (
@@ -48,7 +39,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
         );
     } else if (error) {
         hero = <HeroSkeletonComponent />;
-        body = <ErrorComponent error={error} />;
+        body = <ErrorComponent error={error as any} />;
     } else {
         const title = blog!.id;
         const mungedTime = blog!.created.split(" ").join("T") + ".000Z";

@@ -4,19 +4,21 @@ const PollSkeletonComponent: React.FC = () => {
     return (
         <div className="card">
             <header className="card-header">
-                <p className="card-header-title skeleton-lines">
+                <div className="card-header-title skeleton-lines">
                     <div />
-                </p>
+                </div>
             </header>
             <div className="card-content">
                 <div className="content skeleton-lines">
-                    {Array(2).fill(<div />)}
+                    {Array.from({ length: 2 }).map((_, i) => (
+                        <div key={i} />
+                    ))}
                 </div>
             </div>
             <footer className="card-footer">
-                <p className="card-footer-item skeleton-lines">
+                <div className="card-footer-item skeleton-lines">
                     <div />
-                </p>
+                </div>
             </footer>
         </div>
     );
