@@ -30,8 +30,7 @@ import PollResultsPage from "@components/PollResultsPage";
 
 const queryClient = new QueryClient();
 
-const apiHostName =
-    process.env.REACT_APP_API_BASE_URL ?? "http://localhost:8788";
+const apiHostName = window.location.origin;
 const blogsService = new APIBlogsService({ apiBaseUrl: apiHostName });
 const pollsService = new APIPollsService({ apiBaseUrl: apiHostName });
 
