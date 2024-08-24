@@ -3,6 +3,7 @@ import { D1PollsService } from "@lib/d1_polls_service";
 import { R2ImagesService } from "@lib/r2_images_service";
 import {
     AppErrorData,
+    AppError,
     ErrorCode,
     isAppError,
     statusFromErrorCode,
