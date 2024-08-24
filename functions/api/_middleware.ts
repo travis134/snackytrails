@@ -44,15 +44,16 @@ export const setCorsHeaders: PagesFunction<Env> = async (context) => {
 const injectUser: PagesFunction<Env> = async (context) => {
     const { env, request } = context;
 
-    const ip = request.headers.get("cf-connecting-ip") || "unknown";
-    const userAgent = request.headers.get("user-agent") || "unknown";
-    const acceptLanguage = request.headers.get("accept-language") || "unknown";
-    const data = new TextEncoder().encode(ip + userAgent + acceptLanguage);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const user = Array.from(new Uint8Array(hashBuffer))
-        .map((byte) => byte.toString(16).padStart(2, "0"))
-        .join("");
-    env.user = user;
+    // Get the X-User-ID header value
+    const userId = request.headers.get("X-User-ID");
+
+    if (userId) {
+        // If the X-User-ID header is present, use it as the user identifier
+        env.user = userId;
+    } else {
+        // If the header is missing, throw an AppError with the appropriate error code
+        throw new AppError("X-User-ID header is missing", ErrorCode.RequestInvalid);
+    }
 
     return context.next();
 };
