@@ -128,11 +128,11 @@ const handleErrors: PagesFunction<Env> = async (context) => {
 };
 
 export const onRequest = [
+    handleErrors,
     setCorsHeaders,
     injectUser,
     logAccess,
     injectPollsService,
     injectBlogsService,
     injectImagesService,
-    handleErrors,
 ];
