@@ -55,12 +55,12 @@ const injectUser: PagesFunction<Env> = async (context) => {
     const user = request.headers.get("X-User");
 
     if (user) {
-        // If the X-User-ID header is present, use it as the user identifier
+        // If the X-User header is present, use it as the user identifier
         env.user = user;
     } else {
         // If the header is missing, throw an AppError with the appropriate error code
         throw new AppError(
-            "X-User-ID header is missing",
+            "X-User header is missing",
             ErrorCode.RequestInvalid
         );
     }
