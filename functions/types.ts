@@ -19,6 +19,9 @@ import {
 
 export interface Env {
     API_KEY: string;
+    USERNAME: string;
+    PASSWORD_HASH: string;
+    JWT_SECRET: string;
     ORIGIN: string;
     POLLS_DB: D1Database;
     BLOGS_DB: D1Database;

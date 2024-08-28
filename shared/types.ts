@@ -189,7 +189,7 @@ export const isBlogUpdate = (obj: any): obj is BlogUpdate => {
     return (
         typeof obj === "object" &&
         obj !== null &&
-        (obj.authior !== undefined || obj.content !== undefined)
+        (obj.author !== undefined || obj.content !== undefined)
     );
 };
 
@@ -197,3 +197,27 @@ export interface PaginatedBlogs {
     blogs: Blog[];
     more: boolean;
 }
+
+export interface Login {
+    username: string;
+    password: string;
+}
+
+export const isLogin = (obj: any): obj is Login => {
+    return (
+        typeof obj === "object" &&
+        obj !== null &&
+        typeof obj.username === "string" &&
+        typeof obj.password === "string"
+    );
+};
+
+export interface Authorization {
+    token: string;
+}
+
+export const isAuthorization = (obj: any): obj is Authorization => {
+    return (
+        typeof obj === "object" && obj !== null && typeof obj.token === "string"
+    );
+};

@@ -1,0 +1,9 @@
+{
+    "name": "snackytrails-api",
+    "version": "1.0.0",
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "jose": "^5.8.0",
+        "typescript": "^5.5.4"
+    }
+}

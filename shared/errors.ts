@@ -3,6 +3,7 @@ import { assertUnreachable } from "./helpers";
 export enum ErrorCode {
     RequestInvalid = "request_invalid",
     RequestUnauthorized = "request_unauthorized",
+    LoginInvalid = "login_invalid",
     OptionBadValue = "option_bad_value",
     OptionInvalid = "option_invalid",
     OptionCreateInvalid = "option_create_invalid",
@@ -33,6 +34,8 @@ export const statusFromErrorCode = (errorCode: ErrorCode): number => {
             return 400;
         case ErrorCode.RequestUnauthorized:
             return 401;
+        case ErrorCode.LoginInvalid:
+            return 400;
         case ErrorCode.OptionBadValue:
             return 400;
         case ErrorCode.OptionInvalid:
