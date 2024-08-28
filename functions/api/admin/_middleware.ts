@@ -1,23 +1,45 @@
 import { AppError, ErrorCode } from "@shared/errors";
 import { Env } from "@types";
 
-// Basic authorization
-const checkAuthorization: PagesFunction<Env> = async (context) => {
-    const { request, env } = context;
-    const authHeader = request.headers.get("Authorization");
+import { jwtVerify } from "jose";
 
-    if (!authHeader || !authHeader.startsWith("Basic ")) {
+const checkAuthorization: PagesFunction<Env> = async (context) => {
+    const { API_KEY, USERNAME, JWT_SECRET } = context.env;
+    const authHeader = context.request.headers.get("Authorization");
+
+    if (!authHeader) {
         throw new AppError(
             "Request isn't authorized",
             ErrorCode.RequestUnauthorized
         );
     }
 
-    const base64Credentials = authHeader.split(" ")[1];
-    const credentials = atob(base64Credentials).split(":");
-    const apiKey = credentials[0];
+    let basicAuthorized = false;
+    if (authHeader.startsWith("Basic ")) {
+        const base64Credentials = authHeader.split(" ")[1];
+        const credentials = atob(base64Credentials).split(":");
+        const apiKey = credentials[0];
 
-    if (apiKey !== env.API_KEY) {
+        if (apiKey === API_KEY) {
+            basicAuthorized = true;
+        }
+    }
+
+    let bearerAuthroized = false;
+    if (authHeader.startsWith("Bearer ")) {
+        const token = authHeader.split(" ")[1];
+        const { payload } = await jwtVerify(
+            token,
+            new TextEncoder().encode(JWT_SECRET)
+        );
+        const { username } = payload;
+
+        if (username === USERNAME) {
+            bearerAuthroized = true;
+        }
+    }
+
+    if (!basicAuthorized && !bearerAuthroized) {
         throw new AppError(
             "Request isn't authorized",
             ErrorCode.RequestUnauthorized
