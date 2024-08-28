@@ -2,6 +2,10 @@ const CracoAlias = require("craco-alias");
 const path = require("path");
 
 module.exports = {
+    devServer: (devServerConfig, { env, paths, proxy, allowedHost }) => {
+        devServerConfig.devMiddleware.writeToDisk = true;
+        return devServerConfig;
+    },
     plugins: [
         {
             plugin: CracoAlias,
