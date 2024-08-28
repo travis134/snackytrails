@@ -45,15 +45,24 @@ export const setCorsHeaders: PagesFunction<Env> = async (context) => {
 const injectUser: PagesFunction<Env> = async (context) => {
     const { env, request } = context;
 
-    // Get the X-User-ID header value
-    const userId = request.headers.get("X-User-ID");
+    // Default to admin user on admin paths
+    if (request.url.includes("api/admin")) {
+        env.user = "admin";
+        return context.next();
+    }
 
-    if (userId) {
+    // Get the X-User header value
+    const user = request.headers.get("X-User");
+
+    if (user) {
         // If the X-User-ID header is present, use it as the user identifier
-        env.user = userId;
+        env.user = user;
     } else {
         // If the header is missing, throw an AppError with the appropriate error code
-        throw new AppError("X-User-ID header is missing", ErrorCode.RequestInvalid);
+        throw new AppError(
+            "X-User-ID header is missing",
+            ErrorCode.RequestInvalid
+        );
     }
 
     return context.next();
