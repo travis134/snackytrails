@@ -7,6 +7,7 @@
         "baseUrl": "..",
         "paths": {
             "@shared/*": ["shared/*"],
+            "@api/*": ["functions/api/*"],
             "@lib/*": ["functions/lib/*"],
             "@types": ["functions/types.ts"]
         },

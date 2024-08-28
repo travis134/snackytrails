@@ -41,12 +41,13 @@ export const setCorsHeaders: PagesFunction<Env> = async (context) => {
     return response;
 };
 
-// Janky anonymous user ID
+// Anonymous user value, used to prevent duplicate votes on polls
 const injectUser: PagesFunction<Env> = async (context) => {
     const { env, request } = context;
 
     // Default to admin user on admin paths
-    if (request.url.includes("api/admin")) {
+    const { pathname } = new URL(request.url);
+    if (pathname.startsWith("/api/admin")) {
         env.user = "admin";
         return context.next();
     }

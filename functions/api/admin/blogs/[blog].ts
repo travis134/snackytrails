@@ -2,6 +2,8 @@ import { AppError, ErrorCode } from "@shared/errors";
 import { isBlogUpdate } from "@shared/types";
 import { Env } from "@types";
 
+export { onRequestGet } from "@api/blogs/[blog]";
+
 // Update a blog
 export const onRequestPost: PagesFunction<Env> = async (context) => {
     const { blogsService } = context.env;

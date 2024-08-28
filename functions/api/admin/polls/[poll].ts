@@ -2,6 +2,8 @@ import { AppError, ErrorCode } from "@shared/errors";
 import { isPollUpdate } from "@shared/types";
 import { Env } from "@types";
 
+export { onRequestGet } from "@api/polls/[poll]";
+
 // Update a poll
 export const onRequestPost: PagesFunction<Env> = async (context) => {
     const { pollsService } = context.env;
