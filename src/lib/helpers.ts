@@ -1,12 +1,14 @@
+import { v4 as uuidv4 } from "uuid";
+
 import { AppError, ErrorCode, isAppErrorData } from "@shared/errors";
 
 // Private helper to generate and retrieve the unique user ID
-const getUser = () => {
+const getUser = (): string => {
     const userKey = "user";
     let user = localStorage.getItem(userKey);
 
     if (!user) {
-        user = crypto.randomUUID();
+        user = uuidv4();
         localStorage.setItem(userKey, user);
     }
 
