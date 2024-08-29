@@ -1,8 +1,9 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import Routes from "@lib/routes";
+import { useLoginQuery } from "@queries/useLogin";
 import { BlogsService } from "@types";
 
 import ErrorComponent from "@components/ErrorComponent";
@@ -17,6 +18,10 @@ interface BlogPageProps {
 
 const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
     const { id: blogId } = useParams<{ id: string }>();
+    const [content, setContent] = useState("");
+    const [editing, setEditing] = useState(false);
+
+    const { data: loggedIn } = useLoginQuery();
 
     const {
         data: blog,
@@ -26,6 +31,12 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
         queryKey: ["blog", blogId],
         queryFn: () => blogsService.readBlog(blogId!),
     });
+
+    useEffect(() => {
+        if (blog) {
+            setContent(blog.content);
+        }
+    }, [blog]);
 
     let hero: ReactNode;
     let body: ReactNode;
@@ -46,11 +57,45 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
         const formattedDate = new Date(mungedTime).toLocaleString();
         const subtitle = `${blog!.author} @ ${formattedDate}`;
 
+        let buttons: ReactNode;
+        if (loggedIn) {
+            if (editing) {
+                buttons = (
+                    <div className="buttons is-right mt-5">
+                        <button className="button is-danger">Delete</button>
+                        <button
+                            className="button"
+                            onClick={() => setEditing(false)}
+                        >
+                            Cancel
+                        </button>
+                        <button className="button is-success">Save</button>
+                    </div>
+                );
+            } else {
+                buttons = (
+                    <div className="buttons is-right mt-5">
+                        <button
+                            className="button"
+                            onClick={() => setEditing(true)}
+                        >
+                            Edit
+                        </button>
+                    </div>
+                );
+            }
+        }
+
         hero = <HeroComponent title={title} subtitle={subtitle} />;
         body = (
             <>
                 <article className="box mb-5">
-                    <BlogContentComponent blog={blog!} />
+                    <BlogContentComponent
+                        content={content}
+                        setContent={setContent}
+                        editable={editing}
+                    />
+                    {buttons}
                 </article>
                 <a
                     className={"button is-white has-text-primary is-fullwidth"}

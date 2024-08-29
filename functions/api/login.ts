@@ -1,5 +1,5 @@
 import { AppError, ErrorCode } from "@shared/errors";
-import { isLogin } from "@shared/types";
+import { isCredentials } from "@shared/types";
 import { Env } from "@types";
 
 import bcrypt from "bcryptjs";
@@ -7,13 +7,13 @@ import { SignJWT } from "jose";
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
     const { USERNAME, PASSWORD_HASH, JWT_SECRET } = context.env;
-    const login = await context.request.json();
+    const credentials = await context.request.json();
 
-    if (!isLogin(login)) {
-        throw new AppError("Invalid login", ErrorCode.LoginInvalid);
+    if (!isCredentials(credentials)) {
+        throw new AppError("Invalid login", ErrorCode.CredentialsInvalid);
     }
 
-    const { username, password } = login;
+    const { username, password } = credentials;
     const usernameMatches = username === USERNAME;
     const passwordMatches = await bcrypt.compare(password, PASSWORD_HASH);
     if (!usernameMatches || !passwordMatches) {

@@ -1,5 +1,7 @@
 import {
+    Authorization,
     Blog,
+    Credentials,
     Option,
     PaginatedBlogs,
     PaginatedPolls,
@@ -21,4 +23,8 @@ export interface PollsService {
 export interface BlogsService {
     readBlog(blogId: string): Promise<Blog>;
     listBlogs(limit: number, offset: number): Promise<PaginatedBlogs>;
+}
+
+export interface LoginService {
+    login(credentials: Credentials): Promise<Authorization>;
 }

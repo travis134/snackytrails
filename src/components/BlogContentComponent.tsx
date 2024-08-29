@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { Renderer, marked } from "marked";
 
 import hljs from "highlight.js/lib/core";
@@ -8,21 +8,23 @@ import scss from "highlight.js/lib/languages/scss";
 import sql from "highlight.js/lib/languages/sql";
 import typescript from "highlight.js/lib/languages/typescript";
 
-import { Blog } from "@shared/types";
-
 hljs.registerLanguage("plaintext", plaintext);
 hljs.registerLanguage("scss", scss);
 hljs.registerLanguage("sql", sql);
 hljs.registerLanguage("typescript", typescript);
 
 interface BlogContentComponentProps {
-    blog: Blog;
+    content: string;
+    setContent?: (content: string) => void;
+    editable?: boolean;
 }
 
 const BlogContentComponent: React.FC<BlogContentComponentProps> = ({
-    blog,
+    content,
+    setContent,
+    editable,
 }) => {
-    const [content, setContent] = useState("");
+    const [renderableContent, setRenderableContent] = useState("");
 
     // Translate markdown to html and perform code highlighting
     useEffect(() => {
@@ -43,18 +45,47 @@ const BlogContentComponent: React.FC<BlogContentComponentProps> = ({
             breaks: true,
         });
 
-        const parsedContent = marked.parse(blog.content, {
+        const parsedContent = marked.parse(content, {
             async: false,
         }) as string;
-        setContent(parsedContent);
-    }, [blog.content]);
+        setRenderableContent(parsedContent);
+    }, [content]);
 
-    return (
+    const view = (
         <div
             className="content"
-            dangerouslySetInnerHTML={{ __html: content }}
+            dangerouslySetInnerHTML={{ __html: renderableContent }}
         />
     );
+
+    const edit = (
+        <textarea
+            className="textarea"
+            value={content}
+            onChange={(e) => setContent!(e.target.value)}
+        />
+    );
+
+    let body: ReactNode;
+    if (editable) {
+        body = (
+            <div className="columns">
+                <div className="column">
+                    <label className="label">Edit</label>
+                    <div className="control">{edit}</div>
+                </div>
+
+                <div className="column">
+                    <label className="label">Preview</label>
+                    <div className="control">{view}</div>
+                </div>
+            </div>
+        );
+    } else {
+        body = view;
+    }
+
+    return body;
 };
 
 export default BlogContentComponent;

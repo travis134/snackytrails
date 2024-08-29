@@ -22,7 +22,7 @@ const BlogPreviewComponent: React.FC<BlogPreviewComponentProps> = ({
                 <h4 className="subtitle has-text-link">{blog.id}</h4>
 
                 <div className="preview mt-5 ">
-                    <BlogContentComponent blog={blog} />
+                    <BlogContentComponent content={blog.content} />
                 </div>
                 <p>{subtitle}</p>
             </article>

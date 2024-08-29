@@ -11,6 +11,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "./bulma-custom.scss";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
+import { APILoginService } from "@lib/api_login_service";
 import { APIBlogsService } from "@lib/api_blogs_service";
 import { APIPollsService } from "@lib/api_polls_service";
 import Routes from "@lib/routes";
@@ -21,6 +22,7 @@ import LayoutComponent from "@components/LayoutComponent";
 import HeaderComponent from "@components/HeaderComponent";
 import FooterComponent from "@components/FooterComponent";
 import SplashPage from "@components/SplashPage";
+import LoginPage from "@components/LoginPage";
 import AboutPage from "@components/AboutPage";
 import BlogsPage from "@components/BlogsPage";
 import BlogPage from "@components/BlogPage";
@@ -31,6 +33,7 @@ import PollResultsPage from "@components/PollResultsPage";
 const queryClient = new QueryClient();
 
 const apiHostName = window.location.origin;
+const loginService = new APILoginService({ apiBaseUrl: apiHostName });
 const blogsService = new APIBlogsService({ apiBaseUrl: apiHostName });
 const pollsService = new APIPollsService({ apiBaseUrl: apiHostName });
 
@@ -48,6 +51,10 @@ const router = createBrowserRouter(
                 index
                 path={Routes.HomeRoute.path}
                 element={<SplashPage logo={logo} />}
+            />
+            <Route
+                path={Routes.LoginRoute.path}
+                element={<LoginPage loginService={loginService} />}
             />
             <Route path={Routes.AboutRoute.path} element={<AboutPage />} />
             <Route

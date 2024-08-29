@@ -8,6 +8,11 @@ const HomeRoute: RouteConfig = {
     href: () => "/",
 };
 
+const LoginRoute: RouteConfig = {
+    path: "login",
+    href: () => "/login",
+};
+
 const AboutRoute: RouteConfig = {
     path: "about",
     href: () => "/about",
@@ -54,6 +59,7 @@ const PollResultsRoute: RouteConfig = {
 };
 const Routes: Record<string, RouteConfig> = {
     HomeRoute,
+    LoginRoute,
     AboutRoute,
     BlogsRoute,
     BlogRoute,

@@ -198,12 +198,12 @@ export interface PaginatedBlogs {
     more: boolean;
 }
 
-export interface Login {
+export interface Credentials {
     username: string;
     password: string;
 }
 
-export const isLogin = (obj: any): obj is Login => {
+export const isCredentials = (obj: any): obj is Credentials => {
     return (
         typeof obj === "object" &&
         obj !== null &&

@@ -5,6 +5,7 @@
             "@shared/*": ["../shared/*"],
             "@components/*": ["./components/*"],
             "@lib/*": ["./lib/*"],
+            "@queries/*": ["./queries/*"],
             "@types": ["./types.ts"]
         }
     }
