@@ -10,6 +10,9 @@ npm-debug.log*
 # Mac junk
 .DS_Store
 
+# Editor junk
+.vscode
+
 # Wrangler files
 .wrangler
 .dev.vars
