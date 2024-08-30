@@ -1,22 +1,31 @@
 import { Authorization, Credentials } from "@shared/types";
 import { LoginService } from "@types";
+import { AppError, ErrorCode } from "@shared/errors";
 
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 const loginQueryKey = "login";
 
-const queryLogin = (): boolean => {
-    let isLoggedIn = false;
-
+const queryLogin = (): Authorization => {
     const token = localStorage.getItem("token");
+    if (!token) {
+        throw new AppError("Not authorized", ErrorCode.AuthorizationInvalid);
+    }
+
     if (token) {
         const payload = JSON.parse(atob(token.split(".")[1]));
-        if (payload.exp > Math.floor(Date.now() / 1000)) {
-            isLoggedIn = true;
+        // Expire 5 minutes early, which is the refresh frequency of this query
+        if (payload.exp > Math.floor(Date.now() / 1000) + 3000) {
+            throw new AppError(
+                "Authorization expired",
+                ErrorCode.AuthorizationInvalid
+            );
         }
     }
 
-    return isLoggedIn;
+    const authorization = { token };
+
+    return authorization;
 };
 
 const setAuthorization = (authorization: Authorization) => {
@@ -47,4 +56,12 @@ export const useLoginMutation = (loginService: LoginService) => {
             queryClient.invalidateQueries({ queryKey: [loginQueryKey] });
         },
     });
+};
+
+export const useInvalidateLoginQuery = () => {
+    const queryClient = useQueryClient();
+
+    return () => {
+        queryClient.invalidateQueries({ queryKey: [loginQueryKey] });
+    };
 };
