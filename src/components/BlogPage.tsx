@@ -50,29 +50,33 @@ const BlogPage: React.FC<BlogPageProps> = ({
         setContent(blog!.content);
     };
 
-    const { mutate: saveBlogMutation } = useMutation({
-        mutationFn: (blogUpdate: BlogUpdate) =>
-            blogsService.updateBlog(authorization!, blog!.id, blogUpdate),
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["blog", blogId],
-            });
-            cancelEditing();
-        },
-    });
+    const { mutate: saveBlogMutation, isPending: saveBlogIsPending } =
+        useMutation({
+            mutationFn: (blogUpdate: BlogUpdate) =>
+                blogsService.updateBlog(authorization!, blog!.id, blogUpdate),
+            onSuccess: () => {
+                queryClient.invalidateQueries({
+                    queryKey: ["blog", blogId],
+                });
+                cancelEditing();
+            },
+        });
     const saveBlog = () => {
         saveBlogMutation({ content });
     };
 
-    const { mutate: deleteBlogMutation } = useMutation({
-        mutationFn: () => blogsService.deleteBlog(authorization!, blog!.id),
-        onSuccess: () => {
-            navigate(Routes.BlogsRoute.href());
-        },
-    });
+    const { mutate: deleteBlogMutation, isPending: deleteBlogIsPending } =
+        useMutation({
+            mutationFn: () => blogsService.deleteBlog(authorization!, blog!.id),
+            onSuccess: () => {
+                navigate(Routes.BlogsRoute.href());
+            },
+        });
     const deleteBlog = () => {
         deleteBlogMutation();
     };
+
+    const editIsPending = saveBlogIsPending || deleteBlogIsPending;
 
     useEffect(() => {
         if (blog) {
@@ -107,15 +111,21 @@ const BlogPage: React.FC<BlogPageProps> = ({
                         <button
                             className="button is-danger"
                             onClick={deleteBlog}
+                            disabled={editIsPending}
                         >
                             Delete
                         </button>
-                        <button className="button" onClick={cancelEditing}>
+                        <button
+                            className="button"
+                            onClick={cancelEditing}
+                            disabled={editIsPending}
+                        >
                             Cancel
                         </button>
                         <button
                             className="button is-primary has-text-white"
                             onClick={saveBlog}
+                            disabled={editIsPending}
                         >
                             Save
                         </button>
@@ -143,6 +153,7 @@ const BlogPage: React.FC<BlogPageProps> = ({
                         content={content}
                         setContent={setContent}
                         editable={editable}
+                        disabled={editIsPending}
                     />
                     {buttons}
                 </article>

@@ -17,12 +17,14 @@ interface BlogContentComponentProps {
     content: string;
     setContent?: (content: string) => void;
     editable?: boolean;
+    disabled?: boolean;
 }
 
 const BlogContentComponent: React.FC<BlogContentComponentProps> = ({
     content,
     setContent,
     editable,
+    disabled,
 }) => {
     const [renderableContent, setRenderableContent] = useState("");
 
@@ -63,6 +65,8 @@ const BlogContentComponent: React.FC<BlogContentComponentProps> = ({
             className="textarea"
             value={content}
             onChange={(e) => setContent!(e.target.value)}
+            disabled={disabled}
+            style={{ minHeight: "50vh" }}
         />
     );
 
