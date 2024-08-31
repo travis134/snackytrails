@@ -1,50 +1,81 @@
 import React, { useState } from "react";
 
-import { useLoginMutation, useLoginQuery } from "@queries/useLogin";
-import { LoginService } from "@types";
+import {
+    useAuthorizationMutation,
+    useAuthorizationQuery,
+} from "@queries/authorization";
+import { LoginService, StorageService } from "@types";
 
 import ErrorComponent from "@components/ErrorComponent";
 
 interface LoginPageProps {
     loginService: LoginService;
+    storageService: StorageService;
 }
 
-const LoginPage: React.FC<LoginPageProps> = ({ loginService }) => {
+const LoginPage: React.FC<LoginPageProps> = ({
+    loginService,
+    storageService,
+}) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
     const {
-        data: isLoggedIn,
-        isPending: isLoggedInLoading,
-        error: isLoggedInError,
-    } = useLoginQuery();
+        data: authorization,
+        isPending: authorizationIsPending,
+        error: authorizationError,
+    } = useAuthorizationQuery({ storageService });
 
     const {
-        mutate: loginMutate,
-        error: loginMutateError,
-        isPending: loginMutateIsPending,
-    } = useLoginMutation(loginService);
+        mutate: authorize,
+        isPending: authorizeIsPending,
+        error: authorizeError,
+    } = useAuthorizationMutation({ loginService, storageService });
 
-    const error = isLoggedInError || loginMutateError;
+    const error = authorizationError || authorizeError;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        loginMutate({ username, password });
+        authorize({ username, password });
     };
 
-    if (isLoggedInLoading) {
+    if (authorizationIsPending) {
         return (
             <section className="section">
                 <div className="container is-max-tablet">
                     <div className="box">
-                        <p>Loading...</p>
+                        <div className="field mb-2">
+                            <label className="label is-skeleton" />
+                            <div className="control">
+                                <input
+                                    className="input is-skeleton"
+                                    type="text"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="field mb-5">
+                            <label className="label is-skeleton" />
+                            <div className="control">
+                                <input
+                                    className="input is-skeleton"
+                                    type="text"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="field">
+                            <div className="control">
+                                <button className="button is-fullwidth is-skeleton" />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
         );
     }
 
-    if (isLoggedIn) {
+    if (authorization) {
         return (
             <section className="section">
                 <div className="container is-max-tablet">
@@ -69,7 +100,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ loginService }) => {
                                 placeholder="Enter your username"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                disabled={loginMutateIsPending}
+                                disabled={authorizeIsPending}
                                 required
                             />
                             <span className="icon is-small is-left">
@@ -87,7 +118,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ loginService }) => {
                                 placeholder="Enter your password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                disabled={loginMutateIsPending}
+                                disabled={authorizeIsPending}
                                 required
                             />
                             <span className="icon is-small is-left">
@@ -96,20 +127,16 @@ const LoginPage: React.FC<LoginPageProps> = ({ loginService }) => {
                         </div>
                     </div>
 
-                    {error && (
-                        <div className="notification is-danger">
-                            <ErrorComponent error={error} />
-                        </div>
-                    )}
+                    {error && <ErrorComponent error={error} />}
 
-                    <div className="field is-grouped is-grouped-right">
+                    <div className="field">
                         <div className="control">
                             <button
-                                className={`button is-primary ${
-                                    loginMutateIsPending && "is-loading"
+                                className={`button is-primary has-text-white is-fullwidth ${
+                                    authorizeIsPending && "is-loading"
                                 }`}
                                 type="submit"
-                                disabled={loginMutateIsPending}
+                                disabled={authorizeIsPending}
                             >
                                 Submit
                             </button>

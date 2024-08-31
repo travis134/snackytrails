@@ -12,6 +12,7 @@ import "./bulma-custom.scss";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import { APILoginService } from "@lib/api_login_service";
+import { BrowserStorageService } from "@lib/browser_storage_service";
 import { APIBlogsService } from "@lib/api_blogs_service";
 import { APIPollsService } from "@lib/api_polls_service";
 import Routes from "@lib/routes";
@@ -34,6 +35,7 @@ const queryClient = new QueryClient();
 
 const apiHostName = window.location.origin;
 const loginService = new APILoginService({ apiBaseUrl: apiHostName });
+const storageService = new BrowserStorageService();
 const blogsService = new APIBlogsService({ apiBaseUrl: apiHostName });
 const pollsService = new APIPollsService({ apiBaseUrl: apiHostName });
 
@@ -54,7 +56,12 @@ const router = createBrowserRouter(
             />
             <Route
                 path={Routes.LoginRoute.path}
-                element={<LoginPage loginService={loginService} />}
+                element={
+                    <LoginPage
+                        loginService={loginService}
+                        storageService={storageService}
+                    />
+                }
             />
             <Route path={Routes.AboutRoute.path} element={<AboutPage />} />
             <Route
@@ -63,7 +70,12 @@ const router = createBrowserRouter(
             />
             <Route
                 path={Routes.BlogRoute.path}
-                element={<BlogPage blogsService={blogsService} />}
+                element={
+                    <BlogPage
+                        blogsService={blogsService}
+                        storageService={storageService}
+                    />
+                }
             />
             <Route
                 path={Routes.PollsRoute.path}

@@ -28,3 +28,9 @@ export interface BlogsService {
 export interface LoginService {
     login(credentials: Credentials): Promise<Authorization>;
 }
+
+export interface StorageService {
+    store(key: string, value: string): void;
+    retrieve(key: string): string | null;
+    delete(key: string): void;
+}

@@ -3,8 +3,8 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import Routes from "@lib/routes";
-import { useLoginQuery } from "@queries/useLogin";
-import { BlogsService } from "@types";
+import { useAuthorizationQuery } from "@queries/authorization";
+import { BlogsService, StorageService } from "@types";
 
 import ErrorComponent from "@components/ErrorComponent";
 import HeroComponent from "@components/HeroComponent";
@@ -14,14 +14,18 @@ import BlogContentSkeletonComponent from "./BlogContentSkeletonComponent";
 
 interface BlogPageProps {
     blogsService: BlogsService;
+    storageService: StorageService;
 }
 
-const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
+const BlogPage: React.FC<BlogPageProps> = ({
+    blogsService,
+    storageService,
+}) => {
     const { id: blogId } = useParams<{ id: string }>();
     const [content, setContent] = useState("");
     const [editing, setEditing] = useState(false);
 
-    const { data: loggedIn } = useLoginQuery();
+    const { data: authorization } = useAuthorizationQuery({ storageService });
 
     const {
         data: blog,
@@ -58,7 +62,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ blogsService }) => {
         const subtitle = `${blog!.author} @ ${formattedDate}`;
 
         let buttons: ReactNode;
-        if (loggedIn) {
+        if (authorization) {
             if (editing) {
                 buttons = (
                     <div className="buttons is-right mt-5">
