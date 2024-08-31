@@ -3,14 +3,36 @@ import React, { useState } from "react";
 import { matchPath, useLocation } from "react-router-dom";
 
 import Routes from "@lib/routes";
+import { LoginService, StorageService } from "@types";
+import {
+    useAuthorizationMutation,
+    useAuthorizationQuery,
+} from "@queries/authorization";
 
 interface HeaderComponentProps {
     icon: string;
+    loginService: LoginService;
+    storageService: StorageService;
 }
 
-const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
+const HeaderComponent: React.FC<HeaderComponentProps> = ({
+    icon,
+    loginService,
+    storageService,
+}) => {
     const { pathname } = useLocation();
     const [isActive, setIsActive] = useState(false);
+
+    const { data: authorization } = useAuthorizationQuery({ storageService });
+
+    const { mutate: authorize } = useAuthorizationMutation({
+        loginService,
+        storageService,
+    });
+
+    const logOut = () => {
+        authorize(null);
+    };
 
     const toggleMenu = () => {
         setIsActive(!isActive);
@@ -84,6 +106,16 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ icon }) => {
                     </div>
 
                     <div className="navbar-end">
+                        {authorization && (
+                            <div className="navbar-item">
+                                <button
+                                    className="button is-danger"
+                                    onClick={logOut}
+                                >
+                                    Log out
+                                </button>
+                            </div>
+                        )}
                         <div className="navbar-item">
                             <a
                                 className="button is-primary has-text-white"

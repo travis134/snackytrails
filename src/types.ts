@@ -1,6 +1,7 @@
 import {
     Authorization,
     Blog,
+    BlogUpdate,
     Credentials,
     Option,
     PaginatedBlogs,
@@ -23,6 +24,12 @@ export interface PollsService {
 export interface BlogsService {
     readBlog(blogId: string): Promise<Blog>;
     listBlogs(limit: number, offset: number): Promise<PaginatedBlogs>;
+    updateBlog(
+        authorization: Authorization,
+        blogId: string,
+        blogUpdate: BlogUpdate
+    ): Promise<void>;
+    deleteBlog(authorization: Authorization, blogId: string): Promise<void>;
 }
 
 export interface LoginService {
@@ -33,4 +40,8 @@ export interface StorageService {
     store(key: string, value: string): void;
     retrieve(key: string): string | null;
     delete(key: string): void;
+}
+
+export interface UserService {
+    getUser(): string;
 }

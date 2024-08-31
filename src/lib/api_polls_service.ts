@@ -10,19 +10,30 @@ import {
     isTally,
     isVote,
 } from "@shared/types";
-import { PollsService } from "@types";
+import { PollsService, UserService } from "@types";
 import { appFetch } from "@lib/helpers";
 
 export class APIPollsService implements PollsService {
     apiBaseUrl: string;
+    userService: UserService;
 
-    constructor({ apiBaseUrl }: { apiBaseUrl: string }) {
+    constructor({
+        apiBaseUrl,
+        userService,
+    }: {
+        apiBaseUrl: string;
+        userService: UserService;
+    }) {
         this.apiBaseUrl = apiBaseUrl;
+        this.userService = userService;
     }
 
     async readPoll(pollId: string): Promise<Poll> {
         const url = new URL(`/api/polls/${pollId}`, this.apiBaseUrl);
-        const response = await appFetch(url, { method: "get" });
+        const response = await appFetch(url, {
+            headers: { "X-User": this.userService.getUser() },
+            method: "get",
+        });
         const { poll } = await response.json();
         if (!isPoll(poll)) {
             throw new AppError(
@@ -35,10 +46,13 @@ export class APIPollsService implements PollsService {
     }
 
     async listPolls(limit: number, offset: number): Promise<PaginatedPolls> {
-        const url = new URL(`/api/polls`, this.apiBaseUrl);
+        const url = new URL("/api/polls", this.apiBaseUrl);
         url.searchParams.append("limit", limit.toString(10));
         url.searchParams.append("offset", offset.toString(10));
-        const response = await appFetch(url, { method: "get" });
+        const response = await appFetch(url, {
+            headers: { "X-User": this.userService.getUser() },
+            method: "get",
+        });
         const { polls, more } = await response.json();
         for (const poll of polls) {
             if (!isPoll(poll)) {
@@ -54,7 +68,10 @@ export class APIPollsService implements PollsService {
 
     async tallyPoll(pollId: string): Promise<Tally[]> {
         const url = new URL(`/api/polls/${pollId}/tally`, this.apiBaseUrl);
-        const response = await appFetch(url, { method: "get" });
+        const response = await appFetch(url, {
+            headers: { "X-User": this.userService.getUser() },
+            method: "get",
+        });
         const { tallies } = await response.json();
         for (const tally of tallies) {
             if (!isTally(tally)) {
@@ -77,7 +94,11 @@ export class APIPollsService implements PollsService {
             );
         }
 
-        await appFetch(url, { method: "post", body: JSON.stringify(vote) });
+        await appFetch(url, {
+            headers: { "X-User": this.userService.getUser() },
+            method: "post",
+            body: JSON.stringify(vote),
+        });
     }
 
     async readOption(pollId: string, optionId: number): Promise<Option> {
@@ -85,7 +106,10 @@ export class APIPollsService implements PollsService {
             `/api/polls/${pollId}/options/${optionId}`,
             this.apiBaseUrl
         );
-        const response = await appFetch(url, { method: "get" });
+        const response = await appFetch(url, {
+            headers: { "X-User": this.userService.getUser() },
+            method: "get",
+        });
         const { option } = await response.json();
         if (!isOption(option)) {
             throw new AppError(
@@ -99,7 +123,10 @@ export class APIPollsService implements PollsService {
 
     async listOptions(pollId: string): Promise<Option[]> {
         const url = new URL(`/api/polls/${pollId}/options`, this.apiBaseUrl);
-        const response = await appFetch(url, { method: "get" });
+        const response = await appFetch(url, {
+            headers: { "X-User": this.userService.getUser() },
+            method: "get",
+        });
         const { options } = await response.json();
         for (const option of options) {
             if (!isOption(option)) {

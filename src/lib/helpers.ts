@@ -1,40 +1,22 @@
-import { v4 as uuidv4 } from "uuid";
-
 import { AppError, ErrorCode, isAppErrorData } from "@shared/errors";
-
-// Private helper to generate and retrieve the unique user ID
-const getUser = (): string => {
-    const userKey = "user";
-    let user = localStorage.getItem(userKey);
-
-    if (!user) {
-        user = uuidv4();
-        localStorage.setItem(userKey, user);
-    }
-
-    return user;
-};
 
 export const appFetch = async (
     input: RequestInfo | URL,
     init?: RequestInit | undefined
 ): Promise<Response> => {
-    const user = getUser();
-
-    // Ensure headers are initialized
-    const headers =
-        init?.headers instanceof Headers
-            ? init.headers
-            : new Headers(init?.headers);
-    headers.append("X-User", user);
-
-    // Include the headers in the init object
-    const modifiedInit = { ...init, headers };
-
-    const response = await fetch(input, modifiedInit);
+    const response = await fetch(input, init);
 
     if (!response.ok) {
-        const data = await response.json();
+        let data;
+        try {
+            data = await response.json();
+        } catch (error) {
+            throw new AppError(
+                `An unknown error ocurred (status=${response.status}).`,
+                ErrorCode.Unknown
+            );
+        }
+
         if (isAppErrorData(data)) {
             throw new AppError(data.error, data.error_code);
         } else {

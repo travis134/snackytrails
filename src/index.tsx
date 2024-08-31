@@ -30,21 +30,29 @@ import BlogPage from "@components/BlogPage";
 import PollsPage from "@components/PollsPage";
 import PollPage from "@components/PollPage";
 import PollResultsPage from "@components/PollResultsPage";
+import { AnonymousUserService } from "@lib/anonymous_user_service";
 
 const queryClient = new QueryClient();
 
-const apiHostName = window.location.origin;
-const loginService = new APILoginService({ apiBaseUrl: apiHostName });
+const apiBaseUrl = window.location.origin;
 const storageService = new BrowserStorageService();
-const blogsService = new APIBlogsService({ apiBaseUrl: apiHostName });
-const pollsService = new APIPollsService({ apiBaseUrl: apiHostName });
+const userService = new AnonymousUserService({ storageService });
+const loginService = new APILoginService({ apiBaseUrl, userService });
+const blogsService = new APIBlogsService({ apiBaseUrl, userService });
+const pollsService = new APIPollsService({ apiBaseUrl, userService });
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route
             element={
                 <LayoutComponent
-                    header={<HeaderComponent icon={icon} />}
+                    header={
+                        <HeaderComponent
+                            icon={icon}
+                            loginService={loginService}
+                            storageService={storageService}
+                        />
+                    }
                     footer={<FooterComponent />}
                 />
             }

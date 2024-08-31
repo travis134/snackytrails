@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import Routes from "@lib/routes";
 import { useAuthorizationQuery } from "@queries/authorization";
@@ -11,6 +11,7 @@ import HeroComponent from "@components/HeroComponent";
 import HeroSkeletonComponent from "@components/HeroSkeletonComponent";
 import BlogContentComponent from "@components/BlogContentComponent";
 import BlogContentSkeletonComponent from "./BlogContentSkeletonComponent";
+import { BlogUpdate } from "@shared/types";
 
 interface BlogPageProps {
     blogsService: BlogsService;
@@ -24,8 +25,12 @@ const BlogPage: React.FC<BlogPageProps> = ({
     const { id: blogId } = useParams<{ id: string }>();
     const [content, setContent] = useState("");
     const [editing, setEditing] = useState(false);
+    const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
     const { data: authorization } = useAuthorizationQuery({ storageService });
+
+    const editable = editing && !!authorization;
 
     const {
         data: blog,
@@ -35,6 +40,39 @@ const BlogPage: React.FC<BlogPageProps> = ({
         queryKey: ["blog", blogId],
         queryFn: () => blogsService.readBlog(blogId!),
     });
+
+    const enableEditing = () => {
+        setEditing(true);
+    };
+
+    const cancelEditing = () => {
+        setEditing(false);
+        setContent(blog!.content);
+    };
+
+    const { mutate: saveBlogMutation } = useMutation({
+        mutationFn: (blogUpdate: BlogUpdate) =>
+            blogsService.updateBlog(authorization!, blog!.id, blogUpdate),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["blog", blogId],
+            });
+            cancelEditing();
+        },
+    });
+    const saveBlog = () => {
+        saveBlogMutation({ content });
+    };
+
+    const { mutate: deleteBlogMutation } = useMutation({
+        mutationFn: () => blogsService.deleteBlog(authorization!, blog!.id),
+        onSuccess: () => {
+            navigate(Routes.BlogsRoute.href());
+        },
+    });
+    const deleteBlog = () => {
+        deleteBlogMutation();
+    };
 
     useEffect(() => {
         if (blog) {
@@ -66,22 +104,29 @@ const BlogPage: React.FC<BlogPageProps> = ({
             if (editing) {
                 buttons = (
                     <div className="buttons is-right mt-5">
-                        <button className="button is-danger">Delete</button>
                         <button
-                            className="button"
-                            onClick={() => setEditing(false)}
+                            className="button is-danger"
+                            onClick={deleteBlog}
                         >
+                            Delete
+                        </button>
+                        <button className="button" onClick={cancelEditing}>
                             Cancel
                         </button>
-                        <button className="button is-success">Save</button>
+                        <button
+                            className="button is-primary has-text-white"
+                            onClick={saveBlog}
+                        >
+                            Save
+                        </button>
                     </div>
                 );
             } else {
                 buttons = (
                     <div className="buttons is-right mt-5">
                         <button
-                            className="button"
-                            onClick={() => setEditing(true)}
+                            className="button is-primary has-text-white"
+                            onClick={enableEditing}
                         >
                             Edit
                         </button>
@@ -97,7 +142,7 @@ const BlogPage: React.FC<BlogPageProps> = ({
                     <BlogContentComponent
                         content={content}
                         setContent={setContent}
-                        editable={editing}
+                        editable={editable}
                     />
                     {buttons}
                 </article>
@@ -105,7 +150,7 @@ const BlogPage: React.FC<BlogPageProps> = ({
                     className={"button is-white has-text-primary is-fullwidth"}
                     href={Routes.BlogsRoute.href()}
                 >
-                    Read other blogs
+                    Read more
                 </a>
             </>
         );

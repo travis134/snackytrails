@@ -20,6 +20,11 @@ const LoginPage: React.FC<LoginPageProps> = ({
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
+    const clearLogin = () => {
+        setUsername("");
+        setPassword("");
+    };
+
     const {
         data: authorization,
         isPending: authorizationIsPending,
@@ -36,7 +41,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        authorize({ username, password });
+        authorize({ username, password }, { onSuccess: clearLogin });
     };
 
     if (authorizationIsPending) {

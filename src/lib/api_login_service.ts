@@ -5,14 +5,22 @@ import {
     isCredentials,
     isAuthorization,
 } from "@shared/types";
-import { LoginService } from "@types";
+import { LoginService, UserService } from "@types";
 import { appFetch } from "@lib/helpers";
 
 export class APILoginService implements LoginService {
     apiBaseUrl: string;
+    userService: UserService;
 
-    constructor({ apiBaseUrl }: { apiBaseUrl: string }) {
+    constructor({
+        apiBaseUrl,
+        userService,
+    }: {
+        apiBaseUrl: string;
+        userService: UserService;
+    }) {
         this.apiBaseUrl = apiBaseUrl;
+        this.userService = userService;
     }
 
     async login(credentials: Credentials): Promise<Authorization> {
@@ -25,6 +33,7 @@ export class APILoginService implements LoginService {
 
         const url = new URL("/api/login", this.apiBaseUrl);
         const response = await appFetch(url, {
+            headers: { "X-User": this.userService.getUser() },
             method: "post",
             body: JSON.stringify(credentials),
         });
