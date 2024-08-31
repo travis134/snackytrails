@@ -14,7 +14,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
 
     const { username, password } = credentials;
-    const usernameMatches = username === USERNAME;
+    const usernameMatches = username.toLowerCase() === USERNAME.toLowerCase();
     const passwordMatches = await bcrypt.compare(password, PASSWORD_HASH);
     if (!usernameMatches || !passwordMatches) {
         throw new AppError(
