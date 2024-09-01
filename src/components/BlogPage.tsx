@@ -2,25 +2,24 @@ import React, { ReactNode, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { BlogUpdate } from "@shared/types";
 import Routes from "@lib/routes";
-import { useAuthorizationQuery } from "@queries/authorization";
-import { BlogsService, StorageService } from "@types";
+import { AuthorizationService, BlogsService } from "@types";
 
 import ErrorComponent from "@components/ErrorComponent";
 import HeroComponent from "@components/HeroComponent";
 import HeroSkeletonComponent from "@components/HeroSkeletonComponent";
 import BlogContentComponent from "@components/BlogContentComponent";
-import BlogContentSkeletonComponent from "./BlogContentSkeletonComponent";
-import { BlogUpdate } from "@shared/types";
+import BlogContentSkeletonComponent from "@components/BlogContentSkeletonComponent";
 
 interface BlogPageProps {
     blogsService: BlogsService;
-    storageService: StorageService;
+    authorizationService: AuthorizationService;
 }
 
 const BlogPage: React.FC<BlogPageProps> = ({
     blogsService,
-    storageService,
+    authorizationService,
 }) => {
     const { id: blogId } = useParams<{ id: string }>();
     const [content, setContent] = useState("");
@@ -28,7 +27,12 @@ const BlogPage: React.FC<BlogPageProps> = ({
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
-    const { data: authorization } = useAuthorizationQuery({ storageService });
+    const { data: authorization } = useQuery({
+        queryKey: ["authorization"],
+        queryFn: () => {
+            return authorizationService.authorization();
+        },
+    });
 
     const editable = editing && !!authorization;
 

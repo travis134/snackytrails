@@ -45,3 +45,9 @@ export interface StorageService {
 export interface UserService {
     getUser(): string;
 }
+
+export interface AuthorizationService {
+    authorize(credentials: Credentials): Promise<void>;
+    authorization(): Authorization | null;
+    unauthorize(): void;
+}

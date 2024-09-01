@@ -1,22 +1,18 @@
 import React, { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import {
-    useAuthorizationMutation,
-    useAuthorizationQuery,
-} from "@queries/authorization";
-import { LoginService, StorageService } from "@types";
+import { Credentials } from "@shared/types";
+import { AuthorizationService } from "@types";
 
+import LoginFormSkeletonComponent from "@components/LoginFormSkeletonComponent";
 import ErrorComponent from "@components/ErrorComponent";
 
 interface LoginPageProps {
-    loginService: LoginService;
-    storageService: StorageService;
+    authorizationService: AuthorizationService;
 }
 
-const LoginPage: React.FC<LoginPageProps> = ({
-    loginService,
-    storageService,
-}) => {
+const LoginPage: React.FC<LoginPageProps> = ({ authorizationService }) => {
+    const queryClient = useQueryClient();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
@@ -29,55 +25,38 @@ const LoginPage: React.FC<LoginPageProps> = ({
         data: authorization,
         isPending: authorizationIsPending,
         error: authorizationError,
-    } = useAuthorizationQuery({ storageService });
+    } = useQuery({
+        queryKey: ["authorization"],
+        queryFn: () => {
+            return authorizationService.authorization();
+        },
+    });
 
     const {
         mutate: authorize,
         isPending: authorizeIsPending,
         error: authorizeError,
-    } = useAuthorizationMutation({ loginService, storageService });
+    } = useMutation({
+        mutationFn: async (credentials: Credentials) => {
+            await authorizationService.authorize(credentials);
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: ["authorization"],
+            });
+            clearLogin();
+        },
+    });
 
     const error = authorizationError || authorizeError;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        authorize({ username, password }, { onSuccess: clearLogin });
+        authorize({ username, password });
     };
 
     if (authorizationIsPending) {
-        return (
-            <section className="section">
-                <div className="container is-max-tablet">
-                    <div className="box">
-                        <div className="field mb-2">
-                            <label className="label is-skeleton" />
-                            <div className="control">
-                                <input
-                                    className="input is-skeleton"
-                                    type="text"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="field mb-5">
-                            <label className="label is-skeleton" />
-                            <div className="control">
-                                <input
-                                    className="input is-skeleton"
-                                    type="text"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="field">
-                            <div className="control">
-                                <button className="button is-fullwidth is-skeleton" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        );
+        return <LoginFormSkeletonComponent />;
     }
 
     if (authorization) {

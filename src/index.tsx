@@ -31,13 +31,19 @@ import PollsPage from "@components/PollsPage";
 import PollPage from "@components/PollPage";
 import PollResultsPage from "@components/PollResultsPage";
 import { AnonymousUserService } from "@lib/anonymous_user_service";
+import { BrowserAuthorizationService } from "@lib/browser_authorization_service";
 
 const queryClient = new QueryClient();
 
 const apiBaseUrl = window.location.origin;
+
 const storageService = new BrowserStorageService();
 const userService = new AnonymousUserService({ storageService });
 const loginService = new APILoginService({ apiBaseUrl, userService });
+const authorizationService = new BrowserAuthorizationService({
+    loginService,
+    storageService,
+});
 const blogsService = new APIBlogsService({ apiBaseUrl, userService });
 const pollsService = new APIPollsService({ apiBaseUrl, userService });
 
@@ -49,8 +55,7 @@ const router = createBrowserRouter(
                     header={
                         <HeaderComponent
                             icon={icon}
-                            loginService={loginService}
-                            storageService={storageService}
+                            authorizationService={authorizationService}
                         />
                     }
                     footer={<FooterComponent />}
@@ -65,10 +70,7 @@ const router = createBrowserRouter(
             <Route
                 path={Routes.LoginRoute.path}
                 element={
-                    <LoginPage
-                        loginService={loginService}
-                        storageService={storageService}
-                    />
+                    <LoginPage authorizationService={authorizationService} />
                 }
             />
             <Route path={Routes.AboutRoute.path} element={<AboutPage />} />
@@ -81,7 +83,7 @@ const router = createBrowserRouter(
                 element={
                     <BlogPage
                         blogsService={blogsService}
-                        storageService={storageService}
+                        authorizationService={authorizationService}
                     />
                 }
             />

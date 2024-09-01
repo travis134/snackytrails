@@ -3,35 +3,42 @@ import React, { useState } from "react";
 import { matchPath, useLocation } from "react-router-dom";
 
 import Routes from "@lib/routes";
-import { LoginService, StorageService } from "@types";
-import {
-    useAuthorizationMutation,
-    useAuthorizationQuery,
-} from "@queries/authorization";
+import { AuthorizationService } from "@types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface HeaderComponentProps {
     icon: string;
-    loginService: LoginService;
-    storageService: StorageService;
+    authorizationService: AuthorizationService;
 }
 
 const HeaderComponent: React.FC<HeaderComponentProps> = ({
     icon,
-    loginService,
-    storageService,
+    authorizationService,
 }) => {
+    const queryClient = useQueryClient();
     const { pathname } = useLocation();
     const [isActive, setIsActive] = useState(false);
 
-    const { data: authorization } = useAuthorizationQuery({ storageService });
+    const { data: authorization } = useQuery({
+        queryKey: ["authorization"],
+        queryFn: () => {
+            return authorizationService.authorization();
+        },
+    });
 
-    const { mutate: authorize } = useAuthorizationMutation({
-        loginService,
-        storageService,
+    const { mutate: unauthorize } = useMutation({
+        mutationFn: async () => {
+            authorizationService.unauthorize();
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: ["authorization"],
+            });
+        },
     });
 
     const logOut = () => {
-        authorize(null);
+        unauthorize();
     };
 
     const toggleMenu = () => {
