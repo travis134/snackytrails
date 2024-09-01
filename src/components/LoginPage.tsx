@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { Credentials } from "@shared/types";
 import { AuthorizationService } from "@types";
 
-import LoginFormSkeletonComponent from "@components/LoginFormSkeletonComponent";
 import ErrorComponent from "@components/ErrorComponent";
+import HeroComponent from "@components/HeroComponent";
+import HeroSkeletonComponent from "@components/HeroSkeletonComponent";
+import LoginFormSkeletonComponent from "@components/LoginFormSkeletonComponent";
+import LoginFormComponent from "@components/LoginFormComponent";
 
 interface LoginPageProps {
     authorizationService: AuthorizationService;
@@ -23,8 +26,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ authorizationService }) => {
 
     const {
         data: authorization,
-        isPending: authorizationIsPending,
-        error: authorizationError,
+        isPending: isLoading,
+        error,
     } = useQuery({
         queryKey: ["authorization"],
         queryFn: () => {
@@ -48,87 +51,55 @@ const LoginPage: React.FC<LoginPageProps> = ({ authorizationService }) => {
         },
     });
 
-    const error = authorizationError || authorizeError;
-
-    const handleSubmit = (e: React.FormEvent) => {
+    const onLoginFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         authorize({ username, password });
     };
 
-    if (authorizationIsPending) {
-        return <LoginFormSkeletonComponent />;
-    }
+    let hero: ReactNode;
+    let body: ReactNode;
 
-    if (authorization) {
-        return (
-            <section className="section">
+    if (isLoading) {
+        hero = <HeroSkeletonComponent />;
+        body = <LoginFormSkeletonComponent />;
+    } else if (error) {
+        hero = <HeroSkeletonComponent />;
+        body = <ErrorComponent error={error as any} />;
+    } else {
+        hero = (
+            <HeroComponent
+                title="Login"
+                subtitle="For administrators only please"
+            />
+        );
+        if (authorization) {
+            body = (
                 <div className="container is-max-tablet">
                     <div className="box">
                         <p className="has-text-centered">You are logged in.</p>
                     </div>
                 </div>
-            </section>
-        );
+            );
+        } else {
+            body = (
+                <LoginFormComponent
+                    onSubmit={onLoginFormSubmit}
+                    username={username}
+                    setUsername={setUsername}
+                    password={password}
+                    setPassword={setPassword}
+                    disabled={authorizeIsPending}
+                    error={authorizeError}
+                />
+            );
+        }
     }
 
     return (
-        <section className="section">
-            <div className="container is-max-tablet">
-                <form className="box" onSubmit={handleSubmit}>
-                    <div className="field mb-2">
-                        <label className="label">Username</label>
-                        <div className="control has-icons-left">
-                            <input
-                                className="input"
-                                type="text"
-                                placeholder="Enter your username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                disabled={authorizeIsPending}
-                                required
-                            />
-                            <span className="icon is-small is-left">
-                                <i className="fas fa-user"></i>
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="field mb-5">
-                        <label className="label">Password</label>
-                        <div className="control has-icons-left">
-                            <input
-                                className="input"
-                                type="password"
-                                placeholder="Enter your password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                disabled={authorizeIsPending}
-                                required
-                            />
-                            <span className="icon is-small is-left">
-                                <i className="fas fa-lock"></i>
-                            </span>
-                        </div>
-                    </div>
-
-                    {error && <ErrorComponent error={error} />}
-
-                    <div className="field">
-                        <div className="control">
-                            <button
-                                className={`button is-primary has-text-white is-fullwidth ${
-                                    authorizeIsPending && "is-loading"
-                                }`}
-                                type="submit"
-                                disabled={authorizeIsPending}
-                            >
-                                Submit
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </section>
+        <>
+            {hero}
+            <section className="section">{body}</section>
+        </>
     );
 };
 
