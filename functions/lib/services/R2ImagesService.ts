@@ -1,6 +1,6 @@
 import { R2Bucket } from "@cloudflare/workers-types";
 
-import { ImagesService } from "functions/types";
+import { ImagesService } from "@types";
 
 export class R2ImagesService implements ImagesService {
     imagesBucket: R2Bucket;

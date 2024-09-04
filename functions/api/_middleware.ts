@@ -1,6 +1,6 @@
-import { D1BlogsService } from "@lib/d1_blogs_service";
-import { D1PollsService } from "@lib/d1_polls_service";
-import { R2ImagesService } from "@lib/r2_images_service";
+import { D1BlogsService } from "@lib/services/D1BlogsService";
+import { D1PollsService } from "@lib/services/D1PollsService";
+import { R2ImagesService } from "@lib/services/R2ImagesService";
 import {
     AppError,
     AppErrorData,

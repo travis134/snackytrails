@@ -15,7 +15,7 @@ import {
     isPoll,
     isTally,
 } from "@shared/types";
-import { PollsService } from "functions/types";
+import { PollsService } from "@types";
 
 export class D1PollsService implements PollsService {
     pollsDb: D1Database;

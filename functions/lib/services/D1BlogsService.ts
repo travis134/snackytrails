@@ -8,7 +8,7 @@ import {
     BlogUpdate,
     isBlog,
 } from "@shared/types";
-import { BlogsService } from "functions/types";
+import { BlogsService } from "@types";
 
 export class D1BlogsService implements BlogsService {
     blogsDb: D1Database;
