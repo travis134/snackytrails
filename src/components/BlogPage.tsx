@@ -1,10 +1,15 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { BlogUpdate } from "@shared/types";
 import Routes from "@lib/routes";
 import { AuthorizationService, BlogsService } from "@types";
+
+import {
+    useBlog,
+    useBlogDelete,
+    useBlogUpdate,
+} from "@lib/queries/BlogQueries";
+import { useAuthorization } from "@lib/queries/AuthorizationQueries";
 
 import ErrorComponent from "@components/ErrorComponent";
 import HeroComponent from "@components/HeroComponent";
@@ -24,26 +29,17 @@ const BlogPage: React.FC<BlogPageProps> = ({
     const { id: blogId } = useParams<{ id: string }>();
     const [content, setContent] = useState("");
     const [editing, setEditing] = useState(false);
-    const queryClient = useQueryClient();
     const navigate = useNavigate();
 
-    const { data: authorization } = useQuery({
-        queryKey: ["authorization"],
-        queryFn: () => {
-            return authorizationService.authorization();
-        },
-    });
+    const { data: authorization } = useAuthorization({ authorizationService });
 
     const editable = editing && !!authorization;
 
     const {
         data: blog,
-        error,
-        isLoading,
-    } = useQuery({
-        queryKey: ["blog", blogId],
-        queryFn: () => blogsService.readBlog(blogId!),
-    });
+        error: blogError,
+        isPending: blogIsPending,
+    } = useBlog({ blogsService, blogId: blogId! });
 
     const enableEditing = () => {
         setEditing(true);
@@ -55,29 +51,32 @@ const BlogPage: React.FC<BlogPageProps> = ({
     };
 
     const { mutate: saveBlogMutation, isPending: saveBlogIsPending } =
-        useMutation({
-            mutationFn: (blogUpdate: BlogUpdate) =>
-                blogsService.updateBlog(authorization!, blog!.id, blogUpdate),
+        useBlogUpdate({
+            blogsService,
+            authorization: authorization!,
+            blogId: blogId!,
+        });
+    const saveBlog = () => {
+        const blogUdate = { content };
+        saveBlogMutation(blogUdate, {
             onSuccess: () => {
-                queryClient.invalidateQueries({
-                    queryKey: ["blog", blogId],
-                });
                 cancelEditing();
             },
         });
-    const saveBlog = () => {
-        saveBlogMutation({ content });
     };
 
     const { mutate: deleteBlogMutation, isPending: deleteBlogIsPending } =
-        useMutation({
-            mutationFn: () => blogsService.deleteBlog(authorization!, blog!.id),
+        useBlogDelete({
+            blogsService,
+            authorization: authorization!,
+            blogId: blogId!,
+        });
+    const deleteBlog = () => {
+        deleteBlogMutation(undefined, {
             onSuccess: () => {
                 navigate(Routes.BlogsRoute.href());
             },
         });
-    const deleteBlog = () => {
-        deleteBlogMutation();
     };
 
     const editIsPending = saveBlogIsPending || deleteBlogIsPending;
@@ -91,16 +90,16 @@ const BlogPage: React.FC<BlogPageProps> = ({
     let hero: ReactNode;
     let body: ReactNode;
 
-    if (isLoading) {
+    if (blogIsPending) {
         hero = <HeroSkeletonComponent />;
         body = (
             <article className="box mb-5">
                 <BlogContentSkeletonComponent />
             </article>
         );
-    } else if (error) {
+    } else if (blogError) {
         hero = <HeroSkeletonComponent />;
-        body = <ErrorComponent error={error as any} />;
+        body = <ErrorComponent error={blogError as any} />;
     } else {
         const title = blog!.id;
         const mungedTime = blog!.created.split(" ").join("T") + ".000Z";

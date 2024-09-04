@@ -8,16 +8,19 @@ import {
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
 import "./bulma-custom.scss";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-
-import { APILoginService } from "@lib/api_login_service";
-import { BrowserStorageService } from "@lib/browser_storage_service";
-import { APIBlogsService } from "@lib/api_blogs_service";
-import { APIPollsService } from "@lib/api_polls_service";
 import Routes from "@lib/routes";
 import icon from "./assets/icon.svg";
 import logo from "./assets/logo.svg";
+
+import { BrowserStorageService } from "@lib/services/BrowserStorageService";
+import { AnonymousUserService } from "@lib/services/AnonymousUserService";
+import { APILoginService } from "@lib/services/APILoginService";
+import { BrowserAuthorizationService } from "@lib/services/BrowserAuthorizationService";
+import { APIBlogsService } from "@lib/services/APIBlogsService";
+import { APIPollsService } from "@lib/services/APIPollsService";
 
 import LayoutComponent from "@components/LayoutComponent";
 import HeaderComponent from "@components/HeaderComponent";
@@ -30,8 +33,6 @@ import BlogPage from "@components/BlogPage";
 import PollsPage from "@components/PollsPage";
 import PollPage from "@components/PollPage";
 import PollResultsPage from "@components/PollResultsPage";
-import { AnonymousUserService } from "@lib/anonymous_user_service";
-import { BrowserAuthorizationService } from "@lib/browser_authorization_service";
 
 const queryClient = new QueryClient();
 

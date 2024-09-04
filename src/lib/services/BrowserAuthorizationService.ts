@@ -38,7 +38,8 @@ export class BrowserAuthorizationService implements AuthorizationService {
             return null;
         }
 
-        return { token };
+        const authorization = { token };
+        return authorization;
     }
 
     unauthorize(): void {

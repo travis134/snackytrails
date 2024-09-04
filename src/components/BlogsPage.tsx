@@ -1,7 +1,8 @@
 import React, { ReactNode } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { BlogsService } from "@types";
+
+import { useBlogs } from "@lib/queries/BlogQueries";
 
 import EmptyComponent from "@components/EmptyComponent";
 import ErrorComponent from "@components/ErrorComponent";
@@ -18,32 +19,25 @@ interface BlogsPageProps {
 
 const BlogsPage: React.FC<BlogsPageProps> = ({ blogsService }) => {
     const {
-        data,
-        error,
-        isLoading,
+        data: paginatedBlogs,
+        error: paginatedBlogsError,
+        isPending: paginatedBlogsIsPending,
         isFetchingNextPage,
         fetchNextPage,
         hasNextPage,
-    } = useInfiniteQuery({
-        queryKey: ["blogs"],
-        queryFn: ({ pageParam = 0 }) =>
-            blogsService.listBlogs(limit, pageParam),
-        getNextPageParam: (lastPage, allPages) =>
-            lastPage.more ? allPages.length * limit : undefined,
-        initialPageParam: 0,
-    });
+    } = useBlogs({ blogsService, limit });
 
-    const blogs = data?.pages.flatMap((page) => page.blogs) || [];
+    const blogs = paginatedBlogs?.pages.flatMap((page) => page.blogs) || [];
 
     let hero: ReactNode;
     let body: ReactNode;
 
-    if (isLoading) {
+    if (paginatedBlogsIsPending) {
         hero = <HeroSkeletonComponent />;
         body = <BlogsSkeletonComponent />;
-    } else if (error) {
+    } else if (paginatedBlogsError) {
         hero = <HeroSkeletonComponent />;
-        body = <ErrorComponent error={error as any} />;
+        body = <ErrorComponent error={paginatedBlogsError as any} />;
     } else if (blogs.length === 0) {
         hero = <HeroSkeletonComponent />;
         body = <EmptyComponent />;

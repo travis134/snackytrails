@@ -1,8 +1,11 @@
 import React, { ReactNode, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { Credentials } from "@shared/types";
 import { AuthorizationService } from "@types";
+
+import {
+    useAuthorization,
+    useAuthorize,
+} from "@lib/queries/AuthorizationQueries";
 
 import ErrorComponent from "@components/ErrorComponent";
 import HeroComponent from "@components/HeroComponent";
@@ -15,7 +18,6 @@ interface LoginPageProps {
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ authorizationService }) => {
-    const queryClient = useQueryClient();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
@@ -26,45 +28,38 @@ const LoginPage: React.FC<LoginPageProps> = ({ authorizationService }) => {
 
     const {
         data: authorization,
-        isPending: isLoading,
-        error,
-    } = useQuery({
-        queryKey: ["authorization"],
-        queryFn: () => {
-            return authorizationService.authorization();
-        },
-    });
+        isPending: authorizationIsPending,
+        error: authorizationError,
+    } = useAuthorization({ authorizationService });
 
     const {
-        mutate: authorize,
+        mutate: authorizeMutation,
         isPending: authorizeIsPending,
         error: authorizeError,
-    } = useMutation({
-        mutationFn: async (credentials: Credentials) => {
-            await authorizationService.authorize(credentials);
-        },
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({
-                queryKey: ["authorization"],
-            });
-            clearLogin();
-        },
-    });
+    } = useAuthorize({ authorizationService });
+    const authorize = () => {
+        const credentials = { username, password };
+        authorizeMutation(credentials, {
+            onSuccess: () => {
+                clearLogin();
+            },
+        });
+    };
 
     const onLoginFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        authorize({ username, password });
+        authorize();
     };
 
     let hero: ReactNode;
     let body: ReactNode;
 
-    if (isLoading) {
+    if (authorizationIsPending) {
         hero = <HeroSkeletonComponent />;
         body = <LoginFormSkeletonComponent />;
-    } else if (error) {
+    } else if (authorizationError) {
         hero = <HeroSkeletonComponent />;
-        body = <ErrorComponent error={error as any} />;
+        body = <ErrorComponent error={authorizationError as any} />;
     } else {
         hero = (
             <HeroComponent

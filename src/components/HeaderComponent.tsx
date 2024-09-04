@@ -4,7 +4,11 @@ import { matchPath, useLocation } from "react-router-dom";
 
 import Routes from "@lib/routes";
 import { AuthorizationService } from "@types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import {
+    useAuthorization,
+    useUnauthorize,
+} from "@lib/queries/AuthorizationQueries";
 
 interface HeaderComponentProps {
     icon: string;
@@ -15,30 +19,16 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
     icon,
     authorizationService,
 }) => {
-    const queryClient = useQueryClient();
     const { pathname } = useLocation();
     const [isActive, setIsActive] = useState(false);
 
-    const { data: authorization } = useQuery({
-        queryKey: ["authorization"],
-        queryFn: () => {
-            return authorizationService.authorization();
-        },
-    });
+    const { data: authorization } = useAuthorization({ authorizationService });
 
-    const { mutate: unauthorize } = useMutation({
-        mutationFn: async () => {
-            authorizationService.unauthorize();
-        },
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({
-                queryKey: ["authorization"],
-            });
-        },
+    const { mutate: unauthorizeMutation } = useUnauthorize({
+        authorizationService,
     });
-
-    const logOut = () => {
-        unauthorize();
+    const unauthorize = () => {
+        unauthorizeMutation();
     };
 
     const toggleMenu = () => {
@@ -117,7 +107,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
                             <div className="navbar-item">
                                 <button
                                     className="button is-danger"
-                                    onClick={logOut}
+                                    onClick={unauthorize}
                                 >
                                     Log out
                                 </button>
