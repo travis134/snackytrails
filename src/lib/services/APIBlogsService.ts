@@ -5,6 +5,7 @@ import {
     isBlog,
     Authorization,
     BlogUpdate,
+    BlogCreate,
 } from "@shared/types";
 import { BlogsService, UserService } from "@types";
 import { appFetch } from "@lib/helpers";
@@ -22,6 +23,21 @@ export class APIBlogsService implements BlogsService {
     }) {
         this.apiBaseUrl = apiBaseUrl;
         this.userService = userService;
+    }
+
+    async createBlog(
+        authorization: Authorization,
+        blogCreate: BlogCreate
+    ): Promise<void> {
+        const url = new URL("/api/admin/blogs", this.apiBaseUrl);
+        await appFetch(url, {
+            headers: {
+                "X-User": this.userService.getUser(),
+                Authorization: `Bearer ${authorization.token}`,
+            },
+            method: "post",
+            body: JSON.stringify(blogCreate),
+        });
     }
 
     async readBlog(blogId: string): Promise<Blog> {

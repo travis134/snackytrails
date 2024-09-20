@@ -1,4 +1,4 @@
-import { Authorization, BlogUpdate } from "@shared/types";
+import { Authorization, BlogCreate, BlogUpdate } from "@shared/types";
 import {
     useInfiniteQuery,
     useMutation,
@@ -15,7 +15,45 @@ const getBlogQueryKey = (blogId: string) => {
     return [...blogsQueryKey, blogId];
 };
 
-export const useBlogs = ({
+export const useCreateBlog = ({
+    blogsService,
+    authorization,
+}: {
+    blogsService: BlogsService;
+    authorization: Authorization;
+}) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (blogCreate: BlogCreate) => {
+            await blogsService.createBlog(authorization!, blogCreate);
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: blogsQueryKey,
+                exact: true,
+            });
+        },
+    });
+};
+
+export const useReadBlog = ({
+    blogsService,
+    blogId,
+}: {
+    blogsService: BlogsService;
+    blogId: string;
+}) => {
+    return useQuery({
+        queryKey: getBlogQueryKey(blogId),
+        queryFn: async () => {
+            return blogsService.readBlog(blogId!);
+        },
+        staleTime,
+    });
+};
+
+export const useListBlogs = ({
     blogsService,
     limit,
 }: {
@@ -34,23 +72,7 @@ export const useBlogs = ({
     });
 };
 
-export const useBlog = ({
-    blogsService,
-    blogId,
-}: {
-    blogsService: BlogsService;
-    blogId: string;
-}) => {
-    return useQuery({
-        queryKey: getBlogQueryKey(blogId),
-        queryFn: async () => {
-            return blogsService.readBlog(blogId!);
-        },
-        staleTime,
-    });
-};
-
-export const useBlogUpdate = ({
+export const useUpdateBlog = ({
     blogsService,
     authorization,
     blogId,
@@ -77,7 +99,7 @@ export const useBlogUpdate = ({
     });
 };
 
-export const useBlogDelete = ({
+export const useDeleteBlog = ({
     blogsService,
     authorization,
     blogId,

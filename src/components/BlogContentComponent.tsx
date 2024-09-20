@@ -16,6 +16,7 @@ hljs.registerLanguage("typescript", typescript);
 interface BlogContentComponentProps {
     content: string;
     setContent?: (content: string) => void;
+    contentError: string | null;
     editable?: boolean;
     disabled?: boolean;
 }
@@ -23,6 +24,7 @@ interface BlogContentComponentProps {
 const BlogContentComponent: React.FC<BlogContentComponentProps> = ({
     content,
     setContent,
+    contentError,
     editable,
     disabled,
 }) => {
@@ -73,17 +75,22 @@ const BlogContentComponent: React.FC<BlogContentComponentProps> = ({
     let body: ReactNode;
     if (editable) {
         body = (
-            <div className="columns">
-                <div className="column">
-                    <label className="label">Edit</label>
-                    <div className="control">{edit}</div>
-                </div>
+            <>
+                <div className="columns">
+                    <div className="column">
+                        <label className="label">Edit</label>
+                        <div className="control">{edit}</div>
+                    </div>
 
-                <div className="column">
-                    <label className="label">Preview</label>
-                    <div className="control">{view}</div>
+                    <div className="column">
+                        <label className="label">Preview</label>
+                        <div className="control">{view}</div>
+                    </div>
                 </div>
-            </div>
+                {contentError && (
+                    <p className="help is-danger">{contentError}</p>
+                )}
+            </>
         );
     } else {
         body = view;

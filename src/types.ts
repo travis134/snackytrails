@@ -1,6 +1,7 @@
 import {
     Authorization,
     Blog,
+    BlogCreate,
     BlogUpdate,
     Credentials,
     Option,
@@ -22,6 +23,10 @@ export interface PollsService {
 }
 
 export interface BlogsService {
+    createBlog(
+        authorization: Authorization,
+        blogCreate: BlogCreate
+    ): Promise<void>;
     readBlog(blogId: string): Promise<Blog>;
     listBlogs(limit: number, offset: number): Promise<PaginatedBlogs>;
     updateBlog(

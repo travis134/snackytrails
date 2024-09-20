@@ -5,9 +5,9 @@ import Routes from "@lib/routes";
 import { AuthorizationService, BlogsService } from "@types";
 
 import {
-    useBlog,
-    useBlogDelete,
-    useBlogUpdate,
+    useReadBlog,
+    useDeleteBlog,
+    useUpdateBlog,
 } from "@lib/queries/BlogQueries";
 import { useAuthorization } from "@lib/queries/AuthorizationQueries";
 
@@ -28,18 +28,17 @@ const BlogPage: React.FC<BlogPageProps> = ({
 }) => {
     const { id: blogId } = useParams<{ id: string }>();
     const [content, setContent] = useState("");
+    const [contentError, setContentError] = useState<string | null>(null);
     const [editing, setEditing] = useState(false);
     const navigate = useNavigate();
 
     const { data: authorization } = useAuthorization({ authorizationService });
 
-    const editable = editing && !!authorization;
-
     const {
         data: blog,
         error: blogError,
         isPending: blogIsPending,
-    } = useBlog({ blogsService, blogId: blogId! });
+    } = useReadBlog({ blogsService, blogId: blogId! });
 
     const enableEditing = () => {
         setEditing(true);
@@ -51,14 +50,14 @@ const BlogPage: React.FC<BlogPageProps> = ({
     };
 
     const { mutate: saveBlogMutation, isPending: saveBlogIsPending } =
-        useBlogUpdate({
+        useUpdateBlog({
             blogsService,
             authorization: authorization!,
             blogId: blogId!,
         });
     const saveBlog = () => {
-        const blogUdate = { content };
-        saveBlogMutation(blogUdate, {
+        const blogUpdate = { content };
+        saveBlogMutation(blogUpdate, {
             onSuccess: () => {
                 cancelEditing();
             },
@@ -66,7 +65,7 @@ const BlogPage: React.FC<BlogPageProps> = ({
     };
 
     const { mutate: deleteBlogMutation, isPending: deleteBlogIsPending } =
-        useBlogDelete({
+        useDeleteBlog({
             blogsService,
             authorization: authorization!,
             blogId: blogId!,
@@ -86,6 +85,14 @@ const BlogPage: React.FC<BlogPageProps> = ({
             setContent(blog.content);
         }
     }, [blog]);
+
+    useEffect(() => {
+        if (!content) {
+            setContentError("An content value must be provided");
+        } else {
+            setContentError(null);
+        }
+    }, [content]);
 
     let hero: ReactNode;
     let body: ReactNode;
@@ -107,45 +114,43 @@ const BlogPage: React.FC<BlogPageProps> = ({
         const subtitle = `${blog!.author} @ ${formattedDate}`;
 
         let buttons: ReactNode;
-        if (authorization) {
-            if (editing) {
-                buttons = (
-                    <div className="buttons is-right mt-5">
-                        <button
-                            className="button is-danger"
-                            onClick={deleteBlog}
-                            disabled={editIsPending}
-                        >
-                            Delete
-                        </button>
-                        <button
-                            className="button"
-                            onClick={cancelEditing}
-                            disabled={editIsPending}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            className="button is-primary has-text-white"
-                            onClick={saveBlog}
-                            disabled={editIsPending}
-                        >
-                            Save
-                        </button>
-                    </div>
-                );
-            } else {
-                buttons = (
-                    <div className="buttons is-right mt-5">
-                        <button
-                            className="button is-primary has-text-white"
-                            onClick={enableEditing}
-                        >
-                            Edit
-                        </button>
-                    </div>
-                );
-            }
+        if (editing) {
+            buttons = (
+                <div className="buttons is-right mt-5">
+                    <button
+                        className="button is-danger"
+                        onClick={deleteBlog}
+                        disabled={editIsPending}
+                    >
+                        Delete
+                    </button>
+                    <button
+                        className="button"
+                        onClick={cancelEditing}
+                        disabled={editIsPending}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        className="button is-primary has-text-white"
+                        onClick={saveBlog}
+                        disabled={editIsPending || !!contentError}
+                    >
+                        Save
+                    </button>
+                </div>
+            );
+        } else {
+            buttons = (
+                <div className="buttons is-right mt-5">
+                    <button
+                        className="button is-primary has-text-white"
+                        onClick={enableEditing}
+                    >
+                        Edit
+                    </button>
+                </div>
+            );
         }
 
         hero = <HeroComponent title={title} subtitle={subtitle} />;
@@ -155,10 +160,11 @@ const BlogPage: React.FC<BlogPageProps> = ({
                     <BlogContentComponent
                         content={content}
                         setContent={setContent}
-                        editable={editable}
+                        contentError={contentError}
+                        editable={editing && !!authorization}
                         disabled={editIsPending}
                     />
-                    {buttons}
+                    {authorization && buttons}
                 </article>
                 <a
                     className={"button is-white has-text-primary is-fullwidth"}

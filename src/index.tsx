@@ -77,7 +77,12 @@ const router = createBrowserRouter(
             <Route path={Routes.AboutRoute.path} element={<AboutPage />} />
             <Route
                 path={Routes.BlogsRoute.path}
-                element={<BlogsPage blogsService={blogsService} />}
+                element={
+                    <BlogsPage
+                        blogsService={blogsService}
+                        authorizationService={authorizationService}
+                    />
+                }
             />
             <Route
                 path={Routes.BlogRoute.path}
