@@ -16,7 +16,7 @@ hljs.registerLanguage("typescript", typescript);
 interface BlogContentComponentProps {
     content: string;
     setContent?: (content: string) => void;
-    contentError: string | null;
+    contentError?: string | null;
     editable?: boolean;
     disabled?: boolean;
 }
@@ -64,7 +64,7 @@ const BlogContentComponent: React.FC<BlogContentComponentProps> = ({
 
     const edit = (
         <textarea
-            className="textarea"
+            className={`textarea ${contentError && "is-danger"}`}
             value={content}
             onChange={(e) => setContent!(e.target.value)}
             disabled={disabled}

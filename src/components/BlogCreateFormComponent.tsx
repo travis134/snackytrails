@@ -5,13 +5,13 @@ import BlogContentComponent from "@components/BlogContentComponent";
 interface BlogCreateFormComponentProps {
     id: string;
     setId: (id: string) => void;
-    idError: string | null;
+    idError?: string | null;
     author: string;
     setAuthor: (author: string) => void;
-    authorError: string | null;
+    authorError?: string | null;
     content: string;
     setContent: (content: string) => void;
-    contentError: string | null;
+    contentError?: string | null;
 }
 
 const BlogCreateFormComponent: React.FC<BlogCreateFormComponentProps> = ({
@@ -31,7 +31,7 @@ const BlogCreateFormComponent: React.FC<BlogCreateFormComponentProps> = ({
                 <label className="label">ID</label>
                 <div className="control">
                     <input
-                        className={`input ${idError ?? "is-danger"}`}
+                        className={`input ${idError && "is-danger"}`}
                         type="text"
                         value={id}
                         onChange={(e) => setId(e.target.value)}
@@ -45,7 +45,7 @@ const BlogCreateFormComponent: React.FC<BlogCreateFormComponentProps> = ({
                 <label className="label">Author</label>
                 <div className="control">
                     <input
-                        className={`input ${authorError ?? "is-danger"}`}
+                        className={`input ${authorError && "is-danger"}`}
                         type="text"
                         value={author}
                         onChange={(e) => setAuthor(e.target.value)}

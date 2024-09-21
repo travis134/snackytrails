@@ -119,9 +119,6 @@ export const useDeleteBlog = ({
                 queryKey: blogsQueryKey,
                 exact: true,
             });
-            await queryClient.invalidateQueries({
-                queryKey: getBlogQueryKey(blogId),
-            });
         },
     });
 };
