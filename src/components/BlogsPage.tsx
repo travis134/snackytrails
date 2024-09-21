@@ -75,7 +75,7 @@ const BlogsPage: React.FC<BlogsPageProps> = ({
         if (!id) {
             setIdError("An ID value must be provided");
         } else if (!idPattern.test(id)) {
-            setIdError("The ID value must be words separated by hyphens");
+            setIdError("The ID value must be lowercase words separated by hyphens");
         } else {
             setIdError(null);
         }
@@ -91,7 +91,7 @@ const BlogsPage: React.FC<BlogsPageProps> = ({
 
     useEffect(() => {
         if (!content) {
-            setContentError("An content value must be provided");
+            setContentError("A content value must be provided");
         } else {
             setContentError(null);
         }
